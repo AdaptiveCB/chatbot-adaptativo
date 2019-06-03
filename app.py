@@ -21,31 +21,39 @@ def about():
 @app.route('/pregunta',methods=['POST'])
 def pregunta():
   pregunta = request.form['consulta']
-  # queries = mongo.db.queries
-  # queries.insert({'query':pregunta})
-  questions = mongo.db.questions
-  print(questions)
-  preguntas = questions.find({})
-  print(preguntas)
+  pregunta = limpiar(pregunta)
+
+  preguntas = mongo.db.questions
+  preguntas = preguntas.find({})
   preguntas = [pregunta['question'] for pregunta in preguntas]
   documentos = [limpiar(sentencia) for sentencia in preguntas]
+
   diccionario = vocabulario(documentos)
-  celdas = [similitud_de_coseno(pregunta,documento,documentos,diccionario) for documento in documentos]
-  tabla = pd.DataFrame(celdas,documentos,['Similitud de cosenos'])
-  print(documentos)
-  print(diccionario)
-  print(documento_a_vector('qué es una clase',diccionario))
-  print(celdas)
-  print(tabla)
-  resultados = dict(zip(documentos,celdas))
-  print('------------')
-  print(resultados)
-  print('------------')
   
-  final = [[k,v] for k,v in resultados.items()]
-  print(final)
+  similitudes = [similitud_de_coseno(pregunta,documento,documentos,diccionario) for documento in documentos]
+  similitudes = [round(x,5) for x in similitudes]
+  # print('maximo: ', max(similitudes))
+  preguntaPuntaje = preguntas[similitudes.index(max(similitudes))]
+  respuestas = mongo.db.answers
+  respuesta = respuestas.find_one({'question':preguntaPuntaje})
+  # respuesta = respuesta['answer']
   
-  return render_template('pregunta.html', resultados = final)
+  resultados = dict(zip(documentos,similitudes))
+  resultados = [[k,v] for k,v in resultados.items()]
+
+  respuesta = {
+    'answer': respuesta['answer'],
+    'test': respuesta['test'],
+    'reading': respuesta['reading'],
+    'aplication': respuesta['aplication'],
+    'text': respuesta['text'],
+    'video': respuesta['video'],
+    'podcast': respuesta['podcast'],
+    'prezi': respuesta['prezi'],
+    'model': respuesta['model']
+  }
+  
+  return render_template('pregunta.html', resultados = resultados, respuesta = respuesta)
 
 if __name__ == '__main__':
   app.run(debug=True)

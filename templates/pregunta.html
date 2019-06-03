@@ -2,12 +2,38 @@
 
 {% block content %}
 
-<h2>Preguntas</h2>
-{% for pregunta in resultados %}
-  <p>{{pregunta.0}} ------ {{pregunta.1}}</p>
-{% endfor %}
+<div class="row mb-4">
+  <div class="col">
+    <h2 class="mb-4">Módulo TF-IDF - Similitud de Cosenos</h2>
+    {% for pregunta in resultados %}
 
+    <div class="row">
+      <div class="col-4">{{pregunta.0}}</div>
+      <div class="col-4">{{pregunta.1}}</div>
+    </div>
+
+    {% endfor %}
+
+  </div>
+</div>
+
+<div class="row">
+  <div class="col">
+    <h2 class="mb-4">Respuesta</h2>
+    <!-- <p>{{respuesta}}</p>
+    <p>---------</p> -->
+    <p>{{respuesta.answer}}</p>
+    <p>Prueba {{respuesta.test}}</p>
+    <p>Lectura {{respuesta.reading}}</p>
+    <p>Aplicación {{respuesta.aplication}}</p>
+    <p>Texto {{respuesta.text}}</p>
+    <p>Video {{respuesta.video}}</p>
+    <p>Podcast {{respuesta.podcast}}</p>
+    <p>Prezi {{respuesta.prezi}}</p>
+    <p>Modelo{{respuesta.model}}</p>
+    
+  </div>
+</div>
 
 
 {% endblock %}
-

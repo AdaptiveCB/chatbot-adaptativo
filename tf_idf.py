@@ -44,4 +44,5 @@ def similitud_de_coseno(documento_1, documento_2, documentos, vocabulario):
   vector_1 = np.array([*tf_idf_1.values()])
   vector_2 = np.array([*tf_idf_2.values()])
   cos = np.dot(vector_1, vector_2) / (np.linalg.norm(vector_1) * np.linalg.norm(vector_2)) # cos
+  #cos = [round(valor,2) for valor in cos]
   return cos
