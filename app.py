@@ -14,9 +14,9 @@ mongo = PyMongo(app)
 def home():
   return render_template('home.html')
 
-@app.route('/about')
-def about():
-  return render_template('about.html')
+@app.route('/test')
+def test():
+  return render_template('test.html')
 
 @app.route('/pregunta',methods=['POST'])
 def pregunta():
@@ -45,7 +45,7 @@ def pregunta():
     'answer': respuesta['answer'],
     'test': respuesta['test'],
     'reading': respuesta['reading'],
-    'aplication': respuesta['aplication'],
+    'application': respuesta['application'],
     'text': respuesta['text'],
     'video': respuesta['video'],
     'podcast': respuesta['podcast'],

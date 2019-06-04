@@ -1,0 +1,31 @@
+{% extends "layout.html" %}
+
+{% block content %}
+
+<h2>Test de Perfil de Aprendizaje</h2>
+
+<form action="#" class="mt-4">
+  <div class="form-group">
+    <label>¿Qué tipo de información prefiere percibir?</label>
+    <div><input type="radio" name="optradio" checked> Vistas, sonidos, sensaciones físicas</div>
+    <div><input type="radio" name="optradio" checked> Posibilidades, intuiciones, corazonadas</div>
+  </div>
+  <div class="form-group">
+    <label>¿A través de qué canal sensorial ésta información es percibida más efectivamente?</label>
+    <div><input type="radio" name="optradio" checked> Cuadros, diagramas, gráficos, demostraciones</div>
+    <div><input type="radio" name="optradio" checked> A través de palabras o sonidos</div>
+  </div>
+  <div class="form-group">
+    <label>¿De qué manera prefiere procesar la información?</label>
+    <div><input type="radio" name="optradio" checked> Mediante la participación en la actividad física</div>
+    <div><input type="radio" name="optradio" checked> A través de la introspección</div>
+  </div>
+  <div class="form-group">
+    <label>¿Cómo afecta el progreso hacia la comprensión?</label>
+    <div><input type="radio" name="optradio" checked> En los pasos continuos</div>
+    <div><input type="radio" name="optradio" checked> En grandes saltos, holísticamente</div>
+  </div>
+  <button type="submit" class="btn btn-primary mt-1">Enviar</button>
+</form>
+
+{% endblock %}
