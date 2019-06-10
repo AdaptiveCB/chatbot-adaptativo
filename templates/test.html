@@ -2,30 +2,392 @@
 
 {% block content %}
 
-<h2>Test de Perfil de Aprendizaje</h2>
+<h2>Test de Estilo de Aprendizaje de Felder-Silverman</h2>
 
 <form action="#" class="mt-4">
-  <div class="form-group">
-    <label>¿Qué tipo de información prefiere percibir?</label>
-    <div><input type="radio" name="optradio" checked> Vistas, sonidos, sensaciones físicas</div>
-    <div><input type="radio" name="optradio" checked> Posibilidades, intuiciones, corazonadas</div>
-  </div>
-  <div class="form-group">
-    <label>¿A través de qué canal sensorial ésta información es percibida más efectivamente?</label>
-    <div><input type="radio" name="optradio" checked> Cuadros, diagramas, gráficos, demostraciones</div>
-    <div><input type="radio" name="optradio" checked> A través de palabras o sonidos</div>
-  </div>
-  <div class="form-group">
-    <label>¿De qué manera prefiere procesar la información?</label>
-    <div><input type="radio" name="optradio" checked> Mediante la participación en la actividad física</div>
-    <div><input type="radio" name="optradio" checked> A través de la introspección</div>
-  </div>
-  <div class="form-group">
-    <label>¿Cómo afecta el progreso hacia la comprensión?</label>
-    <div><input type="radio" name="optradio" checked> En los pasos continuos</div>
-    <div><input type="radio" name="optradio" checked> En grandes saltos, holísticamente</div>
-  </div>
+  <ol style="padding-left:15px;">
+    <li>
+      <div class="form-group">
+        <label>Entiendo mejor algo:</label>
+        <div><input type="radio" name="optradio"> Si lo practico</div>
+        <div><input type="radio" name="optradio"> Si pienso en ello</div>
+      </div>
+    </li>
+
+    <li>
+      <div class="form-group">
+        <label>Me considero:</label>
+        <div><input type="radio" name="optradio"> Realista</div>
+        <div><input type="radio" name="optradio"> Innovador</div>
+      </div>
+    </li>
+
+    <li>
+      <div class="form-group">
+        <label>Cuando pienso acerca de lo que hice ayer, es más probable que lo haga sobre
+          la base de:</label>
+        <div><input type="radio" name="optradio"> Una imagen</div>
+        <div><input type="radio" name="optradio"> Palabras</div>
+      </div>
+    </li>
+
+    <li>
+      <div class="form-group">
+        <label>Tengo tendencia a:</label>
+        <div><input type="radio" name="optradio"> Entender los detalles de un tema pero no ver claramente su
+          estructura completa</div>
+        <div><input type="radio" name="optradio"> Entender la estructura completa pero no ver claramente los
+          detalles</div>
+      </div>
+    </li>
+
+    <li>
+      <div class="form-group">
+        <label>Cuando estoy aprendiendo algo nuevo, me ayuda:</label>
+        <div><input type="radio" name="optradio"> Hablar de ello</div>
+        <div><input type="radio" name="optradio"> Pensar en ello</div>
+      </div>
+    </li>
+
+    <li>
+      <div class="form-group">
+        <label>Si yo fuera profesor, yo preferiría dar un curso:</label>
+        <div><input type="radio" name="optradio"> Que trate sobre hechos y situaciones reales de la vida</div>
+        <div><input type="radio" name="optradio"> Que trate con ideas y teorías</div>
+      </div>
+    </li>
+
+    <li>
+      <div class="form-group">
+        <label>Prefiero obtener información nueva de:</label>
+        <div><input type="radio" name="optradio"> Imágenes, diagramas, gráficas o mapas</div>
+        <div><input type="radio" name="optradio"> Instrucciones escritas o información verbal</div>
+      </div>
+    </li>
+
+    <li>
+      <div class="form-group">
+        <label>Una vez que entiendo:</label>
+        <div><input type="radio" name="optradio"> Todas las partes, entiendo el total</div>
+        <div><input type="radio" name="optradio"> El total de algo, entiendo como encajan sus partes</div>
+      </div>
+    </li>
+
+    <li>
+      <div class="form-group">
+        <label>En un grupo de estudio que trabaja con un material difícil, es más probable que:</label>
+        <div><input type="radio" name="optradio"> Participe y contribuya con ideas</div>
+        <div><input type="radio" name="optradio"> No participe y solo escuche</div>
+      </div>
+    </li>
+
+    <li>
+      <div class="form-group">
+        <label>Es más fácil para mí:</label>
+        <div><input type="radio" name="optradio"> aprender hechos</div>
+        <div><input type="radio" name="optradio"> aprender conceptos</div>
+      </div>
+    </li>
+
+    <li>
+      <div class="form-group">
+        <label>En un libro con muchas imágenes y gráficas es más probable que:</label>
+        <div><input type="radio" name="optradio"> revise cuidadosamente las imágenes y las gráficas</div>
+        <div><input type="radio" name="optradio"> me concentre en el texto escrito</div>
+      </div>
+    </li>
+
+    <li>
+      <div class="form-group">
+        <label>Cuando resuelvo problemas de matemáticas:</label>
+        <div><input type="radio" name="optradio"> generalmente trabajo sobre las soluciones con un paso a la vez</div>
+        <div><input type="radio" name="optradio"> frecuentemente sé cuales son las soluciones, pero luego tengo
+          dificultad
+          para imaginarme los pasos para llegar a ellas</div>
+      </div>
+    </li>
+
+    <li>
+      <div class="form-group">
+        <label>En las clases a las que he asistido:</label>
+        <div><input type="radio" name="optradio"> he llegado a saber como son muchos de los estudiantes</div>
+        <div><input type="radio" name="optradio"> raramente he llegado a saber como son muchos estudiantes</div>
+      </div>
+    </li>
+
+    <li>
+      <div class="form-group">
+        <label>Cuando leo temas que no son de ficción, prefiero:</label>
+        <div><input type="radio" name="optradio"> algo que me enseñe nuevos hechos o me diga como hacer algo</div>
+        <div><input type="radio" name="optradio"> algo que me dé nuevas ideas en que pensar</div>
+      </div>
+    </li>
+
+    <li>
+      <div class="form-group">
+        <label>Me gustan los maestros:</label>
+        <div><input type="radio" name="optradio"> que utilizan muchos esquemas en el pizarrón</div>
+        <div><input type="radio" name="optradio"> que toman mucho tiempo para explicar</div>
+      </div>
+    </li>
+
+    <li>
+      <div class="form-group">
+        <label>Cuando estoy analizando un cuento o una novela:</label>
+        <div><input type="radio" name="optradio"> pienso en los incidentes y trato de acomodarlos para configurar los
+          temas</div>
+        <div><input type="radio" name="optradio"> me doy cuenta de cuales son los temas cuando termino de leer y luego
+          tengo que regresar y encontrar los incidentes que los demuestran</div>
+      </div>
+    </li>
+
+    <li>
+      <div class="form-group">
+        <label>Cuando comienzo a resolver un problema de tarea, es más probable que:</label>
+        <div><input type="radio" name="optradio"> comience a trabajar en su solución inmediatamente</div>
+        <div><input type="radio" name="optradio"> primero trate de entender completamente el problema</div>
+      </div>
+    </li>
+
+    <li>
+      <div class="form-group">
+        <label>Prefiero la idea de:</label>
+        <div><input type="radio" name="optradio"> certeza.</div>
+        <div><input type="radio" name="optradio"> teoría</div>
+      </div>
+    </li>
+
+    <li>
+      <div class="form-group">
+        <label>Recuerdo mejor:</label>
+        <div><input type="radio" name="optradio"> lo que veo</div>
+        <div><input type="radio" name="optradio"> lo que oigo</div>
+      </div>
+    </li>
+
+    <li>
+      <div class="form-group">
+        <label>Es más importante para mí que un profesor:</label>
+        <div><input type="radio" name="optradio"> exponga el material en pasos secuenciales claros</div>
+        <div><input type="radio" name="optradio"> me dé un panorama general y relacione el material con otros temas
+        </div>
+      </div>
+    </li>
+
+    <li>
+      <div class="form-group">
+        <label>Prefiero estudiar:</label>
+        <div><input type="radio" name="optradio"> en un grupo de estudio</div>
+        <div><input type="radio" name="optradio"> solo</div>
+      </div>
+    </li>
+
+    <li>
+      <div class="form-group">
+        <label>Me considero:</label>
+        <div><input type="radio" name="optradio"> cuidadoso en los detalles de mi trabajo</div>
+        <div><input type="radio" name="optradio"> creativo en la forma en la que hago mi trabajo</div>
+      </div>
+    </li>
+
+    <li>
+      <div class="form-group">
+        <label>Me considero:</label>
+        <div><input type="radio" name="optradio"> cuidadoso en los detalles de mi trabajo</div>
+        <div><input type="radio" name="optradio"> creativo en la forma en la que hago mi trabajo</div>
+      </div>
+    </li>
+
+    <li>
+      <div class="form-group">
+        <label>Cuando alguien me da direcciones de nuevos lugares, prefiero:</label>
+        <div><input type="radio" name="optradio"> un mapa</div>
+        <div><input type="radio" name="optradio"> instrucciones escritas</div>
+      </div>
+    </li>
+
+    <li>
+      <div class="form-group">
+        <label>Aprendo:</label>
+        <div><input type="radio" name="optradio"> a un paso constante. Si estudio con ahínco consigo lo que deseo</div>
+        <div><input type="radio" name="optradio"> en inicios y pausas. Me llego a confundir y súbitamente lo entiendo
+        </div>
+      </div>
+    </li>
+
+    <li>
+      <div class="form-group">
+        <label>Prefiero primero:</label>
+        <div><input type="radio" name="optradio"> hacer algo y ver que sucede</div>
+        <div><input type="radio" name="optradio"> pensar como voy a hacer algo</div>
+      </div>
+    </li>
+
+    <li>
+      <div class="form-group">
+        <label>Cuando leo por diversión, me gustan los escritores que:</label>
+        <div><input type="radio" name="optradio"> dicen claramente los que desean dar a entender</div>
+        <div><input type="radio" name="optradio"> dicen las cosas en forma creativa e interesante</div>
+      </div>
+    </li>
+
+    <li>
+      <div class="form-group">
+        <label>Cuando veo un esquema o bosquejo en clase, es más probable que recuerde:</label>
+        <div><input type="radio" name="optradio"> la imagen</div>
+        <div><input type="radio" name="optradio"> lo que el profesor dijo acerca de ella</div>
+      </div>
+    </li>
+
+    <li>
+      <div class="form-group">
+        <label>Cuando me enfrento a un cuerpo de información:</label>
+        <div><input type="radio" name="optradio"> me concentro en los detalles y pierdo de vista el total de la misma
+        </div>
+        <div><input type="radio" name="optradio"> trato de entender el todo antes de ir a los detalles</div>
+      </div>
+    </li>
+
+    <li>
+      <div class="form-group">
+        <label>Recuerdo más fácilmente:</label>
+        <div><input type="radio" name="optradio"> algo que he hecho</div>
+        <div><input type="radio" name="optradio"> algo en lo que he pensado mucho</div>
+      </div>
+    </li>
+
+    <li>
+      <div class="form-group">
+        <label>Cuando tengo que hacer un trabajo, prefiero:</label>
+        <div><input type="radio" name="optradio"> dominar una forma de hacerlo</div>
+        <div><input type="radio" name="optradio"> intentar nuevas formas de hacerlo.</div>
+      </div>
+    </li>
+
+    <li>
+      <div class="form-group">
+        <label>Cuando alguien me enseña datos, prefiero:</label>
+        <div><input type="radio" name="optradio"> gráficas</div>
+        <div><input type="radio" name="optradio"> resúmenes con texto</div>
+      </div>
+    </li>
+
+    <li>
+      <div class="form-group">
+        <label>Cuando escribo un trabajo, es más probable que:</label>
+        <div><input type="radio" name="optradio"> lo haga (piense o escriba) desde el principio y avance</div>
+        <div><input type="radio" name="optradio"> lo haga (piense o escriba) en diferentes partes y luego las ordene
+        </div>
+      </div>
+    </li>
+
+    <li>
+      <div class="form-group">
+        <label>Cuando tengo que trabajar en un proyecto de grupo, primero quiero:</label>
+        <div><input type="radio" name="optradio"> realizar una "tormenta de ideas" donde cada uno contribuye con ideas
+        </div>
+        <div><input type="radio" name="optradio"> realizar la "tormenta de ideas" en forma personal y luego juntarme con
+          el
+          grupo para comparar las ideas</div>
+      </div>
+    </li>
+
+    <li>
+      <div class="form-group">
+        <label>Considero que es mejor elogio llamar a alguien:</label>
+        <div><input type="radio" name="optradio"> sensible</div>
+        <div><input type="radio" name="optradio"> imaginativo</div>
+      </div>
+    </li>
+
+    <li>
+      <div class="form-group">
+        <label>Cuando conozco gente en una fiesta, es más probable que recuerde:</label>
+        <div><input type="radio" name="optradio"> cómo es su apariencia</div>
+        <div><input type="radio" name="optradio"> lo que dicen de sí mismos</div>
+      </div>
+    </li>
+
+    <li>
+      <div class="form-group">
+        <label>Cuando estoy aprendiendo un tema, prefiero:</label>
+        <div><input type="radio" name="optradio"> mantenerme concentrado en ese tema, aprendiendo lo más que pueda de
+          é</div>
+        <div><input type="radio" name="optradio"> hacer conexiones entre ese tema y temas relacionados</div>
+      </div>
+    </li>
+
+    <li>
+      <div class="form-group">
+        <label>Me considero:</label>
+        <div><input type="radio" name="optradio"> abierto</div>
+        <div><input type="radio" name="optradio"> reservado</div>
+      </div>
+    </li>
+
+    <li>
+      <div class="form-group">
+        <label>Prefiero cursos que dan más importancia a:</label>
+        <div><input type="radio" name="optradio"> material concreto (hechos, datos)</div>
+        <div><input type="radio" name="optradio"> material abstracto (conceptos, teorías)</div>
+      </div>
+    </li>
+
+    <li>
+      <div class="form-group">
+        <label>Para divertirme, prefiero:</label>
+        <div><input type="radio" name="optradio"> ver televisión</div>
+        <div><input type="radio" name="optradio"> leer un libro</div>
+      </div>
+    </li>
+
+    <li>
+      <div class="form-group">
+        <label>Algunos profesores inician sus clases haciendo un bosquejo de lo que
+          enseñarán. Esos bosquejos son:</label>
+        <div><input type="radio" name="optradio"> algo útiles para mí</div>
+        <div><input type="radio" name="optradio"> muy útiles para mí</div>
+      </div>
+    </li>
+
+    <li>
+      <div class="form-group">
+        <label>La idea de hacer una tarea en grupo con una sola calificación para todos:</label>
+        <div><input type="radio" name="optradio"> me parece bien</div>
+        <div><input type="radio" name="optradio"> no me parece bien</div>
+      </div>
+    </li>
+
+    <li>
+      <div class="form-group">
+        <label>Cuando hago grandes cálculos:</label>
+        <div><input type="radio" name="optradio"> tiendo a repetir todos mis pasos y revisar cuidadosamente mi trabajo</div>
+        <div><input type="radio" name="optradio"> me cansa hacer su revisión y tengo que esforzarme para hacerlo</div>
+      </div>
+    </li>
+
+    <li>
+      <div class="form-group">
+        <label>Tiendo a recordar lugares en los que he estado:</label>
+        <div><input type="radio" name="optradio"> fácilmente y con bastante exactitud</div>
+        <div><input type="radio" name="optradio"> con dificultad y sin mucho detalle</div>
+      </div>
+    </li>
+
+    <li>
+      <div class="form-group">
+        <label>Cuando resuelvo problemas en grupo, es más probable que yo:</label>
+        <div><input type="radio" name="optradio"> piense en los pasos para la solución de los problemas</div>
+        <div><input type="radio" name="optradio"> piense en las posibles consecuencias o aplicaciones de la solución en un
+          amplio rango de campos</div>
+      </div>
+    </li>
+
+  </ol>
+
   <button type="submit" class="btn btn-primary mt-1">Enviar</button>
+
+  <!-- https://www.orientacionandujar.es/wp-content/uploads/2015/11/Test-de-estilos-de-aprendizaje-de-Felder-Felder-y-Silverman.pdf -->
 </form>
 
 {% endblock %}
