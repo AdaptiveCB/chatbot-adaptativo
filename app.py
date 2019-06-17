@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request
+from flask import Flask, render_template, request, jsonify
 from flask_pymongo import PyMongo
 from tf_idf import limpiar, vocabulario, documento_a_vector, similitud_de_coseno
 import pandas as pd
@@ -18,9 +18,11 @@ def home():
 def test():
   return render_template('test.html')
 
-@app.route('/pregunta',methods=['POST'])
+@app.route('/pregunta',methods=['GET','POST'])
 def pregunta():
   pregunta = request.form['consulta']
+  print(pregunta)
+  #pregunta = consulta
   pregunta = limpiar(pregunta)
 
   preguntas = mongo.db.questions
@@ -52,8 +54,11 @@ def pregunta():
     'prezi': respuesta['prezi'],
     'model': respuesta['model']
   }
+
+  # print(respuesta)
   
-  return render_template('pregunta.html', resultados = resultados, respuesta = respuesta)
+  return jsonify(respuesta)
+  #return render_template('pregunta.html', resultados = resultados, respuesta = respuesta)
 
 if __name__ == '__main__':
   app.run(debug=True)
