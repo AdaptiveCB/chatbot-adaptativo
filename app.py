@@ -27,6 +27,7 @@ def perfil():
   # codigo = request.form['codigo']
   codigo = data['codigo']
   #processing: active|reflexive
+<<<<<<< HEAD
   active = int(data['processing']['active'])
   reflexive = int(data['processing']['reflexive'])
   #perception: sensitive|intuitive
@@ -38,6 +39,19 @@ def perfil():
   #understanding: sequential/global
   sequential = int(data['understanding']['sequential'])
   _global = int(data['understanding']['global'])
+=======
+  active = int(data['procesamiento'])
+  reflexive = 11-active
+  #perception: sensitive|intuitive
+  sensitive = int(data['percepcion'])
+  intuitive = 11-sensitive
+  #input: visual|verbal
+  visual = int(data['entrada'])
+  verbal = 11-visual
+  #understanding: sequential/global
+  sequential = int(data['comprension'])
+  _global = 11-sequential
+>>>>>>> 963ddc8259b3edb6304a34b3c93b906ca1a618ae
   
   perfiles = mongo.db.learningprofiles
   
