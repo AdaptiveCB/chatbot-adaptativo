@@ -1,9 +1,12 @@
 from flask import Flask, render_template, request, jsonify
 from flask_pymongo import PyMongo
+from flask_cors import CORS
 from tf_idf import limpiar, vocabulario, documento_a_vector, similitud_de_coseno
 import pandas as pd
 
 app = Flask(__name__)
+
+CORS(app)
 
 app.config['MONGO_DBNAME'] = 'chatbot'
 app.config['MONGO_URI'] = 'mongodb+srv://chatbot:adaptive@cluster0-k4fnb.mongodb.net/chatbot?retryWrites=true&w=majority'#'mongodb://localhost/chatbot'
@@ -20,18 +23,20 @@ def test():
 
 @app.route('/perfil',methods=['GET','POST'])
 def perfil():
-  codigo = request.form['codigo']
+  data = request.get_json()
+  # codigo = request.form['codigo']
+  codigo = data['codigo']
   #processing: active|reflexive
-  active = int(request.form['procesamiento'])
+  active = int(data['procesamiento'])
   reflexive = 11-active
   #perception: sensitive|intuitive
-  sensitive = int(request.form['percepcion'])
+  sensitive = int(data['percepcion'])
   intuitive = 11-sensitive
   #input: visual|verbal
-  visual = int(request.form['entrada'])
+  visual = int(data['entrada'])
   verbal = 11-visual
   #understanding: sequential/global
-  sequential = int(request.form['comprension'])
+  sequential = int(data['comprension'])
   _global = 11-sequential
   
   perfiles = mongo.db.learningprofiles
