@@ -53,6 +53,7 @@ def perfil():
 @app.route('/pregunta',methods=['GET','POST'])
 def pregunta():
   pregunta = request.form['consulta']
+  codigo = request.form['codigo']
   print(pregunta)
   #pregunta = consulta
   pregunta = limpiar(pregunta)
@@ -66,14 +67,21 @@ def pregunta():
   
   similitudes = [similitud_de_coseno(pregunta,documento,documentos,diccionario) for documento in documentos]
   similitudes = [round(x,5) for x in similitudes]
-  # print('maximo: ', max(similitudes))
+  
   preguntaPuntaje = preguntas[similitudes.index(max(similitudes))]
   respuestas = mongo.db.answers
   respuesta = respuestas.find_one({'question':preguntaPuntaje})
-  # respuesta = respuesta['answer']
   
   resultados = dict(zip(documentos,similitudes))
   resultados = [[k,v] for k,v in resultados.items()]
+
+  perfiles = mongo.db.learningprofiles
+  perfil = perfiles.find_one({'codigo' : codigo})
+
+  processing = "active" if perfil['processing']['active'] > 5 else "reflexive"
+  perception = "sensitive" if perfil['perception']['sensitive'] > 5 else "intuitive"
+  _input = "visual" if perfil['input']['visual'] > 5 else "verbal"
+  understanding = "sequential" if perfil['understanding']['sequential'] > 5 else "global"
 
   respuesta = {
     'answer': respuesta['answer'],
@@ -84,10 +92,12 @@ def pregunta():
     'video': respuesta['video'],
     'podcast': respuesta['podcast'],
     'prezi': respuesta['prezi'],
-    'model': respuesta['model']
+    'model': respuesta['model'],
+    'processing':processing,
+    'perception':perception,
+    'input':_input,
+    'understanding':understanding
   }
-
-  # print(respuesta)
   
   return jsonify(respuesta)
   #return render_template('pregunta.html', resultados = resultados, respuesta = respuesta)
