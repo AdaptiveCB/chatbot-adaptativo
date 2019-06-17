@@ -18,6 +18,48 @@ def home():
 def test():
   return render_template('test.html')
 
+@app.route('/perfil',methods=['GET','POST'])
+def perfil():
+  codigo = request.form['codigo']
+  #processing: active|reflexive
+  active = int(request.form['procesamiento'])
+  reflexive = 11-active
+  #perception: sensitive|intuitive
+  sensitive = int(request.form['percepcion'])
+  intuitive = 11-sensitive
+  #input: visual|verbal
+  visual = int(request.form['entrada'])
+  verbal = 11-visual
+  #understanding: sequential/global
+  sequential = int(request.form['comprension'])
+  _global = 11-sequential
+  
+  perfiles = mongo.db.learningprofiles
+  perfil = perfiles.find_one({'codigo':codigo})
+
+  perfil['processing']['active'] = active
+  perfil['processing']['reflexive'] = reflexive
+  perfil['perception']['sensitive'] = sensitive
+  perfil['perception']['intuitive'] = intuitive
+  perfil['input']['visual'] = visual
+  perfil['input']['verbal'] = verbal
+  perfil['understanding']['sequential'] = sequential
+  perfil['understanding']['global'] = _global
+  
+  perfiles.update_one(
+    {'codigo' : codigo},
+    {
+      '$set':{
+      'processing':{'active': active,'reflexive':reflexive},
+      'perception':{'sensitive':sensitive,'intuitive':intuitive},
+      'input':{'visual':visual,'verbal':verbal},
+      'understanding':{'sequential':sequential,'global':_global}
+      }
+    }
+  )
+
+  return 'Guardado'
+
 @app.route('/pregunta',methods=['GET','POST'])
 def pregunta():
   pregunta = request.form['consulta']
@@ -62,3 +104,7 @@ def pregunta():
 
 if __name__ == '__main__':
   app.run(debug=True)
+
+
+
+# deploy heroku: https://www.youtube.com/watch?v=pmRT8QQLIqk
