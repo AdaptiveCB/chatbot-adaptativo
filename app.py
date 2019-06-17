@@ -106,5 +106,5 @@ if __name__ == '__main__':
   app.run(debug=True)
 
 
-
+# url app: https://adaptive-chatbot.herokuapp.com/
 # deploy heroku: https://www.youtube.com/watch?v=pmRT8QQLIqk
