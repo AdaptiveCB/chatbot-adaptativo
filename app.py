@@ -50,11 +50,23 @@ def perfil():
 
   return 'Guardado'
 
+# @app.route('/prueba', methods=['GET','POST'])
+# def prueba():
+#   data = request.get_json()
+#   print(data['codigo'])
+#   print(data['pregunta'])
+
+#   return 'prueba'
+
+
 @app.route('/pregunta',methods=['GET','POST'])
 def pregunta():
-  pregunta = request.form['consulta']
-  codigo = request.form['codigo']
-  print(pregunta)
+  # pregunta = request.form['consulta']
+  # codigo = request.form['codigo']
+  data = request.get_json()
+  pregunta = data['consulta']
+  codigo = data['codigo']
+  # print(pregunta)
   #pregunta = consulta
   pregunta = limpiar(pregunta)
 
