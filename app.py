@@ -27,17 +27,17 @@ def perfil():
   # codigo = request.form['codigo']
   codigo = data['codigo']
   #processing: active|reflexive
-  active = int(data['procesamiento'])
-  reflexive = 11-active
+  active = int(data['processing']['active'])
+  reflexive = int(data['processing']['reflexive'])
   #perception: sensitive|intuitive
-  sensitive = int(data['percepcion'])
-  intuitive = 11-sensitive
+  sensitive = int(data['perception']['sensitive'])
+  intuitive = int(data['perception']['intuitive'])
   #input: visual|verbal
-  visual = int(data['entrada'])
-  verbal = 11-visual
+  visual = int(data['input']['visual'])
+  verbal = int(data['input']['verbal'])
   #understanding: sequential/global
-  sequential = int(data['comprension'])
-  _global = 11-sequential
+  sequential = int(data['understanding']['sequential'])
+  _global = int(data['understanding']['global'])
   
   perfiles = mongo.db.learningprofiles
   
@@ -124,4 +124,4 @@ if __name__ == '__main__':
 
 
 # url app: https://adaptive-chatbot.herokuapp.com/
-# deploy heroku: https://www.youtube.com/watch?v=pmRT8QQLIqk
+# deploy heroku: c
