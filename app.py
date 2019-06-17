@@ -35,16 +35,6 @@ def perfil():
   _global = 11-sequential
   
   perfiles = mongo.db.learningprofiles
-  perfil = perfiles.find_one({'codigo':codigo})
-
-  perfil['processing']['active'] = active
-  perfil['processing']['reflexive'] = reflexive
-  perfil['perception']['sensitive'] = sensitive
-  perfil['perception']['intuitive'] = intuitive
-  perfil['input']['visual'] = visual
-  perfil['input']['verbal'] = verbal
-  perfil['understanding']['sequential'] = sequential
-  perfil['understanding']['global'] = _global
   
   perfiles.update_one(
     {'codigo' : codigo},
