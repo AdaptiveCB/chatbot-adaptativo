@@ -39,19 +39,6 @@ def perfil():
   # #understanding: sequential/global
   sequential = int(data['understanding']['sequential'])
   _global = int(data['understanding']['_global'])
-
-
-#   active = int(data['procesamiento'])
-#   reflexive = 11-active
-#   #perception: sensitive|intuitive
-#   sensitive = int(data['percepcion'])
-#   intuitive = 11-sensitive
-#   #input: visual|verbal
-#   visual = int(data['entrada'])
-#   verbal = 11-visual
-#   #understanding: sequential/global
-#   sequential = int(data['comprension'])
-#   _global = 11-sequential
   
   perfiles = mongo.db.learningprofiles
   
