@@ -3,13 +3,15 @@ from flask_pymongo import PyMongo
 from flask_cors import CORS
 from tf_idf import limpiar, vocabulario, documento_a_vector, similitud_de_coseno
 import pandas as pd
+from bson.json_util import dumps
 
 app = Flask(__name__)
 
 CORS(app)
 
 app.config['MONGO_DBNAME'] = 'chatbot'
-app.config['MONGO_URI'] = 'mongodb+srv://chatbot:adaptive@cluster0-k4fnb.mongodb.net/chatbot?retryWrites=true&w=majority'#'mongodb://localhost/chatbot'
+# app.config['MONGO_URI'] = 'mongodb+srv://chatbot:adaptive@cluster0-k4fnb.mongodb.net/chatbot?retryWrites=true&w=majority'
+app.config['MONGO_URI'] = 'mongodb://localhost/chatbot'
 
 mongo = PyMongo(app)
 
@@ -56,6 +58,19 @@ def perfil():
 
   return 'Guardado'
 
+@app.route('/preguntas',methods=['GET'])
+def preguntas():
+  respuestas = mongo.db.answers
+  respuestas = dumps(respuestas.find())
+
+  # in default raise TypeError(f'Object of type {o.__class__.__name__} '
+  #  Object of type ObjectId is not JSON serializable
+  print(respuestas)
+  return jsonify(respuestas)
+  # preguntas = [respuesta['question'] for respuesta in respuestas]
+  # documentos = [limpiar(sentencia) for sentencia in preguntas]
+
+
 @app.route('/respuesta',methods=['GET','POST'])
 def respuesta():
   data = request.get_json()
@@ -71,8 +86,8 @@ def respuesta():
   prezi =  data['prezi']
   model =  data['model']
 
-  questions = mongo.db.questions
-  questions.insert_one({'question':question})
+  # questions = mongo.db.questions
+  # questions.insert_one({'question':question})
 
   answers = mongo.db.answers
   answers.insert_one({
@@ -98,9 +113,9 @@ def pregunta():
 
   pregunta = limpiar(pregunta)
 
-  preguntas = mongo.db.questions
-  preguntas = preguntas.find({})
-  preguntas = [pregunta['question'] for pregunta in preguntas]
+  respuestas = mongo.db.answers
+  respuestas = respuestas.find({})
+  preguntas = [respuesta['question'] for respuesta in respuestas]
   documentos = [limpiar(sentencia) for sentencia in preguntas]
 
   diccionario = vocabulario(documentos)
@@ -109,6 +124,7 @@ def pregunta():
   similitudes = [round(x,5) for x in similitudes]
   
   preguntaPuntaje = preguntas[similitudes.index(max(similitudes))]
+  
   respuestas = mongo.db.answers
   respuesta = respuestas.find_one({'question':preguntaPuntaje})
   
@@ -124,6 +140,7 @@ def pregunta():
   understanding = "sequential" if perfil['understanding']['sequential'] > 5 else "global"
 
   respuesta = {
+    'id': respuesta['_id'],
     'answer': respuesta['answer'],
     'test': respuesta['test'],
     'reading': respuesta['reading'],
