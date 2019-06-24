@@ -56,24 +56,46 @@ def perfil():
 
   return 'Guardado'
 
-# @app.route('/prueba', methods=['GET','POST'])
-# def prueba():
-#   data = request.get_json()
-#   print(data['codigo'])
-#   print(data['pregunta'])
+@app.route('/respuesta',methods=['GET','POST'])
+def respuesta():
+  data = request.get_json()
 
-#   return 'prueba'
+  answer =  data['answer']
+  question =  data['question']
+  test =  data['test']
+  reading =  data['reading']
+  application =  data['application']
+  text =  data['text']
+  video =  data['video']
+  podcast =  data['podcast']
+  prezi =  data['prezi']
+  model =  data['model']
 
+  questions = mongo.db.questions
+  questions.insert_one({'question':question})
+
+  answers = mongo.db.answers
+  answers.insert_one({
+    "answer" :  answer,
+    "question" :  question,
+    "test" :  test,
+    "reading" :  reading,
+    "application" :  application,
+    "text" :  text,
+    "video" :  video,
+    "podcast" :  podcast,
+    "prezi" :  prezi,
+    "model" :  model
+  })
+
+  return "Respuesta Guardada"
 
 @app.route('/pregunta',methods=['GET','POST'])
 def pregunta():
-  # pregunta = request.form['consulta']
-  # codigo = request.form['codigo']
   data = request.get_json()
   pregunta = data['consulta']
   codigo = data['codigo']
-  # print(pregunta)
-  #pregunta = consulta
+
   pregunta = limpiar(pregunta)
 
   preguntas = mongo.db.questions
@@ -118,7 +140,6 @@ def pregunta():
   }
   
   return jsonify(respuesta)
-  #return render_template('pregunta.html', resultados = resultados, respuesta = respuesta)
 
 if __name__ == '__main__':
   app.run(debug=True)
