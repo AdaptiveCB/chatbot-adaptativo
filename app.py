@@ -88,7 +88,7 @@ def respuesta():
     "model" :  model
   })
 
-  return "Respuesta Guardada"
+  return "Respuesta guardada"
 
 @app.route('/pregunta',methods=['GET','POST'])
 def pregunta():
