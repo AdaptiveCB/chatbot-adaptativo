@@ -4,14 +4,15 @@ from flask_cors import CORS
 from tf_idf import limpiar, vocabulario, documento_a_vector, similitud_de_coseno
 import pandas as pd
 from bson.json_util import dumps
+from bson.objectid import ObjectId
 
 app = Flask(__name__)
 
 CORS(app)
 
 app.config['MONGO_DBNAME'] = 'chatbot'
-app.config['MONGO_URI'] = 'mongodb+srv://chatbot:adaptive@cluster0-k4fnb.mongodb.net/chatbot?retryWrites=true&w=majority'
-# app.config['MONGO_URI'] = 'mongodb://localhost/chatbot'
+# app.config['MONGO_URI'] = 'mongodb+srv://chatbot:adaptive@cluster0-k4fnb.mongodb.net/chatbot?retryWrites=true&w=majority'
+app.config['MONGO_URI'] = 'mongodb://localhost/chatbot'
 
 mongo = PyMongo(app)
 
@@ -140,7 +141,7 @@ def pregunta():
   understanding = "sequential" if perfil['understanding']['sequential'] > 5 else "global"
 
   respuesta = {
-    'id': respuesta['_id'],
+    'id': str(respuesta['_id']),
     'answer': respuesta['answer'],
     'test': respuesta['test'],
     'reading': respuesta['reading'],
@@ -155,8 +156,20 @@ def pregunta():
     'input':_input,
     'understanding':understanding
   }
-  
+
   return jsonify(respuesta)
+
+# @app.route('/prueba',methods=['GET','POST'])
+# def prueba():
+#   respuestas = mongo.db.answers
+#   respuesta = respuestas.find_one({"respuesta":"tarde"})
+#   objeto = {
+#     'id': str(respuesta['_id']),
+#     'answer': respuesta['respuesta'],
+#     'question': respuesta['pregunta']
+#   }
+#   print(objeto)
+#   return "OK"
 
 if __name__ == '__main__':
   app.run(debug=True)
