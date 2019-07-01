@@ -3,6 +3,7 @@ from flask_pymongo import PyMongo
 from flask_cors import CORS
 from tf_idf import limpiar, vocabulario, documento_a_vector, similitud_de_coseno
 import pandas as pd
+# http://api.mongodb.com/python/current/api/bson/json_util.html?highlight=json_util
 from bson.json_util import dumps
 from bson.objectid import ObjectId
 
@@ -24,99 +25,298 @@ def home():
 def test():
   return render_template('test.html')
 
-@app.route('/perfil',methods=['GET','POST'])
+# ESTILO APRENDIZAJE
+
+@app.route('/actualizarEstiloAprendizaje',methods=['GET','POST'])
 def perfil():
   data = request.get_json()
-  # codigo = request.form['codigo']
-  codigo = data['codigo']
-  #processing: active|reflexive
 
-  active = int(data['processing']['active'])
-  reflexive = int(data['processing']['reflexive'])
+  alumno_id = data['alumno_id']
+  
+  #processing: active|reflexive
+  activo = int(data['procesamiento']['activo'])
+  reflexivo = int(data['procesamiento']['reflexivo'])
+
   # perception: sensitive|intuitive
-  sensitive = int(data['perception']['sensitive'])
-  intuitive = int(data['perception']['intuitive'])
-  # #input: visual|verbal
-  visual = int(data['input']['visual'])
-  verbal = int(data['input']['verbal'])
+  sensible = int(data['percepcion']['sensible'])
+  intuitivo = int(data['percepcion']['intuitivo'])
+
+  #input: visual|verbal
+  visual = int(data['entrada']['visual'])
+  verbal = int(data['entrada']['verbal'])
+
   # #understanding: sequential/global
-  sequential = int(data['understanding']['sequential'])
-  _global = int(data['understanding']['_global'])
+  sequencial = int(data['comprension']['sequencial'])
+  _global = int(data['comprension']['_global'])
+
+  coleccionEstiloAprendizaje = mongo.db.estiloAprendizaje
   
-  perfiles = mongo.db.learningprofiles
-  
-  perfiles.update_one(
-    {'codigo' : codigo},
+  existeAlumno = coleccionEstiloAprendizaje.find_one({'alumno_id' : ObjectId(alumno_id)})
+  if(existeAlumno):
+    coleccionEstiloAprendizaje.update_one(
+    {'alumno_id' : ObjectId(alumno_id)},
     {
       '$set':{
-      'processing':{'active': active,'reflexive':reflexive},
-      'perception':{'sensitive':sensitive,'intuitive':intuitive},
-      'input':{'visual':visual,'verbal':verbal},
-      'understanding':{'sequential':sequential,'global':_global}
+      'procesamiento':{'activo': activo,'reflexivo':reflexivo},
+      'percepcion':{'sensible':sensible,'intuitivo':intuitivo},
+      'entrada':{'visual':visual,'verbal':verbal},
+      'comprension':{'secuencial':sequencial,'global':_global}
       }
     }
-  )
-
-  return 'Guardado'
-
-@app.route('/preguntas',methods=['GET'])
-def preguntas():
-  respuestas = mongo.db.answers
-  respuestas = dumps(respuestas.find())
-
-  # in default raise TypeError(f'Object of type {o.__class__.__name__} '
-  #  Object of type ObjectId is not JSON serializable
-  print(respuestas)
-  return jsonify(respuestas)
-  # preguntas = [respuesta['question'] for respuesta in respuestas]
-  # documentos = [limpiar(sentencia) for sentencia in preguntas]
-
-
-@app.route('/respuesta',methods=['GET','POST'])
-def respuesta():
-  data = request.get_json()
-
-  answer =  data['answer']
-  question =  data['question']
-  test =  data['test']
-  reading =  data['reading']
-  application =  data['application']
-  text =  data['text']
-  video =  data['video']
-  podcast =  data['podcast']
-  prezi =  data['prezi']
-  model =  data['model']
-
-  # questions = mongo.db.questions
-  # questions.insert_one({'question':question})
-
-  answers = mongo.db.answers
-  answers.insert_one({
-    "answer" :  answer,
-    "question" :  question,
-    "test" :  test,
-    "reading" :  reading,
-    "application" :  application,
-    "text" :  text,
-    "video" :  video,
-    "podcast" :  podcast,
-    "prezi" :  prezi,
-    "model" :  model
+    )
+  else:
+    coleccionEstiloAprendizaje.insert_one({
+    'alumno_id' : ObjectId(alumno_id),
+    'procesamiento':{'activo': activo,'reflexivo':reflexivo},
+    'percepcion':{'sensible':sensible,'intuitivo':intuitivo},
+    'entrada':{'visual':visual,'verbal':verbal},
+    'comprension':{'secuencial':sequencial,'global':_global}
   })
 
-  return "Respuesta guardada"
+  return 'Estilo de Aprendizaje Guardado'
 
-@app.route('/pregunta',methods=['GET','POST'])
+# CRUD CONOCIMIENTO
+
+@app.route('/obtenerConocimiento',methods=['GET'])
+def obtenerConocimiento():
+  coleccionConocimiento = mongo.db.conocimiento
+  
+  conocimiento = coleccionConocimiento.find()
+  
+  conocimiento = dumps(conocimiento)
+
+  return jsonify(conocimiento)
+
+
+@app.route('/ingresarConocimiento',methods=['GET','POST'])
+def ingresarConocimiento():
+  data = request.get_json()
+
+  profesor_id = data['profesor_id']
+  curso_id = data['curso_id']
+  pregunta =  data['pregunta']
+  respuesta =  data['respuesta']
+  pdf =  data['pdf']
+  video =  data['video']
+
+  coleccionConocimiento = mongo.db.conocimiento
+  coleccionConocimiento.insert_one({
+    "profesor_id" : ObjectId(profesor_id),
+    "curso_id" : ObjectId(curso_id),
+    "pregunta" : pregunta,
+    "respuesta" : respuesta,
+    "pdf" : pdf,
+    "video" : video,
+  })
+
+  return "Conocimiento guardado"
+
+
+@app.route('/eliminarConocimiento',methods=['POST'])
+def eliminarConocimiento():
+  data = request.get_json()
+
+  conocimiento_id = data['conocimiento_id']
+
+  coleccionConocimiento = mongo.db.conocimiento
+
+  coleccionConocimiento.delete_one({'_id': ObjectId(conocimiento_id)})
+
+  return 'Conocimiento Eliminado'
+
+
+
+
+# CRUD CURSO
+
+@app.route('/obtenerCursos',methods=['GET'])
+def obtenerCursos():
+  coleccionCurso = mongo.db.curso
+
+  curso = coleccionCurso.find()
+
+  curso = dumps(curso)
+
+  return jsonify(curso)
+
+@app.route('/ingresarCurso',methods=['POST'])
+def ingresarCurso():
+  data = request.get_json()
+
+  nombre = data['nombre']
+
+  coleccionCurso = mongo.db.curso
+
+  coleccionCurso.insert_one({"nombre":nombre})
+
+  return 'Curso Ingresado'
+
+@app.route('/actualizarCurso',methods=['POST'])
+def actualizarCurso():
+  data = request.get_json()
+
+  curso_id = data['curso_id']
+  nombre = data['nombre']
+
+  coleccionCurso = mongo.db.curso
+
+  coleccionCurso.update_one(
+    {'_id': ObjectId(curso_id)},
+    {'$set':  
+              {
+                'nombre': nombre
+              }
+    }
+  )  
+
+  return 'Curso Actualizado'
+
+@app.route('/eliminarCurso',methods=['POST'])
+def eliminarCurso():
+  data = request.get_json()
+
+  curso_id = data['curso_id']
+
+  coleccionCurso = mongo.db.curso
+
+  coleccionCurso.delete_one({'_id': ObjectId(curso_id)})
+
+  return 'Curso Eliminado'
+
+# CRUD ALUMNO
+
+@app.route('/obtenerAlumnos',methods=['GET'])
+def obtenerAlumnos():
+  coleccionAlumno = mongo.db.alumno
+
+  alumno = coleccionAlumno.find()
+
+  alumno = dumps(alumno)
+
+  return jsonify(alumno)
+
+@app.route('/ingresarAlumno',methods=['POST'])
+def ingresarAlumno():
+  data = request.get_json()
+
+  codigo = data['codigo']
+  contrasena = data['contrasena']
+
+  coleccionAlumno = mongo.db.alumno
+
+  coleccionAlumno.insert_one({"codigo":codigo,"contrasena":contrasena})
+
+  return 'Alumno Ingresado'
+
+@app.route('/actualizarAlumno',methods=['POST'])
+def actualizarAlumno():
+  data = request.get_json()
+
+  alumno_id = data['alumno_id']
+  codigo = data['codigo']
+  contrasena = data['contrasena']
+
+  coleccionAlumno = mongo.db.alumno
+
+  coleccionAlumno.update_one(
+    {'_id': ObjectId(alumno_id)},
+    {'$set':  
+              {
+                'codigo': codigo,
+                'contrasena': contrasena
+              }
+    }
+  )  
+
+  return 'Alumno Actualizado'
+
+@app.route('/eliminarAlumno',methods=['POST'])
+def eliminarAlumno():
+  data = request.get_json()
+
+  alumno_id = data['alumno_id']
+
+  coleccionAlumno = mongo.db.alumno
+
+  coleccionAlumno.delete_one({'_id': ObjectId(alumno_id)})
+
+  return 'Alumno Eliminado'
+
+# CRUD PROFESOR
+
+@app.route('/obtenerProfesores',methods=['GET'])
+def obtenerProfesores():
+  coleccionProfesor = mongo.db.profesor
+
+  profesor = coleccionProfesor.find()
+
+  profesor = dumps(profesor)
+
+  return jsonify(profesor)
+
+@app.route('/ingresarProfesor',methods=['POST'])
+def ingresarProfesor():
+  data = request.get_json()
+
+  codigo = data['codigo']
+  contrasena = data['contrasena']
+
+  coleccionProfesor = mongo.db.profesor
+
+  coleccionProfesor.insert_one({"codigo":codigo,"contrasena":contrasena})
+
+  return 'Profesor Ingresado'
+
+@app.route('/actualizarProfesor',methods=['POST'])
+def actualizarProfesor():
+  data = request.get_json()
+
+  profesor_id = data['profesor_id']
+  codigo = data['codigo']
+  contrasena = data['contrasena']
+
+  coleccionProfesor = mongo.db.profesor
+
+  coleccionProfesor.update_one(
+    {'_id': ObjectId(profesor_id)},
+    {'$set':  
+              {
+                'codigo': codigo,
+                'contrasena': contrasena
+              }
+    }
+  )  
+
+  return 'Profesor Actualizado'
+
+@app.route('/eliminarProfesor',methods=['POST'])
+def eliminarProfesor():
+  data = request.get_json()
+
+  profesor_id = data['profesor_id']
+
+  coleccionProfesor = mongo.db.profesor
+
+  coleccionProfesor.delete_one({'_id': ObjectId(profesor_id)})
+
+  return 'Profesor Eliminado'
+
+# RESPUESTA
+
+@app.route('/obtenerRespuesta',methods=['GET','POST'])
 def pregunta():
   data = request.get_json()
-  pregunta = data['consulta']
-  codigo = data['codigo']
+  
+  alumno_id = data['alumno_id']
+  consulta = data['consulta']
 
-  pregunta = limpiar(pregunta)
+  coleccionConocimiento = mongo.db.conocimiento
 
-  respuestas = mongo.db.answers
-  respuestas = respuestas.find({})
-  preguntas = [respuesta['question'] for respuesta in respuestas]
+  baseConocimiento = coleccionConocimiento.find()
+
+  pregunta = limpiar(consulta)
+
+  preguntas = [conocimiento['pregunta'] for conocimiento in baseConocimiento]
   documentos = [limpiar(sentencia) for sentencia in preguntas]
 
   diccionario = vocabulario(documentos)
@@ -126,51 +326,33 @@ def pregunta():
   
   preguntaPuntaje = preguntas[similitudes.index(max(similitudes))]
   
-  respuestas = mongo.db.answers
-  respuesta = respuestas.find_one({'question':preguntaPuntaje})
+  conocimiento = coleccionConocimiento.find_one({'pregunta':preguntaPuntaje})
   
   resultados = dict(zip(documentos,similitudes))
   resultados = [[k,v] for k,v in resultados.items()]
 
-  perfiles = mongo.db.learningprofiles
-  perfil = perfiles.find_one({'codigo' : codigo})
+  coleccionEstiloAprendizaje = mongo.db.estiloAprendizaje
+  estiloAprendizaje = coleccionEstiloAprendizaje.find_one({'alumno_id' : ObjectId(alumno_id)})
 
-  processing = "active" if perfil['processing']['active'] > 5 else "reflexive"
-  perception = "sensitive" if perfil['perception']['sensitive'] > 5 else "intuitive"
-  _input = "visual" if perfil['input']['visual'] > 5 else "verbal"
-  understanding = "sequential" if perfil['understanding']['sequential'] > 5 else "global"
+  # processing = "active" if perfil['processing']['active'] > 5 else "reflexive"
+  # perception = "sensitive" if perfil['perception']['sensitive'] > 5 else "intuitive"
+  # _input = "visual" if perfil['input']['visual'] > 5 else "verbal"
+  # understanding = "sequential" if perfil['understanding']['sequential'] > 5 else "global"
 
   respuesta = {
-    'id': str(respuesta['_id']),
-    'answer': respuesta['answer'],
-    'test': respuesta['test'],
-    'reading': respuesta['reading'],
-    'application': respuesta['application'],
-    'text': respuesta['text'],
-    'video': respuesta['video'],
-    'podcast': respuesta['podcast'],
-    'prezi': respuesta['prezi'],
-    'model': respuesta['model'],
-    'processing':processing,
-    'perception':perception,
-    'input':_input,
-    'understanding':understanding
+    'conocimiento_id': str(conocimiento['_id']),
+    'respuesta': conocimiento['respuesta'],
+    'pdf': conocimiento['pdf'],
+    'video': conocimiento['video'],
+    'procesamiento':estiloAprendizaje['procesamiento'],
+    'percepcion':estiloAprendizaje['percepcion'],
+    'entrada':estiloAprendizaje['entrada'],
+    'comprension':estiloAprendizaje['comprension']
   }
 
   return jsonify(respuesta)
 
-# @app.route('/prueba',methods=['GET','POST'])
-# def prueba():
-#   respuestas = mongo.db.answers
-#   respuesta = respuestas.find_one({"respuesta":"tarde"})
-#   objeto = {
-#     'id': str(respuesta['_id']),
-#     'answer': respuesta['respuesta'],
-#     'question': respuesta['pregunta']
-#   }
-#   print(objeto)
-#   return "OK"
-
+  
 if __name__ == '__main__':
   app.run(debug=True)
 
