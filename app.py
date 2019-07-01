@@ -100,17 +100,18 @@ def ingresarConocimiento():
   video =  data['video']
 
   coleccionConocimiento = mongo.db.conocimiento
-  coleccionConocimiento.insert_one({
+  nuevoConocimiento_id = coleccionConocimiento.insert_one({
     "profesor_id" : ObjectId(profesor_id),
     "curso_id" : ObjectId(curso_id),
     "pregunta" : pregunta,
     "respuesta" : respuesta,
     "pdf" : pdf,
     "video" : video,
-  })
+  }).inserted_id
 
-  return "Conocimiento guardado"
+  nuevoConocimiento_id = dumps(nuevoConocimiento_id)
 
+  return jsonify(nuevoConocimiento_id)
 
 @app.route('/actualizarConocimiento',methods=['POST'])
 def actualizarConocimiento():
