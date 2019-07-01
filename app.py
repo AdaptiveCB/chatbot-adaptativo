@@ -28,7 +28,7 @@ def test():
 # ESTILO APRENDIZAJE
 
 @app.route('/actualizarEstiloAprendizaje',methods=['GET','POST'])
-def perfil():
+def actualizarEstiloAprendizaje():
   data = request.get_json()
 
   alumno_id = data['alumno_id']
@@ -304,7 +304,7 @@ def eliminarProfesor():
 # RESPUESTA
 
 @app.route('/obtenerRespuesta',methods=['GET','POST'])
-def pregunta():
+def obtenerRespuesta():
   data = request.get_json()
   
   alumno_id = data['alumno_id']
