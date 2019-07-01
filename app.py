@@ -112,6 +112,33 @@ def ingresarConocimiento():
   return "Conocimiento guardado"
 
 
+@app.route('/actualizarConocimiento',methods=['POST'])
+def actualizarConocimiento():
+  data = request.get_json()
+
+  conocimiento_id = data['conocimiento_id']
+  pregunta = data['pregunta']
+  respuesta = data['respuesta']
+  pdf = data['pdf']
+  video = data['video']
+
+  coleccionConocimiento = mongo.db.conocimiento
+
+  coleccionConocimiento.update_one(
+    {'_id': ObjectId(conocimiento_id)},
+    {'$set':  
+              {
+                'pregunta': pregunta,
+                'respuesta': respuesta,
+                'pdf': pdf,
+                'video': video
+              }
+    }
+  )  
+
+  return "Conocimiento actualizado"
+
+
 @app.route('/eliminarConocimiento',methods=['POST'])
 def eliminarConocimiento():
   data = request.get_json()
