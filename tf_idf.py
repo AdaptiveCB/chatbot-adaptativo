@@ -1,9 +1,19 @@
 import numpy as np
 import re
+import nltk
+from nltk.stem import SnowballStemmer
+from nltk.corpus import stopwords
+
+stemmer = SnowballStemmer('spanish')
+# nltk.download('stopwords')
+# stopwords = set([stemmer.stem(word) for word in stopwords.words('spanish')])
 
 def limpiar(sentencia):
-  documento = re.sub('(\?|¿)', '', sentencia.lower())
-  return documento
+  sentencia = sentencia.lower()                                                                # convertir texto a minúsculas
+  sentencia = re.sub('[^a-zá-ú0-9ñÑ\s]+',' ',sentencia)                                        # obtener solo caracteres y numeros
+  # sentencia = [stemmer.stem(w) for w in sentencia.split() if stemmer.stem(w) not in stopwords] # remover stopwords, tildes y estemizar
+  sentencia = [stemmer.stem(w) for w in sentencia.split()] # remover tildes y estemizar
+  return ' '.join(sentencia)
 
 def vocabulario(documentos):
   vocabulario = list(set([palabra for documento in documentos for palabra in documento.split()]))
