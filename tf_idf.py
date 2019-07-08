@@ -1,4 +1,4 @@
-import numpy as np
+﻿import numpy as np
 import re
 import nltk
 from nltk.stem import SnowballStemmer
@@ -11,6 +11,13 @@ stemmer = SnowballStemmer('spanish')
 def limpiar(sentencia):
   sentencia = sentencia.lower()                                                                # convertir texto a minúsculas
   sentencia = re.sub('[^a-zá-ú0-9ñÑ\s]+',' ',sentencia)                                        # obtener solo caracteres y numeros
+	
+  sentencia = sentencia.replace('á', 'a')  
+  sentencia = sentencia.replace('é', 'e')
+  sentencia = sentencia.replace('í', 'i')
+  sentencia = sentencia.replace('ó', 'o')
+  sentencia = sentencia.replace('ú', 'u')
+
   # sentencia = [stemmer.stem(w) for w in sentencia.split() if stemmer.stem(w) not in stopwords] # remover stopwords, tildes y estemizar
   sentencia = [stemmer.stem(w) for w in sentencia.split()] # remover tildes y estemizar
   return ' '.join(sentencia)
