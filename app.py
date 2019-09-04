@@ -393,7 +393,14 @@ def obtenerRespuesta():
   coleccionEstiloAprendizaje = mongo.db.estiloAprendizaje
   estiloAprendizaje = coleccionEstiloAprendizaje.find_one({'alumno_id' : ObjectId(alumno_id)})
 
-  modeloRespuesta = responder(consulta)
+  coleccionConocimiento = mongo.db.conocimiento
+  conocimiento = coleccionConocimiento.find()
+  arreglo = list(conocimiento)
+  conocimientosBD = []
+  for elemento in arreglo:
+    conocimientosBD.append(Conocimiento(elemento['_id'],elemento['preguntas'],elemento['respuestas'],elemento['pdf'],elemento['video']))
+
+  modeloRespuesta = responder(consulta, conocimientosBD)
   # return jsonify(respuesta)
   respuesta = {
     'conocimiento_id': str(modeloRespuesta['conocimiento_id']),

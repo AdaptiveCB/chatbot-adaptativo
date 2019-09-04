@@ -66,7 +66,7 @@ def entrenarModelo(conocimientos):
   return score
 
 
-def responder(pregunta):
+def responder(pregunta, conocimientos):
   x_semhash = [semhash(pregunta, n)]
   x_vector = vectorizer.transform(x_semhash).toarray()
   prediccion = model.predict(x_vector)[0]
