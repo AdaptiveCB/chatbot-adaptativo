@@ -426,9 +426,9 @@ def entrenar():
 
   reemplazarConocimiento(conocimientosBD)
  
-  entrenarModelo()
+  score = entrenarModelo()
 
-  return 'Entrenamiento Realizado'
+  return str(score)
 
 # @app.route('/obtenerRespuesta',methods=['GET','POST'])
 # def obtenerRespuesta():
