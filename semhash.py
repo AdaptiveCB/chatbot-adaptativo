@@ -163,10 +163,10 @@ def entrenarModelo():
 
   x_train_vector = vectorizer.transform(x_train_semhash).toarray()
 
-  # model = LogisticRegression(C=1.0, class_weight=None, dual=False,
-  #           fit_intercept=True, intercept_scaling=1, max_iter=100,
-  #           multi_class='ovr', n_jobs=1, penalty='l2', random_state=None,
-  #           solver='liblinear', tol=0.0001, verbose=0, warm_start=False)
+  model = LogisticRegression(C=1.0, class_weight=None, dual=False,
+            fit_intercept=True, intercept_scaling=1, max_iter=100,
+            multi_class='ovr', n_jobs=1, penalty='l2', random_state=None,
+            solver='liblinear', tol=0.0001, verbose=0, warm_start=False)
   model.fit(x_train_vector, y_train)
   
   predicciones = model.predict(x_train_vector)
