@@ -77,6 +77,57 @@ def actualizarEstiloAprendizaje():
 
 # CRUD CONOCIMIENTO
 
+@app.route('/ingresarConocimiento',methods=['GET','POST'])
+def ingresarConocimiento():
+  data = request.get_json()
+
+  profesor_id = data['profesor_id']
+  curso_id = data['curso_id']
+  preguntas = data['preguntas']
+  respuestas = data['respuestas']
+  pdf =  data['pdf']
+  video =  data['video']
+
+  coleccionConocimiento = mongo.db.conocimiento
+  nuevoConocimiento_id = coleccionConocimiento.insert_one({
+    "profesor_id" : ObjectId(profesor_id),
+    "curso_id" : ObjectId(curso_id),
+    "preguntas" : preguntas,
+    "respuestas" : respuestas,
+    "pdf" : pdf,
+    "video" : video,
+  }).inserted_id
+  
+  nuevoConocimiento_id = dumps(nuevoConocimiento_id)
+
+  return jsonify(nuevoConocimiento_id)
+
+@app.route('/actualizarConocimiento',methods=['POST'])
+def actualizarConocimiento():
+  data = request.get_json()
+
+  conocimiento_id = data['conocimiento_id']
+  preguntas = data['preguntas']
+  respuestas = data['respuestas']
+  pdf = data['pdf']
+  video = data['video']
+
+  coleccionConocimiento = mongo.db.conocimiento
+
+  coleccionConocimiento.update_one(
+    {'_id': ObjectId(conocimiento_id)},
+    {'$set':  
+              {
+                'preguntas': preguntas,
+                'respuestas': respuestas,
+                'pdf': pdf,
+                'video': video
+              }
+    }
+  )  
+
+  return "Conocimiento actualizado"
+
 @app.route('/obtenerConocimiento',methods=['GET'])
 def obtenerConocimiento():
   coleccionConocimiento = mongo.db.conocimiento
@@ -88,56 +139,56 @@ def obtenerConocimiento():
   return jsonify(conocimiento)
 
 
-@app.route('/ingresarConocimiento',methods=['GET','POST'])
-def ingresarConocimiento():
-  data = request.get_json()
+# @app.route('/ingresarConocimiento',methods=['GET','POST'])
+# def ingresarConocimiento():
+#   data = request.get_json()
 
-  profesor_id = data['profesor_id']
-  curso_id = data['curso_id']
-  pregunta =  data['pregunta']
-  respuesta =  data['respuesta']
-  pdf =  data['pdf']
-  video =  data['video']
+#   profesor_id = data['profesor_id']
+#   curso_id = data['curso_id']
+#   pregunta =  data['pregunta']
+#   respuesta =  data['respuesta']
+#   pdf =  data['pdf']
+#   video =  data['video']
 
-  coleccionConocimiento = mongo.db.conocimiento
-  nuevoConocimiento_id = coleccionConocimiento.insert_one({
-    "profesor_id" : ObjectId(profesor_id),
-    "curso_id" : ObjectId(curso_id),
-    "pregunta" : pregunta,
-    "respuesta" : respuesta,
-    "pdf" : pdf,
-    "video" : video,
-  }).inserted_id
+#   coleccionConocimiento = mongo.db.conocimiento
+#   nuevoConocimiento_id = coleccionConocimiento.insert_one({
+#     "profesor_id" : ObjectId(profesor_id),
+#     "curso_id" : ObjectId(curso_id),
+#     "pregunta" : pregunta,
+#     "respuesta" : respuesta,
+#     "pdf" : pdf,
+#     "video" : video,
+#   }).inserted_id
 
-  nuevoConocimiento_id = dumps(nuevoConocimiento_id)
+#   nuevoConocimiento_id = dumps(nuevoConocimiento_id)
 
-  return jsonify(nuevoConocimiento_id)
+#   return jsonify(nuevoConocimiento_id)
 
-@app.route('/actualizarConocimiento',methods=['POST'])
-def actualizarConocimiento():
-  data = request.get_json()
+# @app.route('/actualizarConocimiento',methods=['POST'])
+# def actualizarConocimiento():
+#   data = request.get_json()
 
-  conocimiento_id = data['conocimiento_id']
-  pregunta = data['pregunta']
-  respuesta = data['respuesta']
-  pdf = data['pdf']
-  video = data['video']
+#   conocimiento_id = data['conocimiento_id']
+#   pregunta = data['pregunta']
+#   respuesta = data['respuesta']
+#   pdf = data['pdf']
+#   video = data['video']
 
-  coleccionConocimiento = mongo.db.conocimiento
+#   coleccionConocimiento = mongo.db.conocimiento
 
-  coleccionConocimiento.update_one(
-    {'_id': ObjectId(conocimiento_id)},
-    {'$set':  
-              {
-                'pregunta': pregunta,
-                'respuesta': respuesta,
-                'pdf': pdf,
-                'video': video
-              }
-    }
-  )  
+#   coleccionConocimiento.update_one(
+#     {'_id': ObjectId(conocimiento_id)},
+#     {'$set':  
+#               {
+#                 'pregunta': pregunta,
+#                 'respuesta': respuesta,
+#                 'pdf': pdf,
+#                 'video': video
+#               }
+#     }
+#   )  
 
-  return "Conocimiento actualizado"
+#   return "Conocimiento actualizado"
 
 
 @app.route('/eliminarConocimiento',methods=['POST'])
