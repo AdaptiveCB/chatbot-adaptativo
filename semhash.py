@@ -172,7 +172,7 @@ def entrenarModelo():
   predicciones = model.predict(x_train_vector)
   score = metrics.accuracy_score(y_train, predicciones)
   
-  print('Entrenamiento Finalizado')
+  # print('Entrenamiento Finalizado')
 
 
 def responder(pregunta):

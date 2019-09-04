@@ -406,7 +406,7 @@ def obtenerRespuesta():
     'comprension':estiloAprendizaje['comprension']
   }
 
-  print(respuesta)
+  # print(respuesta)
   return jsonify(respuesta)
 
 # ENTRENAMIENTO DEL MODELO
