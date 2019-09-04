@@ -2,7 +2,7 @@ from flask import Flask, render_template, request, jsonify
 from flask_pymongo import PyMongo
 from flask_cors import CORS
 from tf_idf import limpiar, vocabulario, documento_a_vector, similitud_de_coseno
-from semhash import entrenarModelo,responder,Conocimiento,reemplazarConocimiento
+from semhash import entrenarModelo,responder,Conocimiento
 import pandas as pd
 # http://api.mongodb.com/python/current/api/bson/json_util.html?highlight=json_util
 from bson.json_util import dumps
@@ -424,9 +424,7 @@ def entrenar():
   for elemento in arreglo:
     conocimientosBD.append(Conocimiento(elemento['_id'],elemento['preguntas'],elemento['respuestas'],elemento['pdf'],elemento['video']))
 
-  reemplazarConocimiento(conocimientosBD)
- 
-  score = entrenarModelo()
+  score = entrenarModelo(conocimientosBD)
 
   return str(score)
 

@@ -38,11 +38,7 @@ n = 3 #tamaño n-gram
 vectorizer = CountVectorizer(token_pattern='[#a-zñ0-9]+')
 intenciones = []
 
-def reemplazarConocimiento(conocimientoBD):
-  global conocimientos
-  conocimientos = conocimientoBD
-
-def entrenarModelo():
+def entrenarModelo(conocimientos):
   global intenciones, model
   intenciones = [c.intencion for c in conocimientos]
   for c in conocimientos:
