@@ -2,6 +2,7 @@ from flask import Flask, render_template, request, jsonify
 from flask_pymongo import PyMongo
 from flask_cors import CORS
 from tf_idf import limpiar, vocabulario, documento_a_vector, similitud_de_coseno
+from semhash import entrenarModelo,responder,Conocimiento,reemplazarConocimiento
 import pandas as pd
 # http://api.mongodb.com/python/current/api/bson/json_util.html?highlight=json_util
 from bson.json_util import dumps
@@ -124,7 +125,7 @@ def actualizarConocimiento():
                 'video': video
               }
     }
-  )  
+  )
 
   return "Conocimiento actualizado"
 
@@ -389,49 +390,97 @@ def obtenerRespuesta():
   alumno_id = data['alumno_id']
   consulta = data['consulta']
 
-  coleccionConocimiento = mongo.db.conocimiento
-
-  baseConocimiento = coleccionConocimiento.find()
-
-  pregunta = limpiar(consulta)
-
-  preguntas = [conocimiento['pregunta'] for conocimiento in baseConocimiento]
-  documentos = [limpiar(sentencia) for sentencia in preguntas]
-
-  diccionario = vocabulario(documentos)
-  
-  similitudes = [similitud_de_coseno(pregunta,documento,documentos,diccionario) for documento in documentos]
-  similitudes = [round(x,5) for x in similitudes]
-  
-  preguntaPuntaje = preguntas[similitudes.index(max(similitudes))]
-  
-  conocimiento = coleccionConocimiento.find_one({'pregunta':preguntaPuntaje})
-  
-  resultados = dict(zip(documentos,similitudes))
-  resultados = [[k,v] for k,v in resultados.items()]
-
   coleccionEstiloAprendizaje = mongo.db.estiloAprendizaje
   estiloAprendizaje = coleccionEstiloAprendizaje.find_one({'alumno_id' : ObjectId(alumno_id)})
 
-  # processing = "active" if perfil['processing']['active'] > 5 else "reflexive"
-  # perception = "sensitive" if perfil['perception']['sensitive'] > 5 else "intuitive"
-  # _input = "visual" if perfil['input']['visual'] > 5 else "verbal"
-  # understanding = "sequential" if perfil['understanding']['sequential'] > 5 else "global"
-
+  modeloRespuesta = responder(consulta)
+  # return jsonify(respuesta)
   respuesta = {
-    'conocimiento_id': str(conocimiento['_id']),
-    'respuesta': conocimiento['respuesta'],
-    'pdf': conocimiento['pdf'],
-    'video': conocimiento['video'],
+    'conocimiento_id': str(modeloRespuesta['conocimiento_id']),
+    'respuesta': modeloRespuesta['respuesta'],
+    'pdf': modeloRespuesta['pdf'],
+    'video': modeloRespuesta['video'],
     'procesamiento':estiloAprendizaje['procesamiento'],
     'percepcion':estiloAprendizaje['percepcion'],
     'entrada':estiloAprendizaje['entrada'],
     'comprension':estiloAprendizaje['comprension']
   }
 
+  print(respuesta)
   return jsonify(respuesta)
 
+# ENTRENAMIENTO DEL MODELO
+
+@app.route('/entrenar',methods=['GET','POST'])
+def entrenar():
+  coleccionConocimiento = mongo.db.conocimiento
   
+  conocimiento = coleccionConocimiento.find()
+  
+  arreglo = list(conocimiento)
+
+  conocimientosBD = []
+
+  for elemento in arreglo:
+    conocimientosBD.append(Conocimiento(elemento['_id'],elemento['preguntas'],elemento['respuestas'],elemento['pdf'],elemento['video']))
+
+  reemplazarConocimiento(conocimientosBD)
+ 
+  entrenarModelo()
+
+  return 'Entrenamiento Realizado'
+
+# @app.route('/obtenerRespuesta',methods=['GET','POST'])
+# def obtenerRespuesta():
+#   data = request.get_json()
+  
+#   alumno_id = data['alumno_id']
+#   consulta = data['consulta']
+
+#   coleccionConocimiento = mongo.db.conocimiento
+
+#   baseConocimiento = coleccionConocimiento.find()
+
+#   pregunta = limpiar(consulta)
+
+#   preguntas = [conocimiento['pregunta'] for conocimiento in baseConocimiento]
+#   documentos = [limpiar(sentencia) for sentencia in preguntas]
+
+#   diccionario = vocabulario(documentos)
+  
+#   similitudes = [similitud_de_coseno(pregunta,documento,documentos,diccionario) for documento in documentos]
+#   similitudes = [round(x,5) for x in similitudes]
+  
+#   preguntaPuntaje = preguntas[similitudes.index(max(similitudes))]
+  
+#   conocimiento = coleccionConocimiento.find_one({'pregunta':preguntaPuntaje})
+  
+#   resultados = dict(zip(documentos,similitudes))
+#   resultados = [[k,v] for k,v in resultados.items()]
+
+#   coleccionEstiloAprendizaje = mongo.db.estiloAprendizaje
+#   estiloAprendizaje = coleccionEstiloAprendizaje.find_one({'alumno_id' : ObjectId(alumno_id)})
+
+#   # processing = "active" if perfil['processing']['active'] > 5 else "reflexive"
+#   # perception = "sensitive" if perfil['perception']['sensitive'] > 5 else "intuitive"
+#   # _input = "visual" if perfil['input']['visual'] > 5 else "verbal"
+#   # understanding = "sequential" if perfil['understanding']['sequential'] > 5 else "global"
+
+#   respuesta = {
+#     'conocimiento_id': str(conocimiento['_id']),
+#     'respuesta': conocimiento['respuesta'],
+#     'pdf': conocimiento['pdf'],
+#     'video': conocimiento['video'],
+#     'procesamiento':estiloAprendizaje['procesamiento'],
+#     'percepcion':estiloAprendizaje['percepcion'],
+#     'entrada':estiloAprendizaje['entrada'],
+#     'comprension':estiloAprendizaje['comprension']
+#   }
+
+#   return jsonify(respuesta)
+
+entrenar()
+
 if __name__ == '__main__':
   app.run(debug=True)
 
