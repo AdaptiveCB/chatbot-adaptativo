@@ -70,6 +70,7 @@ def responder(pregunta, conocimientos):
   x_semhash = [semhash(pregunta, n)]
   x_vector = vectorizer.transform(x_semhash).toarray()
   prediccion = model.predict(x_vector)[0]
+  print(prediccion)
   intencion = intenciones[prediccion]
 
   respuesta = ""
