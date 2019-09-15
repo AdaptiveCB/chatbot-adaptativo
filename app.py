@@ -26,6 +26,68 @@ def home():
 def test():
   return render_template('test.html')
 
+
+# TEMA
+@app.route('/ingresarTema', methods=['GET','POST'])
+def ingresarTema():
+  data = request.get_json()
+
+  curso_id = data['curso_id']
+  nombre = data['nombre']
+
+  coleccionTema = mongo.db.tema
+
+  temaIngresado = coleccionTema.insert_one({
+    'curso_id': ObjectId(curso_id),
+    'nombre': nombre
+  }).inserted_id
+
+  nuevoTema_id = dumps(temaIngresado)
+
+  return jsonify(nuevoTema_id)
+
+# CUESTIONARIO
+
+@app.route('/ingresarCuestionario', methods=['GET','POST'])
+def ingresarCuestionario():
+  data = request.get_json()
+
+  tema_id = data['tema_id']
+  preguntas = data['preguntas']
+
+  coleccionCuestionario = mongo.db.cuestionario
+
+  cuestionarioIngresado = coleccionCuestionario.insert_one({
+    'tema_id': ObjectId(tema_id),
+    'preguntas': preguntas
+  }).inserted_id
+
+  nuevoCuestionario_id = dumps(cuestionarioIngresado)
+
+  return jsonify(nuevoCuestionario_id)
+
+# EVALUACIÓN
+
+@app.route('/ingresarEvaluacion', methods=['GET','POST'])
+def ingresarEvaluacion():
+  data = request.get_json()
+
+  alumno_id = data['alumno_id']
+  cuestionario_id = data['cuestionario_id']
+  nota = int(data['nota'])
+
+  coleccionEvaluacion = mongo.db.evaluacion
+
+  evaluacionIngresada = coleccionEvaluacion.insert_one({
+    'alumno_id': ObjectId(alumno_id),
+    'cuestionario_id': ObjectId(cuestionario_id),
+    'nota': nota
+  })
+
+  nuevaEvaluacion_id = dumps(evaluacionIngresada)
+
+  return jsonify(nuevaEvaluacion_id)
+
 # ESTILO APRENDIZAJE
 
 @app.route('/actualizarEstiloAprendizaje',methods=['GET','POST'])
@@ -72,7 +134,7 @@ def actualizarEstiloAprendizaje():
     'percepcion':{'sensible':sensible,'intuitivo':intuitivo},
     'entrada':{'visual':visual,'verbal':verbal},
     'comprension':{'secuencial':sequencial,'global':_global}
-  })
+    })
 
   return 'Estilo de Aprendizaje Guardado'
 
