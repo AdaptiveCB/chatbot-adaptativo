@@ -37,14 +37,29 @@ def iniciarSesionAlumno():
   coleccionAlumno = mongo.db.alumno
   alumno = coleccionAlumno.find_one({'codigo':codigo,'contrasena':contrasena})
 
-  respuesta = ""
-  if(alumno):
-    respuesta = "SI"
-  else:
-    respuesta = "NO"
-  
+  alumno_id = ""
 
-  return respuesta
+  if(alumno):
+    alumno_id = (str(alumno['_id']))
+
+  return alumno_id
+
+@app.route('/iniciarSesionProfesor', methods=['GET','POST'])
+def iniciarSesionProfesor():
+  data = request.get_json()
+
+  codigo = data['codigo']
+  contrasena = data['contrasena']
+
+  coleccionProfesor = mongo.db.profesor
+  profesor = coleccionProfesor.find_one({'codigo':codigo,'contrasena':contrasena})
+
+  profesor_id = ""
+  
+  if(profesor):
+    profesor_id = (str(profesor['_id']))
+
+  return profesor_id
 
 
 # TEMA
