@@ -66,6 +66,20 @@ def ingresarCuestionario():
 
   return jsonify(nuevoCuestionario_id)
 
+@app.route('/obtenerCuestionario', methods=['GET','POST'])
+def obtenerCuestionario():
+  data = request.get_json()
+
+  cuestionario_id = data['cuestionario_id']
+
+  coleccionCuestionario = mongo.db.cuestionario
+
+  cuestionario = coleccionCuestionario.find({"_id":ObjectId(cuestionario_id)})
+
+  cuestionario = dumps(cuestionario)
+
+  return jsonify(cuestionario)
+  
 # EVALUACIÓN
 
 @app.route('/ingresarEvaluacion', methods=['GET','POST'])
