@@ -61,7 +61,6 @@ def iniciarSesionProfesor():
 
   return profesor_id
 
-
 # TEMA
 @app.route('/ingresarTema', methods=['GET','POST'])
 def ingresarTema():
@@ -81,6 +80,7 @@ def ingresarTema():
 
   return jsonify(nuevoTema_id)
 
+
 @app.route('/obtenerTema', methods=['GET','POST'])
 def obtenerTema():
   data = request.get_json()
@@ -94,6 +94,20 @@ def obtenerTema():
   tema = dumps(tema)
 
   return jsonify(tema)
+
+@app.route('/obtenerTemaPorCurso', methods=['POST'])
+def obtenerTemaPorCurso():
+  data = request.get_json()
+
+  curso_id = data['curso_id']
+
+  coleccionTema = mongo.db.tema
+
+  temas = coleccionTema.find({"curso_id":ObjectId(curso_id)})
+
+  temas = dumps(temas)
+
+  return jsonify(temas)
 
 # CUESTIONARIO
 
@@ -128,6 +142,20 @@ def obtenerCuestionario():
   cuestionario = dumps(cuestionario)
 
   return jsonify(cuestionario)
+
+@app.route('/obtenerCuestionarioPorTema', methods=['POST'])
+def obtenerCuestionarioPorTema():
+  data = request.get_json()
+
+  tema_id = data['tema_id']
+
+  coleccionCuestionario = mongo.db.cuestionario
+
+  cuestionarios = coleccionCuestionario.find({"tema_id":ObjectId(tema_id)})
+
+  cuestionarios = dumps(cuestionarios)
+
+  return jsonify(cuestionarios)
   
 # EVALUACIÓN
 
@@ -362,14 +390,34 @@ def obtenerCursos():
 def ingresarCurso():
   data = request.get_json()
 
+  profesor_id = data['profesor_id']
   nombre = data['nombre']
 
   coleccionCurso = mongo.db.curso
 
-  coleccionCurso.insert_one({"nombre":nombre})
+  cursoIngresado = coleccionCurso.insert_one({
+    'profesor_id': ObjectId(profesor_id),
+    'nombre': nombre
+  }).inserted_id
 
-  return 'Curso Ingresado'
+  nuevoCurso_id = dumps(cursoIngresado)
 
+  return jsonify(nuevoCurso_id)
+
+@app.route('/obtenerCursoPorProfesor', methods=['POST'])
+def obtenerCursoPorProfesor():
+  data = request.get_json()
+
+  profesor_id = data['profesor_id']
+
+  coleccionCurso = mongo.db.curso
+
+  cursos = coleccionCurso.find({'profesor_id':ObjectId(profesor_id)})
+
+  cursos = dumps(cursos)
+
+  return jsonify(cursos)
+ 
 @app.route('/actualizarCurso',methods=['POST'])
 def actualizarCurso():
   data = request.get_json()
