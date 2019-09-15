@@ -26,6 +26,26 @@ def home():
 def test():
   return render_template('test.html')
 
+# SESIÓN
+@app.route('/iniciarSesionAlumno', methods=['GET','POST'])
+def iniciarSesionAlumno():
+  data = request.get_json()
+
+  codigo = data['codigo']
+  contrasena = data['contrasena']
+
+  coleccionAlumno = mongo.db.alumno
+  alumno = coleccionAlumno.find_one({'codigo':codigo,'contrasena':contrasena})
+
+  respuesta = ""
+  if(alumno):
+    respuesta = "SI"
+  else:
+    respuesta = "NO"
+  
+
+  return respuesta
+
 
 # TEMA
 @app.route('/ingresarTema', methods=['GET','POST'])
@@ -45,6 +65,20 @@ def ingresarTema():
   nuevoTema_id = dumps(temaIngresado)
 
   return jsonify(nuevoTema_id)
+
+@app.route('/obtenerTema', methods=['GET','POST'])
+def obtenerTema():
+  data = request.get_json()
+
+  tema_id = data['tema_id']
+
+  coleccionTema = mongo.db.tema
+
+  tema = coleccionTema.find({"_id":ObjectId(tema_id)})
+
+  tema = dumps(tema)
+
+  return jsonify(tema)
 
 # CUESTIONARIO
 
@@ -101,6 +135,20 @@ def ingresarEvaluacion():
   nuevaEvaluacion_id = dumps(evaluacionIngresada)
 
   return jsonify(nuevaEvaluacion_id)
+
+@app.route('/obtenerEvaluacion', methods=['GET','POST'])
+def obtenerEvaluacion():
+  data = request.get_json()
+
+  evaluacion_id = data['evaluacion_id']
+
+  coleccionEvaluacion = mongo.db.evaluacion
+
+  evaluacion = coleccionEvaluacion.find({"_id":ObjectId(evaluacion_id)})
+
+  evaluacion = dumps(evaluacion)
+
+  return jsonify(evaluacion)
 
 # ESTILO APRENDIZAJE
 
@@ -489,7 +537,6 @@ def obtenerRespuesta():
     'comprension':estiloAprendizaje['comprension']
   }
 
-  # print(respuesta)
   return jsonify(respuesta)
 
 # ENTRENAMIENTO DEL MODELO

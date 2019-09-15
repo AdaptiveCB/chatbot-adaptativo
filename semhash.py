@@ -41,8 +41,8 @@ intenciones = []
 def entrenarModelo(conocimientos):
   global intenciones, model
   intenciones = [c.intencion for c in conocimientos]
-  for c in conocimientos:
-    print(c.intencion, c.preguntas, c.respuestas)
+  # for c in conocimientos:
+  #   print(c.intencion, c.preguntas, c.respuestas)
   x_train = []
   y_train = []
   
@@ -70,7 +70,7 @@ def responder(pregunta, conocimientos):
   x_semhash = [semhash(pregunta, n)]
   x_vector = vectorizer.transform(x_semhash).toarray()
   prediccion = model.predict(x_vector)[0]
-  print(prediccion)
+  # print(prediccion)
   intencion = intenciones[prediccion]
 
   respuesta = ""
