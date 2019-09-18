@@ -4,6 +4,7 @@ from flask_cors import CORS
 from tf_idf import limpiar, vocabulario, documento_a_vector, similitud_de_coseno
 from semhash import cargarModelo,entrenarModelo,responder,Conocimiento,cargarVariosModelos
 import pandas as pd
+import random
 # http://api.mongodb.com/python/current/api/bson/json_util.html?highlight=json_util
 from bson.json_util import dumps
 from bson.objectid import ObjectId
@@ -612,17 +613,17 @@ def obtenerRespuesta():
   estiloAprendizaje = coleccionEstiloAprendizaje.find_one({'alumno_id' : ObjectId(alumno_id)})
 
   coleccionConocimiento = mongo.db.conocimiento
-  conocimiento = coleccionConocimiento.find({'tema_id':tema_id})
+  conocimiento = coleccionConocimiento.find({'tema_id':ObjectId(tema_id)})
   arreglo = list(conocimiento)
   conocimientosBD = []
   for elemento in arreglo:
     conocimientosBD.append(Conocimiento(elemento['_id'],elemento['preguntas'],elemento['respuestas']))
 
   modeloRespuesta = responder(consulta, conocimientosBD,tema_id)
-  # return jsonify(respuesta)
+  
   respuesta = {
-    'conocimiento_id': str(modeloRespuesta['conocimiento_id']),
-    'respuesta': modeloRespuesta['respuesta'],
+    'conocimiento_id': str(modeloRespuesta.intencion),
+    'respuesta': random.choice(modeloRespuesta.respuestas),
     'procesamiento':estiloAprendizaje['procesamiento'],
     'percepcion':estiloAprendizaje['percepcion'],
     'entrada':estiloAprendizaje['entrada'],
@@ -652,7 +653,7 @@ def obtenerRespuestaProfesor():
 
   respuesta = {
     'conocimiento_id':str(modeloRespuesta.intencion),
-    'respuestas': modeloRespuesta.respuestas
+    'respuestas': random.choice(modeloRespuesta.respuestas)
   }
 
   return jsonify(respuesta)
