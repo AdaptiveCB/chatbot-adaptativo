@@ -27,6 +27,36 @@ def home():
 def test():
   return render_template('test.html')
 
+
+# MATERIAL
+@app.route('/obtenerListadoMaterial', methods=['GET','POST'])
+def obtenerListadoMaterial():
+  data = request.get_json()
+
+  tema_id = data['tema_id']
+
+  coleccionMaterial = mongo.db.material
+  
+  materiales = coleccionMaterial.find({'tema_id':ObjectId(tema_id)})
+
+  materiales = dumps(materiales)
+
+  return jsonify(materiales)
+
+@app.route('/obtenerMaterial', methods=['GET','POST'])
+def obtenerMaterial():
+  data = request.get_json()
+  
+  material_id = data['material_id']
+
+  coleccionMaterial = mongo.db.material
+  
+  material = coleccionMaterial.find({'_id':ObjectId(material_id)})
+
+  material = dumps(material)
+  
+  return jsonify(material)
+
 # SESIÓN
 @app.route('/iniciarSesionAlumno', methods=['GET','POST'])
 def iniciarSesionAlumno():
@@ -259,12 +289,14 @@ def ingresarConocimiento():
   data = request.get_json()
 
   tema_id = data['tema_id']
+  material_id = data['material_id']
   preguntas = data['preguntas']
   respuestas = data['respuestas']
 
   coleccionConocimiento = mongo.db.conocimiento
   nuevoConocimiento_id = coleccionConocimiento.insert_one({
     "tema_id" : ObjectId(tema_id),
+    "material_id": ObjectId(material_id),
     "preguntas" : preguntas,
     "respuestas" : respuestas,
   }).inserted_id
@@ -278,6 +310,7 @@ def actualizarConocimiento():
   data = request.get_json()
 
   conocimiento_id = data['conocimiento_id']
+  material_id = data['material_id']
   preguntas = data['preguntas']
   respuestas = data['respuestas']
 
@@ -287,6 +320,7 @@ def actualizarConocimiento():
     {'_id': ObjectId(conocimiento_id)},
     {'$set':  
               {
+                'material_id': ObjectId(material_id),
                 'preguntas': preguntas,
                 'respuestas': respuestas,
               }
@@ -649,8 +683,8 @@ def obtenerRespuestaProfesor():
   coleccionConocimiento = mongo.db.conocimiento
   conocimiento = coleccionConocimiento.find({'tema_id':ObjectId(tema_id)})
 
-  coleccionMaterial = mongo.db.material
-  material = coleccionMaterial.find_one({'tema_id':ObjectId(tema_id)})
+  # coleccionMaterial = mongo.db.material
+  # material = coleccionMaterial.find_one({'tema_id':ObjectId(tema_id)})
 
   arreglo = list(conocimiento)
 
@@ -661,9 +695,11 @@ def obtenerRespuestaProfesor():
   
   modeloRespuesta = responder(consulta,conocimientosBD,tema_id)
 
+  material = coleccionConocimiento.find_one({'_id':modeloRespuesta.intencion})
+
   respuesta = {
     'conocimiento_id': str(modeloRespuesta.intencion),
-    'material_id': str(material['_id']),
+    'material_id': str(material['material_id']),
     'respuestas': random.choice(modeloRespuesta.respuestas)
   }
 
