@@ -57,6 +57,74 @@ def obtenerMaterial():
   
   return jsonify(material)
 
+@app.route('/ingresarMaterial', methods=['GET','POST'])
+def ingresarMaterial():
+  data = request.get_json()
+
+  tema_id = data['tema_id']
+  nombre = data['nombre']
+  texto = data['texto']
+  documento = data['documento']
+  video = data['video']
+  imagen = data['imagen']
+
+  coleccionMaterial = mongo.db.material
+
+  materialIngresado = coleccionMaterial.insert_one({
+    'tema_id': ObjectId(tema_id),
+    'nombre': nombre,
+    'texto': texto,
+    'documento': documento,
+    'video': video,
+    'imagen': imagen,
+  }).inserted_id
+
+  nuevoMaterial_id = dumps(materialIngresado)
+
+  return jsonify(nuevoMaterial_id)
+
+@app.route('/actualizarMaterial', methods=['GET','POST'])
+def actualizarMaterial():
+  data = request.get_json()
+
+  material_id = data['material_id']
+  tema_id = data['tema_id']
+  nombre = data['nombre']
+  texto = data['texto']
+  documento = data['documento']
+  video = data['video']
+  imagen = data['imagen']
+
+  coleccionMaterial = mongo.db.material
+
+  coleccionMaterial.update_one({
+    {'_id':ObjectId(material_id)},
+    {'$set':
+              {
+                'tema_id': ObjectId(tema_id),
+                'nombre': nombre,
+                'texto': texto,
+                'documento': documento,
+                'video': video,
+                'imagen': imagen
+              }
+    }
+  })
+
+  return 'Material Actualizado'
+
+@app.route('/eliminarMaterial', methods=['GET','POST'])
+def eliminarMaterial():
+  data = request.get_json()
+
+  material_id = data['material_id']
+
+  coleccionMaterial = mongo.db.material
+
+  coleccionMaterial.delete_one({'_id': ObjectId(material_id)})
+
+  return 'Material Eliminado'
+
 # SESIÓN
 @app.route('/iniciarSesionAlumno', methods=['GET','POST'])
 def iniciarSesionAlumno():
