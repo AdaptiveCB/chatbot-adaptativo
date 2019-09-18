@@ -2,7 +2,7 @@ from flask import Flask, render_template, request, jsonify
 from flask_pymongo import PyMongo
 from flask_cors import CORS
 from tf_idf import limpiar, vocabulario, documento_a_vector, similitud_de_coseno
-from semhash import entrenarModelo,responder,Conocimiento
+from semhash import cargarModelo,entrenarModelo,responder,Conocimiento,cargarVariosModelos
 import pandas as pd
 # http://api.mongodb.com/python/current/api/bson/json_util.html?highlight=json_util
 from bson.json_util import dumps
@@ -610,18 +610,19 @@ def obtenerRespuesta():
   
   alumno_id = data['alumno_id']
   consulta = data['consulta']
+  tema_id = data['tema_id']
 
   coleccionEstiloAprendizaje = mongo.db.estiloAprendizaje
   estiloAprendizaje = coleccionEstiloAprendizaje.find_one({'alumno_id' : ObjectId(alumno_id)})
 
   coleccionConocimiento = mongo.db.conocimiento
-  conocimiento = coleccionConocimiento.find()
+  conocimiento = coleccionConocimiento.find({'tema_id':tema_id})
   arreglo = list(conocimiento)
   conocimientosBD = []
   for elemento in arreglo:
     conocimientosBD.append(Conocimiento(elemento['_id'],elemento['preguntas'],elemento['respuestas']))
 
-  modeloRespuesta = responder(consulta, conocimientosBD)
+  modeloRespuesta = responder(consulta, conocimientosBD,tema_id)
   # return jsonify(respuesta)
   respuesta = {
     'conocimiento_id': str(modeloRespuesta['conocimiento_id']),
@@ -634,13 +635,46 @@ def obtenerRespuesta():
 
   return jsonify(respuesta)
 
+
+# CARGAR MODELo
+@app.route('/cargar',methods=['GET','POST'])
+def cargar():
+  data = request.get_json()
+
+  tema_id = data['tema_id']
+  
+  cargarModelo(tema_id)
+
+  return "Modelo cargado"
+
+@app.route('/cargarVarios',methods=['GET','POST'])
+def cargarVarios():
+  coleccionTema = mongo.db.tema
+
+  temas = coleccionTema.find()
+
+  temas = list(temas)
+
+  temas = [str(tema_id['_id']) for tema_id in temas]
+
+  cargarVariosModelos(temas)
+
+  return "bien"
+
+cargarVarios()
 # ENTRENAMIENTO DEL MODELO
 
 @app.route('/entrenar',methods=['GET','POST'])
 def entrenar():
+  data = request.get_json()
+
+  tema_id = data['tema_id']
+
   coleccionConocimiento = mongo.db.conocimiento
   
-  conocimiento = coleccionConocimiento.find()
+  conocimiento = coleccionConocimiento.find({
+    'tema_id' : ObjectId(tema_id)
+  })
   
   arreglo = list(conocimiento)
 
@@ -649,7 +683,7 @@ def entrenar():
   for elemento in arreglo:
     conocimientosBD.append(Conocimiento(elemento['_id'],elemento['preguntas'],elemento['respuestas']))
 
-  score = entrenarModelo(conocimientosBD)
+  score = entrenarModelo(conocimientosBD,tema_id)
 
   return str(score)
 
@@ -702,7 +736,7 @@ def entrenar():
 
 #   return jsonify(respuesta)
 
-entrenar()
+#entrenar()
 
 if __name__ == '__main__':
   app.run(debug=True)

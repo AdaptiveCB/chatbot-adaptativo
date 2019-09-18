@@ -1,9 +1,13 @@
+import os
 import re
 import random
+import pickle
 
 from sklearn import metrics
 from sklearn.feature_extraction.text import CountVectorizer, TfidfVectorizer
 from sklearn.linear_model import LogisticRegression
+
+modelos = {}
 
 class Conocimiento:
   def __init__(self, intencion, preguntas, respuestas,pdf="",video=""):
@@ -38,7 +42,7 @@ n = 3 #tamaño n-gram
 vectorizer = CountVectorizer(token_pattern='[#a-zñ0-9]+')
 intenciones = []
 
-def entrenarModelo(conocimientos):
+def entrenarModelo(conocimientos,tema_id):
   global intenciones, model
   intenciones = [c.intencion for c in conocimientos]
   # for c in conocimientos:
@@ -62,13 +66,37 @@ def entrenarModelo(conocimientos):
   
   predicciones = model.predict(x_train_vector)
   score = metrics.accuracy_score(y_train, predicciones)
+
+  # if tema_id in modelos:
+  #   print("exite")
+  # else:
+  #   modelos.update({tema_id:model})
+  
+  modelos.update({tema_id:model})  
+  
+  filename = os.path.join('models',tema_id+'.sav')
+  pickle.dump(model, open(filename, 'wb'))
   
   return score
 
+def cargarModelo(tema_id):
+  filename = os.path.join('models',tema_id+'.sav')
+  model = pickle.load(open(filename, 'rb'))
 
-def responder(pregunta, conocimientos):
+  modelos.update({tema_id:model})  
+
+def cargarVariosModelos(temas):
+  for tema_id in temas:
+    filename = os.path.join('models',tema_id+'.sav')
+    if(filename):
+      model = pickle.load(open(filename, 'rb'))
+      modelos.update({tema_id:model})  
+
+
+def responder(pregunta, conocimientos,tema_id):
   x_semhash = [semhash(pregunta, n)]
   x_vector = vectorizer.transform(x_semhash).toarray()
+  model = modelos.get(tema_id)
   prediccion = model.predict(x_vector)[0]
   # print(prediccion)
   intencion = intenciones[prediccion]
