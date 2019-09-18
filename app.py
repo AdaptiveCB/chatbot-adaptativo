@@ -639,19 +639,20 @@ def obtenerRespuestaProfesor():
   tema_id = data['tema_id']
 
   coleccionConocimiento = mongo.db.conocimiento
-  conocimiento = coleccionConocimiento.find({'tema_id':tema_id})
-  arreglo = list(conocimiento)
-  conocimientosBD = []
-  for elemento in arreglo:
-    conocimientosBD.append(Conocimiento(elemento['_id'],elemento['preguntas'],elemento['respuestas']))
+  conocimiento = coleccionConocimiento.find({'tema_id':ObjectId(tema_id)})
 
+  arreglo = list(conocimiento)
+
+  conocimientosBD = []
+
+  for elemento in arreglo:
+    conocimientosBD.append(Conocimiento(elemento['_id'],elemento['preguntas'],elemento['respuestas']))  
   
-  modeloRespuesta = responder(consulta, conocimientosBD,tema_id)
-  
-  # return jsonify(respuesta)
+  modeloRespuesta = responder(consulta,conocimientosBD,tema_id)
+
   respuesta = {
-    'conocimiento_id': str(modeloRespuesta['conocimiento_id']),
-    'respuesta': modeloRespuesta['respuesta'],
+    'conocimiento_id':str(modeloRespuesta.intencion),
+    'respuestas': modeloRespuesta.respuestas
   }
 
   return jsonify(respuesta)

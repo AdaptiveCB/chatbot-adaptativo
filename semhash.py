@@ -2,20 +2,24 @@ import os
 import re
 import random
 import pickle
+import numpy as np
 
 from sklearn import metrics
 from sklearn.feature_extraction.text import CountVectorizer, TfidfVectorizer
 from sklearn.linear_model import LogisticRegression
 
 modelos = {}
+vectorizers = {}
 
 class Conocimiento:
-  def __init__(self, intencion, preguntas, respuestas,pdf="",video=""):
+  def __init__(self, intencion, preguntas, respuestas):
     self.intencion = intencion
     self.preguntas = preguntas
     self.respuestas = respuestas
-    self.pdf = pdf
-    self.video = video
+
+  
+  def __getitem__(self):#,intencion, preguntas, respuestas):
+    return [self.intencion,self.preguntas,self.respuestas]
 
 def tratamiento(text):
   text = text.lower()
@@ -39,12 +43,10 @@ def semhash(text, n):
   return ' '.join(tokens)
 
 n = 3 #tamaño n-gram
-vectorizer = CountVectorizer(token_pattern='[#a-zñ0-9]+')
 intenciones = []
 
 def entrenarModelo(conocimientos,tema_id):
-  global intenciones, model
-  global vectorizer
+  vectorizer = CountVectorizer(token_pattern='[#a-zñ0-9]+')
   intenciones = [c.intencion for c in conocimientos]
   # for c in conocimientos:
   #   print(c.intencion, c.preguntas, c.respuestas)
@@ -72,11 +74,21 @@ def entrenarModelo(conocimientos,tema_id):
   #   print("exite")
   # else:
   #   modelos.update({tema_id:model})
+
+  # if tema_id in vectorizers:
+  #   print("existe")
+  #   print(vectorizers[tema_id])
+  # else:
+  #   print("no existe")
   
-  modelos.update({tema_id:model})  
+  modelos.update({tema_id:model})
+  vectorizers.update({tema_id:vectorizer})
   
   filename = os.path.join('models',tema_id+'.sav')
   pickle.dump(model, open(filename, 'wb'))
+
+  filenameVectorizer = os.path.join('vectorizer',tema_id+'.sav')
+  pickle.dump(vectorizer, open(filenameVectorizer, 'wb'))
   
   return score
 
@@ -84,39 +96,56 @@ def cargarModelo(tema_id):
   filename = os.path.join('models',tema_id+'.sav')
   model = pickle.load(open(filename, 'rb'))
 
+  filenameVectorizer = os.path.join('vectorizer',tema_id+'.sav')
+  vectorizer = pickle.load(open(filenameVectorizer, 'rb'))
+
   modelos.update({tema_id:model})  
+  vectorizers.update({tema_id:vectorizer})
 
 def cargarVariosModelos(temas):
   for tema_id in temas:
     filename = os.path.join('models',tema_id+'.sav')
-    if(filename):
+    filenameVectorizer = os.path.join('vectorizer',tema_id+'.sav')
+    if(os.path.exists(filename)):
       model = pickle.load(open(filename, 'rb'))
       modelos.update({tema_id:model})  
+      vectorizer = pickle.load(open(filenameVectorizer, 'rb'))
+      vectorizers.update({tema_id:vectorizer})
+    
 
 
-def responder(pregunta, conocimientos,tema_id):
-  global vectorizer
+def responder(pregunta,conocimientos,tema_id):
+
+  vectorizer = vectorizers.get(tema_id)
+
+  model = modelos.get(tema_id)
+
   x_semhash = [semhash(pregunta, n)]
   
   x_vector = vectorizer.transform(x_semhash).toarray()
+
   
-  model = modelos.get(tema_id)
-  print('d')
-  prediccion = model.predict(x_vector)[0]
-  print('e')
-  # print(prediccion)
-  intencion = intenciones[prediccion]
+  probabilidades = model.predict_proba(x_vector)[0]
 
-  respuesta = ""
-  conocimiento_id = ""
-  for c in conocimientos:
+  idx = np.argmax(probabilidades)
 
-    if c.intencion == intencion:
-      conocimiento_id = c.intencion
-      respuesta = random.choice(c.respuestas)
-      break
-  objeto = {
-    'conocimiento_id':conocimiento_id,
-    'respuesta':respuesta,
-  }
-  return objeto
+  return conocimientos[idx]
+  
+  # prediccion = model.predict(x_vector)[0]
+  
+  # # print(prediccion)
+  # intencion = intenciones[prediccion]
+
+  # respuesta = ""
+  # conocimiento_id = ""
+  # for c in conocimientos:
+
+  #   if c.intencion == intencion:
+  #     conocimiento_id = c.intencion
+  #     respuesta = random.choice(c.respuestas)
+  #     break
+  # objeto = {
+  #   'conocimiento_id':conocimiento_id,
+  #   'respuesta':respuesta,
+  # }
+  # return objeto
