@@ -41,8 +41,12 @@ def iniciarSesionAlumno():
 
   if(alumno):
     alumno_id = (str(alumno['_id']))
+  
+  objetoAlumno = {
+    "alumno_id": alumno_id
+  }
 
-  return alumno_id
+  return jsonify(objetoAlumno)
 
 @app.route('/iniciarSesionProfesor', methods=['GET','POST'])
 def iniciarSesionProfesor():
@@ -58,8 +62,12 @@ def iniciarSesionProfesor():
   
   if(profesor):
     profesor_id = (str(profesor['_id']))
+  
+  objetoProfesor = {
+    "profesor_id": profesor_id
+  }
 
-  return profesor_id
+  return jsonify(objetoProfesor)
 
 # TEMA
 @app.route('/ingresarTema', methods=['GET','POST'])
@@ -306,6 +314,20 @@ def obtenerConocimiento():
 
   return jsonify(conocimiento)
 
+@app.route('/obtenerConocimientoPorTema',methods=['GET','POST'])
+def obtenerConocimientoPorTema():
+  data = request.get_json()
+
+  tema_id = data['tema_id']
+
+  coleccionConocimiento = mongo.db.conocimiento
+  
+  conocimiento = coleccionConocimiento.find({'tema_id':ObjectId(tema_id)})
+
+  conocimiento = dumps(conocimiento)
+
+  return jsonify(conocimiento)
+
 
 # @app.route('/ingresarConocimiento',methods=['GET','POST'])
 # def ingresarConocimiento():
@@ -466,14 +488,23 @@ def obtenerAlumnos():
 def ingresarAlumno():
   data = request.get_json()
 
+  nombre = data['nombre']
+  apellido_paterno = data['apellido_paterno']
+  apellido_materno = data['apellido_materno']
   codigo = data['codigo']
   contrasena = data['contrasena']
 
   coleccionAlumno = mongo.db.alumno
 
-  coleccionAlumno.insert_one({"codigo":codigo,"contrasena":contrasena})
+  alumnoIngresado = coleccionAlumno.insert_one({
+    "nombre":nombre,
+    "apellido_paterno":apellido_paterno,
+    "apellido_materno":apellido_materno,
+    "codigo":codigo,
+    "contrasena":contrasena
+  }).inserted_id
 
-  return 'Alumno Ingresado'
+  return alumnoIngresado
 
 @app.route('/actualizarAlumno',methods=['POST'])
 def actualizarAlumno():
@@ -525,14 +556,23 @@ def obtenerProfesores():
 def ingresarProfesor():
   data = request.get_json()
 
+  nombre = data['nombre']
+  apellido_paterno = data['apellido_paterno']
+  apellido_materno = data['apellido_materno']
   codigo = data['codigo']
   contrasena = data['contrasena']
 
   coleccionProfesor = mongo.db.profesor
 
-  coleccionProfesor.insert_one({"codigo":codigo,"contrasena":contrasena})
+  profesorIngresado = coleccionProfesor.insert_one({
+    "nombre":nombre,
+    "apellido_paterno":apellido_paterno,
+    "apellido_materno":apellido_materno,
+    "codigo":codigo,
+    "contrasena":contrasena
+  }).inserted_id
 
-  return 'Profesor Ingresado'
+  return profesorIngresado
 
 @app.route('/actualizarProfesor',methods=['POST'])
 def actualizarProfesor():
