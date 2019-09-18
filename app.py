@@ -296,7 +296,7 @@ def ingresarConocimiento():
   coleccionConocimiento = mongo.db.conocimiento
   nuevoConocimiento_id = coleccionConocimiento.insert_one({
     "tema_id" : ObjectId(tema_id),
-    "material_id": ObjectId(material_id),
+    "material_id": material_id,
     "preguntas" : preguntas,
     "respuestas" : respuestas,
   }).inserted_id
@@ -320,7 +320,7 @@ def actualizarConocimiento():
     {'_id': ObjectId(conocimiento_id)},
     {'$set':  
               {
-                'material_id': ObjectId(material_id),
+                'material_id': material_id,
                 'preguntas': preguntas,
                 'respuestas': respuestas,
               }
@@ -649,9 +649,7 @@ def obtenerRespuesta():
   coleccionConocimiento = mongo.db.conocimiento
   conocimiento = coleccionConocimiento.find({'tema_id':ObjectId(tema_id)})
 
-  coleccionMaterial = mongo.db.material
-  material = coleccionMaterial.find_one({'tema_id':ObjectId(tema_id)})
-  
+
   arreglo = list(conocimiento)
 
   conocimientosBD = []
@@ -660,10 +658,12 @@ def obtenerRespuesta():
     conocimientosBD.append(Conocimiento(elemento['_id'],elemento['preguntas'],elemento['respuestas']))
 
   modeloRespuesta = responder(consulta, conocimientosBD,tema_id)
-  
+
+  material = coleccionConocimiento.find_one({'_id':modeloRespuesta.intencion})
+
   respuesta = {
     'conocimiento_id': str(modeloRespuesta.intencion),
-    'material_id': str(material['_id']),
+    'material_id': material['material_id'],
     'respuesta': random.choice(modeloRespuesta.respuestas),
     'procesamiento':estiloAprendizaje['procesamiento'],
     'percepcion':estiloAprendizaje['percepcion'],
@@ -699,7 +699,7 @@ def obtenerRespuestaProfesor():
 
   respuesta = {
     'conocimiento_id': str(modeloRespuesta.intencion),
-    'material_id': str(material['material_id']),
+    'material_id': material['material_id'],
     'respuestas': random.choice(modeloRespuesta.respuestas)
   }
 
