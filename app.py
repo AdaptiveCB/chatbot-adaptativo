@@ -655,7 +655,7 @@ def obtenerRespuestaProfesor():
   arreglo = list(conocimiento)
 
   conocimientosBD = []
-
+ 
   for elemento in arreglo:
     conocimientosBD.append(Conocimiento(elemento['_id'],elemento['preguntas'],elemento['respuestas']))  
   
