@@ -44,6 +44,7 @@ intenciones = []
 
 def entrenarModelo(conocimientos,tema_id):
   global intenciones, model
+  global vectorizer
   intenciones = [c.intencion for c in conocimientos]
   # for c in conocimientos:
   #   print(c.intencion, c.preguntas, c.respuestas)
@@ -94,29 +95,28 @@ def cargarVariosModelos(temas):
 
 
 def responder(pregunta, conocimientos,tema_id):
+  global vectorizer
   x_semhash = [semhash(pregunta, n)]
+  
   x_vector = vectorizer.transform(x_semhash).toarray()
+  
   model = modelos.get(tema_id)
+  print('d')
   prediccion = model.predict(x_vector)[0]
+  print('e')
   # print(prediccion)
   intencion = intenciones[prediccion]
 
   respuesta = ""
-  pdf = ""
-  video = ""
   conocimiento_id = ""
   for c in conocimientos:
 
     if c.intencion == intencion:
       conocimiento_id = c.intencion
       respuesta = random.choice(c.respuestas)
-      pdf = c.pdf
-      video = c.video
       break
   objeto = {
     'conocimiento_id':conocimiento_id,
     'respuesta':respuesta,
-    'pdf':pdf,
-    'video':video
   }
   return objeto

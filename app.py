@@ -279,8 +279,6 @@ def actualizarConocimiento():
   conocimiento_id = data['conocimiento_id']
   preguntas = data['preguntas']
   respuestas = data['respuestas']
-  pdf = data['pdf']
-  video = data['video']
 
   coleccionConocimiento = mongo.db.conocimiento
 
@@ -290,8 +288,6 @@ def actualizarConocimiento():
               {
                 'preguntas': preguntas,
                 'respuestas': respuestas,
-                'pdf': pdf,
-                'video': video
               }
     }
   )
@@ -635,6 +631,31 @@ def obtenerRespuesta():
 
   return jsonify(respuesta)
 
+@app.route('/obtenerRespuestaProfesor',methods=['GET','POST'])
+def obtenerRespuestaProfesor():
+  data = request.get_json()
+  
+  consulta = data['consulta']
+  tema_id = data['tema_id']
+
+  coleccionConocimiento = mongo.db.conocimiento
+  conocimiento = coleccionConocimiento.find({'tema_id':tema_id})
+  arreglo = list(conocimiento)
+  conocimientosBD = []
+  for elemento in arreglo:
+    conocimientosBD.append(Conocimiento(elemento['_id'],elemento['preguntas'],elemento['respuestas']))
+
+  
+  modeloRespuesta = responder(consulta, conocimientosBD,tema_id)
+  
+  # return jsonify(respuesta)
+  respuesta = {
+    'conocimiento_id': str(modeloRespuesta['conocimiento_id']),
+    'respuesta': modeloRespuesta['respuesta'],
+  }
+
+  return jsonify(respuesta)
+
 
 # CARGAR MODELo
 @app.route('/cargar',methods=['GET','POST'])
@@ -659,7 +680,7 @@ def cargarVarios():
 
   cargarVariosModelos(temas)
 
-  return "bien"
+  return "ok"
 
 cargarVarios()
 # ENTRENAMIENTO DEL MODELO
