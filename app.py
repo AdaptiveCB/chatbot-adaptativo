@@ -619,15 +619,13 @@ def obtenerRespuesta():
   arreglo = list(conocimiento)
   conocimientosBD = []
   for elemento in arreglo:
-    conocimientosBD.append(Conocimiento(elemento['_id'],elemento['preguntas'],elemento['respuestas'],elemento['pdf'],elemento['video']))
+    conocimientosBD.append(Conocimiento(elemento['_id'],elemento['preguntas'],elemento['respuestas']))
 
   modeloRespuesta = responder(consulta, conocimientosBD)
   # return jsonify(respuesta)
   respuesta = {
     'conocimiento_id': str(modeloRespuesta['conocimiento_id']),
     'respuesta': modeloRespuesta['respuesta'],
-    'pdf': modeloRespuesta['pdf'],
-    'video': modeloRespuesta['video'],
     'procesamiento':estiloAprendizaje['procesamiento'],
     'percepcion':estiloAprendizaje['percepcion'],
     'entrada':estiloAprendizaje['entrada'],
