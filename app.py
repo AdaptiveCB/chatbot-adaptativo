@@ -257,21 +257,15 @@ def actualizarEstiloAprendizaje():
 def ingresarConocimiento():
   data = request.get_json()
 
-  profesor_id = data['profesor_id']
-  curso_id = data['curso_id']
+  tema_id = data['tema_id']
   preguntas = data['preguntas']
   respuestas = data['respuestas']
-  pdf =  data['pdf']
-  video =  data['video']
 
   coleccionConocimiento = mongo.db.conocimiento
   nuevoConocimiento_id = coleccionConocimiento.insert_one({
-    "profesor_id" : ObjectId(profesor_id),
-    "curso_id" : ObjectId(curso_id),
+    "tema_id" : ObjectId(tema_id),
     "preguntas" : preguntas,
     "respuestas" : respuestas,
-    "pdf" : pdf,
-    "video" : video,
   }).inserted_id
   
   nuevoConocimiento_id = dumps(nuevoConocimiento_id)
