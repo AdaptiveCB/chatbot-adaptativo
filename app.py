@@ -304,18 +304,18 @@ def actualizarConocimiento():
 
   return "Conocimiento actualizado"
 
-@app.route('/obtenerConocimiento',methods=['GET'])
+# @app.route('/obtenerConocimiento',methods=['GET'])
+# def obtenerConocimiento():
+#   coleccionConocimiento = mongo.db.conocimiento
+  
+#   conocimiento = coleccionConocimiento.find()
+  
+#   conocimiento = dumps(conocimiento)
+
+#   return jsonify(conocimiento)
+
+@app.route('/obtenerConocimiento',methods=['GET','POST'])
 def obtenerConocimiento():
-  coleccionConocimiento = mongo.db.conocimiento
-  
-  conocimiento = coleccionConocimiento.find()
-  
-  conocimiento = dumps(conocimiento)
-
-  return jsonify(conocimiento)
-
-@app.route('/obtenerConocimientoPorTema',methods=['GET','POST'])
-def obtenerConocimientoPorTema():
   data = request.get_json()
 
   tema_id = data['tema_id']
@@ -655,7 +655,7 @@ def entrenar():
   conocimientosBD = []
 
   for elemento in arreglo:
-    conocimientosBD.append(Conocimiento(elemento['_id'],elemento['preguntas'],elemento['respuestas'],elemento['pdf'],elemento['video']))
+    conocimientosBD.append(Conocimiento(elemento['_id'],elemento['preguntas'],elemento['respuestas']))
 
   score = entrenarModelo(conocimientosBD)
 
