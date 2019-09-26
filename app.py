@@ -97,7 +97,7 @@ def actualizarMaterial():
 
   coleccionMaterial = mongo.db.material
 
-  coleccionMaterial.update_one({
+  coleccionMaterial.update_one(
     {'_id':ObjectId(material_id)},
     {'$set':
               {
@@ -109,7 +109,7 @@ def actualizarMaterial():
                 'imagen': imagen
               }
     }
-  })
+  )
 
   return 'Material Actualizado'
 
@@ -263,6 +263,41 @@ def obtenerCuestionarioPorTema():
   cuestionarios = dumps(cuestionarios)
 
   return jsonify(cuestionarios)
+
+@app.route('/actualizarCuestionario', methods=['GET','POST'])
+def actualizarCuestionario():
+  data = request.get_json()
+
+  cuestionario_id = data['cuestionario_id']
+  tema_id = data['tema_id']
+  preguntas = data['preguntas']
+
+  coleccionCuestionario = mongo.db.cuestionario
+
+  coleccionCuestionario.update_one(
+    {'_id':ObjectId(cuestionario_id)},
+    {'$set':
+              {
+                'tema_id': ObjectId(tema_id),
+                'preguntas': preguntas
+              }
+    }
+  )
+
+  return 'Cuestionario Actualizado'
+
+@app.route('/eliminarCuestionario',methods=['POST'])
+def eliminarCuestionario():
+  data = request.get_json()
+
+  cuestionario_id = data['cuestionario_id']
+
+  coleccionCuestionario = mongo.db.cuestionario
+
+  coleccionCuestionario.delete_one({'_id': ObjectId(cuestionario_id)})
+
+  return 'Conocimiento Eliminado'
+
   
 # EVALUACIÓN
 
