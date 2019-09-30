@@ -144,6 +144,7 @@ def cargarVariosModelos(temas):
       vectorizers.update({tema_id:vectorizer})
 
 def responder(pregunta,conocimientos,tema_id):
+  cargarModelo(tema_id)
 
   vectorizer = vectorizers.get(tema_id)
 
