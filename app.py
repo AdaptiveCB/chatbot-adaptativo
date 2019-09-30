@@ -856,7 +856,7 @@ def entrenar():
   coleccionConocimiento = mongo.db.conocimiento
   
   conocimiento = coleccionConocimiento.find({
-    'tema_id' : ObjectId(tema_id)
+    'tema_id' : ObjectId(tema_id)  
   })
   
   arreglo = list(conocimiento)
