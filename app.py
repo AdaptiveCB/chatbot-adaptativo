@@ -278,6 +278,7 @@ def actualizarCuestionario():
 
   cuestionario_id = data['cuestionario_id']
   tema_id = data['tema_id']
+  nombre = data['nombre']
   preguntas = data['preguntas']
 
   coleccionCuestionario = mongo.db.cuestionario
@@ -287,6 +288,7 @@ def actualizarCuestionario():
     {'$set':
               {
                 'tema_id': ObjectId(tema_id),
+                'nombre': nombre,
                 'preguntas': preguntas
               }
     }
