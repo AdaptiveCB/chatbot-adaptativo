@@ -229,12 +229,14 @@ def ingresarCuestionario():
   data = request.get_json()
 
   tema_id = data['tema_id']
+  nombre = data['nombre']
   preguntas = data['preguntas']
 
   coleccionCuestionario = mongo.db.cuestionario
 
   cuestionarioIngresado = coleccionCuestionario.insert_one({
     'tema_id': ObjectId(tema_id),
+    'nombre': nombre,
     'preguntas': preguntas
   }).inserted_id
 
@@ -276,6 +278,7 @@ def actualizarCuestionario():
 
   cuestionario_id = data['cuestionario_id']
   tema_id = data['tema_id']
+  nombre = data['nombre']
   preguntas = data['preguntas']
 
   coleccionCuestionario = mongo.db.cuestionario
@@ -285,6 +288,7 @@ def actualizarCuestionario():
     {'$set':
               {
                 'tema_id': ObjectId(tema_id),
+                'nombre': nombre,
                 'preguntas': preguntas
               }
     }
