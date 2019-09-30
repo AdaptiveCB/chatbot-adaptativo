@@ -2,11 +2,36 @@ import os
 import re
 import random
 import pickle
+import pyrebase
 import numpy as np
 
 from sklearn import metrics
 from sklearn.feature_extraction.text import CountVectorizer, TfidfVectorizer
 from sklearn.linear_model import LogisticRegression
+
+
+firebaseConfig = {
+  "apiKey": "AIzaSyCicLp-X6d2XGXTUPwb9SSfYDvsuN1N2VE",
+  "authDomain": "chatbot-adaptativo.firebaseapp.com",
+  "databaseURL": "https://chatbot-adaptativo.firebaseio.com",
+  "projectId": "chatbot-adaptativo",
+  "storageBucket": "chatbot-adaptativo.appspot.com",
+  "messagingSenderId": "943322485233",
+  "appId": "1:943322485233:web:4d843654a0500f810bb450"
+}
+firebase = pyrebase.initialize_app(firebaseConfig)
+FirebaseStorage = firebase.storage()
+
+# Subir
+# FirebaseStorage.child("images/new.jpg").put("foto_prueba.jpg")
+
+# Descargar
+# FirebaseStorage.child("images/new.jpg").download("example.jpg")
+
+# Obtener Link
+# print(FirebaseStorage.child("images/new.jpg").get_url(None))
+
+
 
 modelos = {}
 vectorizers = {}
@@ -86,13 +111,17 @@ def entrenarModelo(conocimientos,tema_id):
   
   filename = os.path.join('models',tema_id+'.sav')
   pickle.dump(model, open(filename, 'wb'))
+  FirebaseStorage.child('models',tema_id+'.sav').put(os.path.join('models',tema_id+'.sav'))
 
   filenameVectorizer = os.path.join('vectorizer',tema_id+'.sav')
   pickle.dump(vectorizer, open(filenameVectorizer, 'wb'))
+  FirebaseStorage.child('vectorizer',tema_id+'.sav').put(os.path.join('vectorizer',tema_id+'.sav'))
   
   return score
 
 def cargarModelo(tema_id):
+  FirebaseStorage.child('models',tema_id+'.sav').download(os.path.join('models',tema_id+'.sav'))
+  FirebaseStorage.child('vectorizer',tema_id+'.sav').download(os.path.join('vectorizer',tema_id+'.sav'))
   filename = os.path.join('models',tema_id+'.sav')
   model = pickle.load(open(filename, 'rb'))
 
@@ -104,6 +133,8 @@ def cargarModelo(tema_id):
 
 def cargarVariosModelos(temas):
   for tema_id in temas:
+    FirebaseStorage.child('models',tema_id+'.sav').download(os.path.join('models',tema_id+'.sav'))
+    FirebaseStorage.child('vectorizer',tema_id+'.sav').download(os.path.join('vectorizer',tema_id+'.sav'))
     filename = os.path.join('models',tema_id+'.sav')
     filenameVectorizer = os.path.join('vectorizer',tema_id+'.sav')
     if(os.path.exists(filename)):
@@ -111,8 +142,6 @@ def cargarVariosModelos(temas):
       modelos.update({tema_id:model})  
       vectorizer = pickle.load(open(filenameVectorizer, 'rb'))
       vectorizers.update({tema_id:vectorizer})
-    
-
 
 def responder(pregunta,conocimientos,tema_id):
 
@@ -124,7 +153,6 @@ def responder(pregunta,conocimientos,tema_id):
   
   x_vector = vectorizer.transform(x_semhash).toarray()
 
-  
   probabilidades = model.predict_proba(x_vector)[0]
 
   idx = np.argmax(probabilidades)

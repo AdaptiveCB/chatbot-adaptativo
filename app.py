@@ -5,9 +5,14 @@ from tf_idf import limpiar, vocabulario, documento_a_vector, similitud_de_coseno
 from semhash import cargarModelo,entrenarModelo,responder,Conocimiento,cargarVariosModelos
 import pandas as pd
 import random
+
+import os
 # http://api.mongodb.com/python/current/api/bson/json_util.html?highlight=json_util
 from bson.json_util import dumps
 from bson.objectid import ObjectId
+
+
+
 
 app = Flask(__name__)
 
@@ -18,6 +23,7 @@ app.config['MONGO_URI'] = 'mongodb+srv://chatbot:adaptive@cluster0-k4fnb.mongodb
 # app.config['MONGO_URI'] = 'mongodb://localhost/chatbot'
 
 mongo = PyMongo(app)
+
 
 @app.route('/')
 def home():
