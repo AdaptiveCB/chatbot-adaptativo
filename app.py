@@ -622,6 +622,28 @@ def obtenerAlumnos():
 
   return jsonify(alumno)
 
+@app.route('/obtenerAlumnoPorId',methods=['GET','POST'])
+def obtenerAlumnoPorId():
+  data = request.get_json()
+
+  alumno_id = data['alumno_id']
+
+  coleccionAlumno = mongo.db.alumno
+
+  try:
+    alumno = coleccionAlumno.find_one({'_id':ObjectId(alumno_id)})
+
+    objetoAlumno = {
+      'nombre': alumno['nombre'],
+      'apellido_paterno': alumno['apellido_paterno'],
+      'apellido_materno': alumno['apellido_materno'],
+      'codigo': alumno['codigo']
+    }
+  except:
+    objetoAlumno = {}
+
+  return  jsonify(objetoAlumno)
+
 @app.route('/ingresarAlumno',methods=['POST'])
 def ingresarAlumno():
   data = request.get_json()
@@ -689,6 +711,28 @@ def obtenerProfesores():
   profesor = dumps(profesor)
 
   return jsonify(profesor)
+
+@app.route('/obtenerProfesorPorId',methods=['GET','POST'])
+def obtenerProfesorPorId():
+  data = request.get_json()
+
+  profesor_id = data['profesor_id']
+
+  coleccionProfesor = mongo.db.profesor
+
+  try:
+    profesor = coleccionProfesor.find_one({'_id':ObjectId(profesor_id)})
+
+    objetoProfesor = {
+      'nombre': profesor['nombre'],
+      'apellido_paterno': profesor['apellido_paterno'],
+      'apellido_materno': profesor['apellido_materno'],
+      'codigo': profesor['codigo']
+    }
+  except:
+    objetoProfesor = {}
+
+  return  jsonify(objetoProfesor)
 
 @app.route('/ingresarProfesor',methods=['POST'])
 def ingresarProfesor():
