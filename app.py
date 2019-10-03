@@ -664,29 +664,44 @@ def ingresarAlumno():
     "contrasena":contrasena
   }).inserted_id
 
-  return alumnoIngresado
+  alumno = {
+    'alumno_id' : str(alumnoIngresado)
+  }
+
+  return jsonify(alumno)
 
 @app.route('/actualizarAlumno',methods=['POST'])
 def actualizarAlumno():
   data = request.get_json()
 
   alumno_id = data['alumno_id']
+  nombre = data['nombre']
+  apellido_paterno = data['apellido_paterno']
+  apellido_materno = data['apellido_materno']
   codigo = data['codigo']
   contrasena = data['contrasena']
 
   coleccionAlumno = mongo.db.alumno
 
-  coleccionAlumno.update_one(
+  resultado = coleccionAlumno.update_one(
     {'_id': ObjectId(alumno_id)},
     {'$set':  
-              {
+              { 
+                'nombre': nombre,
+                'apellido_paterno': apellido_paterno,
+                'apellido_materno': apellido_materno,
                 'codigo': codigo,
                 'contrasena': contrasena
               }
     }
-  )  
+  )
 
-  return 'Alumno Actualizado'
+  objetoResultado = {
+    'encontrado': resultado.matched_count,
+    'modificado': resultado.modified_count
+  }
+
+  return jsonify(objetoResultado)
 
 @app.route('/eliminarAlumno',methods=['POST'])
 def eliminarAlumno():
@@ -696,9 +711,13 @@ def eliminarAlumno():
 
   coleccionAlumno = mongo.db.alumno
 
-  coleccionAlumno.delete_one({'_id': ObjectId(alumno_id)})
+  resultado = coleccionAlumno.delete_one({'_id': ObjectId(alumno_id)})
 
-  return 'Alumno Eliminado'
+  objetoResultado = {
+    'eliminado': resultado.deleted_count
+  }
+
+  return jsonify(objetoResultado)
 
 # CRUD PROFESOR
 
@@ -754,29 +773,44 @@ def ingresarProfesor():
     "contrasena":contrasena
   }).inserted_id
 
-  return profesorIngresado
+  profesor = {
+    'profesor_id' : str(profesorIngresado)
+  }
+
+  return jsonify(profesor)
 
 @app.route('/actualizarProfesor',methods=['POST'])
 def actualizarProfesor():
   data = request.get_json()
 
   profesor_id = data['profesor_id']
+  nombre = data['nombre']
+  apellido_paterno = data['apellido_paterno']
+  apellido_materno = data['apellido_materno']
   codigo = data['codigo']
   contrasena = data['contrasena']
 
   coleccionProfesor = mongo.db.profesor
 
-  coleccionProfesor.update_one(
+  resultado = coleccionProfesor.update_one(
     {'_id': ObjectId(profesor_id)},
     {'$set':  
               {
+                'nombre':nombre,
+                'apellido_paterno':apellido_paterno,
+                'apellido_materno':apellido_materno,
                 'codigo': codigo,
                 'contrasena': contrasena
               }
     }
   )  
 
-  return 'Profesor Actualizado'
+  objetoResultado = {
+    'encontrado': resultado.matched_count,
+    'modificado': resultado.modified_count
+  }
+
+  return jsonify(objetoResultado)
 
 @app.route('/eliminarProfesor',methods=['POST'])
 def eliminarProfesor():
@@ -786,9 +820,13 @@ def eliminarProfesor():
 
   coleccionProfesor = mongo.db.profesor
 
-  coleccionProfesor.delete_one({'_id': ObjectId(profesor_id)})
+  resultado = coleccionProfesor.delete_one({'_id': ObjectId(profesor_id)})
 
-  return 'Profesor Eliminado'
+  objetoResultado = {
+    'eliminado': resultado.deleted_count
+  }
+
+  return jsonify(objetoResultado)
 
 # RESPUESTA
 
