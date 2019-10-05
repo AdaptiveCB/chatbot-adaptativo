@@ -35,7 +35,7 @@ def test():
 
 
 # MATERIAL
-@app.route('/obtenerListadoMaterial', methods=['GET','POST'])
+@app.route('/obtenerMaterialPorTema', methods=['GET','POST'])
 def obtenerListadoMaterial():
   data = request.get_json()
 
@@ -49,7 +49,7 @@ def obtenerListadoMaterial():
 
   return jsonify(materiales)
 
-@app.route('/obtenerMaterial', methods=['GET','POST'])
+@app.route('/obtenerMaterialPorId', methods=['GET','POST'])
 def obtenerMaterial():
   data = request.get_json()
   
@@ -57,8 +57,8 @@ def obtenerMaterial():
 
   coleccionMaterial = mongo.db.material
   
-  material = coleccionMaterial.find({'_id':ObjectId(material_id)})
-
+  material = coleccionMaterial.find_one({'_id':ObjectId(material_id)})
+  
   material = dumps(material)
   
   return jsonify(material)
@@ -72,7 +72,10 @@ def ingresarMaterial():
   texto = data['texto']
   documento = data['documento']
   video = data['video']
-  imagen = data['imagen']
+  imagen = data['imagen'],
+  quiz = data['quiz'],
+  ejemplos = data['ejemplos']
+  importancia = data['importancia']
 
   coleccionMaterial = mongo.db.material
 
@@ -83,27 +86,36 @@ def ingresarMaterial():
     'documento': documento,
     'video': video,
     'imagen': imagen,
+    'quiz': quiz,
+    'ejemplos': ejemplos,
+    'importancia': importancia
   }).inserted_id
 
-  nuevoMaterial_id = dumps(materialIngresado)
+  material = {
+    'material_id': str(materialIngresado)
+  }
 
-  return jsonify(nuevoMaterial_id)
+  return jsonify(material)
 
 @app.route('/actualizarMaterial', methods=['GET','POST'])
 def actualizarMaterial():
   data = request.get_json()
 
   material_id = data['material_id']
+
   tema_id = data['tema_id']
   nombre = data['nombre']
   texto = data['texto']
   documento = data['documento']
   video = data['video']
-  imagen = data['imagen']
+  imagen = data['imagen'],
+  quiz = data['quiz'],
+  ejemplos = data['ejemplos']
+  importancia = data['importancia']
 
   coleccionMaterial = mongo.db.material
 
-  coleccionMaterial.update_one(
+  resultado = coleccionMaterial.update_one(
     {'_id':ObjectId(material_id)},
     {'$set':
               {
@@ -112,12 +124,20 @@ def actualizarMaterial():
                 'texto': texto,
                 'documento': documento,
                 'video': video,
-                'imagen': imagen
+                'imagen': imagen,
+                'quiz': quiz,
+                'ejemplos': ejemplos,
+                'importancia': importancia
               }
     }
   )
 
-  return 'Material Actualizado'
+  objetoResultado = {
+    'encontrado': resultado.matched_count,
+    'modificado': resultado.modified_count
+  }
+
+  return jsonify(objetoResultado)
 
 @app.route('/eliminarMaterial', methods=['GET','POST'])
 def eliminarMaterial():
@@ -127,9 +147,13 @@ def eliminarMaterial():
 
   coleccionMaterial = mongo.db.material
 
-  coleccionMaterial.delete_one({'_id': ObjectId(material_id)})
+  resultado = coleccionMaterial.delete_one({'_id': ObjectId(material_id)})
+   
+  objetoResultado = {
+    'eliminado': resultado.deleted_count
+  }
 
-  return 'Material Eliminado'
+  return jsonify(objetoResultado)
 
 # SESIÓN
 @app.route('/iniciarSesionAlumno', methods=['GET','POST'])
@@ -240,9 +264,11 @@ def ingresarCuestionario():
     'preguntas': preguntas
   }).inserted_id
 
-  nuevoCuestionario_id = dumps(cuestionarioIngresado)
+  cuestionario = {
+    'cuestionario_id': str(cuestionarioIngresado)
+  }
 
-  return jsonify(nuevoCuestionario_id)
+  return jsonify(cuestionario)
 
 @app.route('/obtenerCuestionario', methods=['GET','POST'])
 def obtenerCuestionario():
@@ -277,13 +303,14 @@ def actualizarCuestionario():
   data = request.get_json()
 
   cuestionario_id = data['cuestionario_id']
+
   tema_id = data['tema_id']
   nombre = data['nombre']
   preguntas = data['preguntas']
 
   coleccionCuestionario = mongo.db.cuestionario
 
-  coleccionCuestionario.update_one(
+  resultado = coleccionCuestionario.update_one(
     {'_id':ObjectId(cuestionario_id)},
     {'$set':
               {
@@ -294,7 +321,12 @@ def actualizarCuestionario():
     }
   )
 
-  return 'Cuestionario Actualizado'
+  objetoResultado = {
+    'encontrado': resultado.matched_count,
+    'modificado': resultado.modified_count
+  }
+
+  return jsonify(objetoResultado)
 
 @app.route('/eliminarCuestionario',methods=['POST'])
 def eliminarCuestionario():
@@ -304,9 +336,13 @@ def eliminarCuestionario():
 
   coleccionCuestionario = mongo.db.cuestionario
 
-  coleccionCuestionario.delete_one({'_id': ObjectId(cuestionario_id)})
+  resultado = coleccionCuestionario.delete_one({'_id': ObjectId(cuestionario_id)})
 
-  return 'Conocimiento Eliminado'
+  objetoResultado = {
+    'eliminado': resultado.deleted_count
+  }
+
+  return jsonify(objetoResultado)
 
   
 # EVALUACIÓN
@@ -407,52 +443,69 @@ def ingresarConocimiento():
   respuestas = data['respuestas']
 
   coleccionConocimiento = mongo.db.conocimiento
-  nuevoConocimiento_id = coleccionConocimiento.insert_one({
+
+  nuevoConocimiento = coleccionConocimiento.insert_one({
     "tema_id" : ObjectId(tema_id),
-    "material_id": material_id,
+    "material_id": ObjectId(material_id),
     "preguntas" : preguntas,
     "respuestas" : respuestas,
   }).inserted_id
-  
-  nuevoConocimiento_id = dumps(nuevoConocimiento_id)
 
-  return jsonify(nuevoConocimiento_id)
+  conocimiento = {
+    'conocimiento_id': str(nuevoConocimiento)
+  }
+
+  return jsonify(conocimiento)
 
 @app.route('/actualizarConocimiento',methods=['POST'])
 def actualizarConocimiento():
   data = request.get_json()
 
   conocimiento_id = data['conocimiento_id']
+
+  tema_id = data['tema_id']
   material_id = data['material_id']
   preguntas = data['preguntas']
   respuestas = data['respuestas']
 
   coleccionConocimiento = mongo.db.conocimiento
 
-  coleccionConocimiento.update_one(
+  resultado = coleccionConocimiento.update_one(
     {'_id': ObjectId(conocimiento_id)},
     {'$set':  
               {
-                'material_id': material_id,
+                'tema_id': ObjectId(tema_id),
+                'material_id': ObjectId(material_id),
                 'preguntas': preguntas,
                 'respuestas': respuestas,
               }
     }
   )
 
-  return "Conocimiento actualizado"
+  objetoResultado = {
+    'encontrado': resultado.matched_count,
+    'modificado': resultado.modified_count
+  }
 
-# @app.route('/obtenerConocimiento',methods=['GET'])
-# def obtenerConocimiento():
-#   coleccionConocimiento = mongo.db.conocimiento
-  
-#   conocimiento = coleccionConocimiento.find()
-  
-#   conocimiento = dumps(conocimiento)
+  return jsonify(objetoResultado)
 
-#   return jsonify(conocimiento)
+@app.route('/eliminarConocimiento', methods=['POST'])
+def eliminarConocimiento():
+  data = request.get_json()
 
-@app.route('/obtenerConocimiento',methods=['GET','POST'])
+  conocimiento_id = data['conocimiento_id']
+
+  coleccionConocimiento = mongo.db.conocimiento
+
+  resultado = coleccionConocimiento.delete_one({'_id':ObjectId(conocimiento_id)})
+
+  objetoResultado = {
+    'eliminado': resultado.deleted_count
+  }
+
+  return jsonify(objetoResultado)
+
+@app.route('/obtenerConocimientoPorTema',methods=['GET','POST'])
 def obtenerConocimiento():
   data = request.get_json()
 
@@ -466,85 +519,21 @@ def obtenerConocimiento():
 
   return jsonify(conocimiento)
 
-
-# @app.route('/ingresarConocimiento',methods=['GET','POST'])
-# def ingresarConocimiento():
-#   data = request.get_json()
-
-#   profesor_id = data['profesor_id']
-#   curso_id = data['curso_id']
-#   pregunta =  data['pregunta']
-#   respuesta =  data['respuesta']
-#   pdf =  data['pdf']
-#   video =  data['video']
-
-#   coleccionConocimiento = mongo.db.conocimiento
-#   nuevoConocimiento_id = coleccionConocimiento.insert_one({
-#     "profesor_id" : ObjectId(profesor_id),
-#     "curso_id" : ObjectId(curso_id),
-#     "pregunta" : pregunta,
-#     "respuesta" : respuesta,
-#     "pdf" : pdf,
-#     "video" : video,
-#   }).inserted_id
-
-#   nuevoConocimiento_id = dumps(nuevoConocimiento_id)
-
-#   return jsonify(nuevoConocimiento_id)
-
-# @app.route('/actualizarConocimiento',methods=['POST'])
-# def actualizarConocimiento():
-#   data = request.get_json()
-
-#   conocimiento_id = data['conocimiento_id']
-#   pregunta = data['pregunta']
-#   respuesta = data['respuesta']
-#   pdf = data['pdf']
-#   video = data['video']
-
-#   coleccionConocimiento = mongo.db.conocimiento
-
-#   coleccionConocimiento.update_one(
-#     {'_id': ObjectId(conocimiento_id)},
-#     {'$set':  
-#               {
-#                 'pregunta': pregunta,
-#                 'respuesta': respuesta,
-#                 'pdf': pdf,
-#                 'video': video
-#               }
-#     }
-#   )  
-
-#   return "Conocimiento actualizado"
-
-
-@app.route('/eliminarConocimiento',methods=['POST'])
-def eliminarConocimiento():
-  data = request.get_json()
-
-  conocimiento_id = data['conocimiento_id']
-
-  coleccionConocimiento = mongo.db.conocimiento
-
-  coleccionConocimiento.delete_one({'_id': ObjectId(conocimiento_id)})
-
-  return 'Conocimiento Eliminado'
-
-
-
-
 # CRUD CURSO
 
-@app.route('/obtenerCursos',methods=['GET'])
-def obtenerCursos():
+@app.route('/obtenerCursoPorProfesor', methods=['POST'])
+def obtenerCursoPorProfesor():
+  data = request.get_json()
+
+  profesor_id = data['profesor_id']
+
   coleccionCurso = mongo.db.curso
 
-  curso = coleccionCurso.find()
+  cursos = coleccionCurso.find({'profesor_id':ObjectId(profesor_id)})
 
-  curso = dumps(curso)
+  cursos = dumps(cursos)
 
-  return jsonify(curso)
+  return jsonify(cursos)
 
 @app.route('/ingresarCurso',methods=['POST'])
 def ingresarCurso():
@@ -560,43 +549,38 @@ def ingresarCurso():
     'nombre': nombre
   }).inserted_id
 
-  nuevoCurso_id = dumps(cursoIngresado)
+  curso = {
+    'curso_id': str(cursoIngresado)
+  }
 
-  return jsonify(nuevoCurso_id)
+  return jsonify(curso)
 
-@app.route('/obtenerCursoPorProfesor', methods=['POST'])
-def obtenerCursoPorProfesor():
-  data = request.get_json()
-
-  profesor_id = data['profesor_id']
-
-  coleccionCurso = mongo.db.curso
-
-  cursos = coleccionCurso.find({'profesor_id':ObjectId(profesor_id)})
-
-  cursos = dumps(cursos)
-
-  return jsonify(cursos)
- 
 @app.route('/actualizarCurso',methods=['POST'])
 def actualizarCurso():
   data = request.get_json()
 
   curso_id = data['curso_id']
+  profesor_id = data['profesor_id']
   nombre = data['nombre']
 
   coleccionCurso = mongo.db.curso
 
-  coleccionCurso.update_one(
+  resultado = coleccionCurso.update_one(
     {'_id': ObjectId(curso_id)},
     {'$set':  
               {
+                'profesor_id': ObjectId(profesor_id),
                 'nombre': nombre
               }
     }
-  )  
+  )
 
-  return 'Curso Actualizado'
+  objetoResultado = {
+    'encontrado': resultado.matched_count,
+    'modificado': resultado.modified_count
+  }
+
+  return jsonify(objetoResultado)
 
 @app.route('/eliminarCurso',methods=['POST'])
 def eliminarCurso():
@@ -606,9 +590,13 @@ def eliminarCurso():
 
   coleccionCurso = mongo.db.curso
 
-  coleccionCurso.delete_one({'_id': ObjectId(curso_id)})
+  resultado = coleccionCurso.delete_one({'_id': ObjectId(curso_id)})
 
-  return 'Curso Eliminado'
+  objetoResultado = {
+    'eliminado': resultado.deleted_count
+  }
+
+  return jsonify(objetoResultado)
 
 # CRUD ALUMNO
 
@@ -951,55 +939,6 @@ def entrenar():
   score = entrenarModelo(conocimientosBD,tema_id)
 
   return str(score)
-
-# @app.route('/obtenerRespuesta',methods=['GET','POST'])
-# def obtenerRespuesta():
-#   data = request.get_json()
-  
-#   alumno_id = data['alumno_id']
-#   consulta = data['consulta']
-
-#   coleccionConocimiento = mongo.db.conocimiento
-
-#   baseConocimiento = coleccionConocimiento.find()
-
-#   pregunta = limpiar(consulta)
-
-#   preguntas = [conocimiento['pregunta'] for conocimiento in baseConocimiento]
-#   documentos = [limpiar(sentencia) for sentencia in preguntas]
-
-#   diccionario = vocabulario(documentos)
-  
-#   similitudes = [similitud_de_coseno(pregunta,documento,documentos,diccionario) for documento in documentos]
-#   similitudes = [round(x,5) for x in similitudes]
-  
-#   preguntaPuntaje = preguntas[similitudes.index(max(similitudes))]
-  
-#   conocimiento = coleccionConocimiento.find_one({'pregunta':preguntaPuntaje})
-  
-#   resultados = dict(zip(documentos,similitudes))
-#   resultados = [[k,v] for k,v in resultados.items()]
-
-#   coleccionEstiloAprendizaje = mongo.db.estiloAprendizaje
-#   estiloAprendizaje = coleccionEstiloAprendizaje.find_one({'alumno_id' : ObjectId(alumno_id)})
-
-#   # processing = "active" if perfil['processing']['active'] > 5 else "reflexive"
-#   # perception = "sensitive" if perfil['perception']['sensitive'] > 5 else "intuitive"
-#   # _input = "visual" if perfil['input']['visual'] > 5 else "verbal"
-#   # understanding = "sequential" if perfil['understanding']['sequential'] > 5 else "global"
-
-#   respuesta = {
-#     'conocimiento_id': str(conocimiento['_id']),
-#     'respuesta': conocimiento['respuesta'],
-#     'pdf': conocimiento['pdf'],
-#     'video': conocimiento['video'],
-#     'procesamiento':estiloAprendizaje['procesamiento'],
-#     'percepcion':estiloAprendizaje['percepcion'],
-#     'entrada':estiloAprendizaje['entrada'],
-#     'comprension':estiloAprendizaje['comprension']
-#   }
-
-#   return jsonify(respuesta)
 
 #entrenar()
 
