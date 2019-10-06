@@ -95,17 +95,6 @@ def entrenarModelo(conocimientos,tema_id):
   predicciones = model.predict(x_train_vector)
   score = metrics.accuracy_score(y_train, predicciones)
 
-  # if tema_id in modelos:
-  #   print("exite")
-  # else:
-  #   modelos.update({tema_id:model})
-
-  # if tema_id in vectorizers:
-  #   print("existe")
-  #   print(vectorizers[tema_id])
-  # else:
-  #   print("no existe")
-  
   modelos.update({tema_id:model})
   vectorizers.update({tema_id:vectorizer})
   
@@ -160,21 +149,4 @@ def responder(pregunta,conocimientos,tema_id):
 
   return conocimientos[idx]
   
-  # prediccion = model.predict(x_vector)[0]
-  
-  # # print(prediccion)
-  # intencion = intenciones[prediccion]
-
-  # respuesta = ""
-  # conocimiento_id = ""
-  # for c in conocimientos:
-
-  #   if c.intencion == intencion:
-  #     conocimiento_id = c.intencion
-  #     respuesta = random.choice(c.respuestas)
-  #     break
-  # objeto = {
-  #   'conocimiento_id':conocimiento_id,
-  #   'respuesta':respuesta,
-  # }
-  # return objeto
+ 

@@ -824,15 +824,15 @@ def obtenerRespuesta():
   conocimientosBD = []
 
   for elemento in arreglo:
-    conocimientosBD.append(Conocimiento(elemento['_id'],elemento['preguntas'],elemento['respuestas']))
+    conocimientosBD.append(Conocimiento(str(elemento['_id']),elemento['preguntas'],elemento['respuestas']))
 
   modeloRespuesta = responder(consulta, conocimientosBD,tema_id)
 
-  material = coleccionConocimiento.find_one({'_id':modeloRespuesta.intencion})
+  material = coleccionConocimiento.find_one({'_id':ObjectId(modeloRespuesta.intencion)})
 
   respuesta = {
     'conocimiento_id': str(modeloRespuesta.intencion),
-    'material_id': material['material_id'],
+    'material_id': str(material['material_id']),
     'respuesta': random.choice(modeloRespuesta.respuestas),
     'procesamiento':estiloAprendizaje['procesamiento'],
     'percepcion':estiloAprendizaje['percepcion'],
@@ -852,23 +852,20 @@ def obtenerRespuestaProfesor():
   coleccionConocimiento = mongo.db.conocimiento
   conocimiento = coleccionConocimiento.find({'tema_id':ObjectId(tema_id)})
 
-  # coleccionMaterial = mongo.db.material
-  # material = coleccionMaterial.find_one({'tema_id':ObjectId(tema_id)})
-
   arreglo = list(conocimiento)
 
   conocimientosBD = []
  
   for elemento in arreglo:
-    conocimientosBD.append(Conocimiento(elemento['_id'],elemento['preguntas'],elemento['respuestas']))  
+    conocimientosBD.append(Conocimiento(str(elemento['_id']),elemento['preguntas'],elemento['respuestas']))  
   
   modeloRespuesta = responder(consulta,conocimientosBD,tema_id)
 
-  material = coleccionConocimiento.find_one({'_id':modeloRespuesta.intencion})
+  material = coleccionConocimiento.find_one({'_id':ObjectId(modeloRespuesta.intencion)})
 
   respuesta = {
     'conocimiento_id': str(modeloRespuesta.intencion),
-    'material_id': material['material_id'],
+    'material_id': str(material['material_id']),
     'respuestas': random.choice(modeloRespuesta.respuestas)
   }
 
