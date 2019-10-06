@@ -461,7 +461,7 @@ def actualizarConocimiento():
     {'$set':  
               {
                 'tema_id': ObjectId(tema_id),
-                'material_id': ObjectId(material_id),
+                'material_id': ObjectId(material_id) if material_id != '' else '',
                 'preguntas': preguntas,
                 'respuestas': respuestas,
               }
