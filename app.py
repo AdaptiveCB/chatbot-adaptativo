@@ -108,8 +108,8 @@ def actualizarMaterial():
   texto = data['texto']
   documento = data['documento']
   video = data['video']
-  imagen = data['imagen'],
-  quiz = data['quiz'],
+  imagen = data['imagen']
+  quiz = data['quiz']
   ejemplos = data['ejemplos']
   importancia = data['importancia']
 
