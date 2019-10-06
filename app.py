@@ -804,7 +804,7 @@ def eliminarProfesor():
 
 # RESPUESTA
 
-@app.route('/obtenerRespuesta',methods=['GET','POST'])
+@app.route('/obtenerRespuestaAlumno',methods=['GET','POST'])
 def obtenerRespuesta():
   data = request.get_json()
   
@@ -818,7 +818,6 @@ def obtenerRespuesta():
   coleccionConocimiento = mongo.db.conocimiento
   conocimiento = coleccionConocimiento.find({'tema_id':ObjectId(tema_id)})
 
-
   arreglo = list(conocimiento)
 
   conocimientosBD = []
@@ -828,18 +827,42 @@ def obtenerRespuesta():
 
   modeloRespuesta = responder(consulta, conocimientosBD,tema_id)
 
-  material = coleccionConocimiento.find_one({'_id':ObjectId(modeloRespuesta.intencion)})
+  material_id = coleccionConocimiento.find_one({'_id':ObjectId(modeloRespuesta.intencion)})
+
+  coleccionMaterial = mongo.db.material
+ 
+  material = coleccionMaterial.find_one({'_id':ObjectId(material_id['material_id'])})
+
+  if estiloAprendizaje['procesamiento']['activo'] > estiloAprendizaje['procesamiento']['reflexivo']:
+    procesamiento = material['quiz']
+  else:
+    procesamiento = material['ejemplos']
+
+  if estiloAprendizaje['percepcion']['sensible'] > estiloAprendizaje['percepcion']['intuitivo']:
+    percepcion = material['importancia']
+  else:
+    percepcion = material['imagen']
+
+  if estiloAprendizaje['entrada']['verbal'] > estiloAprendizaje['entrada']['visual']:
+    entrada = material['documento']
+  else:
+    entrada = material['video']
+
+  if estiloAprendizaje['comprension']['secuencial'] > estiloAprendizaje['comprension']['global']:
+    comprension = material['texto']
+  else:
+    materiales = coleccionMaterial.find({'tema_id':ObjectId(tema_id)})
+    comprension = [materiali['nombre'] for materiali in materiales]
 
   respuesta = {
     'conocimiento_id': str(modeloRespuesta.intencion),
-    'material_id': str(material['material_id']),
     'respuesta': random.choice(modeloRespuesta.respuestas),
-    'procesamiento':estiloAprendizaje['procesamiento'],
-    'percepcion':estiloAprendizaje['percepcion'],
-    'entrada':estiloAprendizaje['entrada'],
-    'comprension':estiloAprendizaje['comprension']
+    'procesamiento':procesamiento,#estiloAprendizaje['procesamiento'],
+    'percepcion':percepcion,#estiloAprendizaje['percepcion'],
+    'entrada':entrada,#estiloAprendizaje['entrada'],
+    'comprension':comprension#estiloAprendizaje['comprension']
   }
-
+  
   return jsonify(respuesta)
 
 @app.route('/obtenerRespuestaProfesor',methods=['GET','POST'])
