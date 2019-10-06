@@ -108,8 +108,8 @@ def actualizarMaterial():
   texto = data['texto']
   documento = data['documento']
   video = data['video']
-  imagen = data['imagen'],
-  quiz = data['quiz'],
+  imagen = data['imagen']
+  quiz = data['quiz']
   ejemplos = data['ejemplos']
   importancia = data['importancia']
 
@@ -461,7 +461,7 @@ def actualizarConocimiento():
     {'$set':  
               {
                 'tema_id': ObjectId(tema_id),
-                'material_id': ObjectId(material_id),
+                'material_id': ObjectId(material_id) if material_id != '' else '',
                 'preguntas': preguntas,
                 'respuestas': respuestas,
               }
