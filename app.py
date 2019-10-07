@@ -588,6 +588,46 @@ def eliminarCurso():
 
 # CRUD ALUMNO
 
+@app.route('/obtenerAlumnosPorCurso', methods=['POST'])
+def obtenerAlumnosPorCurso():
+  data = request.get_json()
+
+  curso_id = data['curso_id']
+
+  coleccionMatricula = mongo.db.matricula
+
+  alumnos = coleccionMatricula.find({'curso_id':ObjectId(curso_id)})
+
+  alumnos = [str(alumno['alumno_id']) for alumno in alumnos]
+
+  alumnos = {
+    'alumnos':alumnos
+  }
+
+  return jsonify(alumnos)
+
+@app.route('/matricularAlumno', methods=['POST'])
+def matricularAlumno():
+  data = request.get_json()
+
+  alumno_id = data['alumno_id']
+  curso_id = data['curso_id']
+
+  coleccionMatricula = mongo.db.matricula
+
+  matriculaIngresada = coleccionMatricula.insert_one({
+    "alumno_id": ObjectId(alumno_id),
+    "curso_id": ObjectId(curso_id)
+  }).inserted_id
+
+  matricula = {
+    'matricula_id' : str(matriculaIngresada)
+  }
+
+  return jsonify(matricula)
+
+
+
 @app.route('/obtenerAlumnos',methods=['GET'])
 def obtenerAlumnos():
   coleccionAlumno = mongo.db.alumno
