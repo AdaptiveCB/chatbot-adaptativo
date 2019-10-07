@@ -347,11 +347,13 @@ def ingresarEvaluacion():
     'alumno_id': ObjectId(alumno_id),
     'cuestionario_id': ObjectId(cuestionario_id),
     'nota': nota
-  })
+  }).inserted_id
 
-  nuevaEvaluacion_id = dumps(evaluacionIngresada)
+  evaluacion = {
+    'evaluacion_id' : str(evaluacionIngresada)
+  }
 
-  return jsonify(nuevaEvaluacion_id)
+  return jsonify(evaluacion)
 
 @app.route('/obtenerEvaluacion', methods=['GET','POST'])
 def obtenerEvaluacion():
@@ -831,38 +833,51 @@ def obtenerRespuesta():
 
   coleccionMaterial = mongo.db.material
  
-  material = coleccionMaterial.find_one({'_id':ObjectId(material_id['material_id'])})
+  #material = coleccionMaterial.find_one({'_id':ObjectId(material_id['material_id'])})
+
+  mostrar = []
 
   if estiloAprendizaje['procesamiento']['activo'] > estiloAprendizaje['procesamiento']['reflexivo']:
-    procesamiento = material['quiz']
+    # procesamiento = material['quiz']
+    mostrar.append('quiz')
   else:
-    procesamiento = material['ejemplos']
+    # procesamiento = material['ejemplos']
+    mostrar.append('ejemplos')
 
   if estiloAprendizaje['percepcion']['sensible'] > estiloAprendizaje['percepcion']['intuitivo']:
-    percepcion = material['importancia']
+    # percepcion = material['importancia']
+    mostrar.append('importancia')
   else:
-    percepcion = material['imagen']
+    # percepcion = material['imagen']
+    mostrar.append('imagen')
 
   if estiloAprendizaje['entrada']['verbal'] > estiloAprendizaje['entrada']['visual']:
-    entrada = material['documento']
+    # entrada = material['documento']
+    mostrar.append('documento')
   else:
-    entrada = material['video']
+    # entrada = material['video']
+    mostrar.append('video')
 
   if estiloAprendizaje['comprension']['secuencial'] > estiloAprendizaje['comprension']['global']:
-    comprension = material['texto']
+    # comprension = material['texto']
+    mostrar.append('texto')
+    comprension = ''
   else:
     materiales = coleccionMaterial.find({'tema_id':ObjectId(tema_id)})
     comprension = [materiali['nombre'] for materiali in materiales]
 
   respuesta = {
     'conocimiento_id': str(modeloRespuesta.intencion),
+    'material_id': str(material_id['material_id']),
     'respuesta': random.choice(modeloRespuesta.respuestas),
-    'procesamiento':procesamiento,#estiloAprendizaje['procesamiento'],
-    'percepcion':percepcion,#estiloAprendizaje['percepcion'],
-    'entrada':entrada,#estiloAprendizaje['entrada'],
-    'comprension':comprension#estiloAprendizaje['comprension']
+    'mostrar': mostrar,
+    'global': comprension
+    #'procesamiento':procesamiento,#estiloAprendizaje['procesamiento'],
+    #'percepcion':percepcion,#estiloAprendizaje['percepcion'],
+    #'entrada':entrada,#estiloAprendizaje['entrada'],
+    #'comprension':comprension#estiloAprendizaje['comprension']
   }
-  
+
   return jsonify(respuesta)
 
 @app.route('/obtenerRespuestaProfesor',methods=['GET','POST'])
