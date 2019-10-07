@@ -878,6 +878,9 @@ def obtenerRespuesta():
     #'comprension':comprension#estiloAprendizaje['comprension']
   }
 
+  if comprension == '':
+    respuesta.pop('global')
+
   return jsonify(respuesta)
 
 @app.route('/obtenerRespuestaProfesor',methods=['GET','POST'])
