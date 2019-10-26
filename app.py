@@ -5,6 +5,7 @@ from tf_idf import limpiar, vocabulario, documento_a_vector, similitud_de_coseno
 from semhash import cargarModelo,entrenarModelo,responder,Conocimiento,cargarVariosModelos
 import pandas as pd
 import random
+import re
 
 import os
 # http://api.mongodb.com/python/current/api/bson/json_util.html?highlight=json_util
@@ -659,6 +660,35 @@ def obtenerAlumnoPorId():
     objetoAlumno = {}
 
   return  jsonify(objetoAlumno)
+
+@app.route('/obtenerAlumnoPorNombre',methods=['POST'])
+def obtenerAlumnoPorNombre():
+  data = request.get_json()
+
+  alumno_nombre = data['alumno_nombre']
+
+  coleccionAlumno = mongo.db.alumno
+
+  try:
+    alumno = coleccionAlumno.find_one({
+      '$or':[
+        {'nombre':{'$regex':re.compile(alumno_nombre, re.IGNORECASE)}},
+        {'apellido_paterno':{'$regex':re.compile(alumno_nombre, re.IGNORECASE)}},
+        {'apellido_materno':{'$regex':re.compile(alumno_nombre, re.IGNORECASE)}}
+      ]
+    })
+    objetoAlumno = {
+      'alumno_id': str(alumno['_id']),
+      'apellido_paterno': alumno['apellido_paterno'],
+      'apellido_materno': alumno['apellido_materno'],
+      'codigo': alumno['codigo']
+    }
+  except:
+    objetoAlumno = {}
+
+  print(alumno_nombre)
+
+  return jsonify(objetoAlumno)
 
 @app.route('/ingresarAlumno',methods=['POST'])
 def ingresarAlumno():
