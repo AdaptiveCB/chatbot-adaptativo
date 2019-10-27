@@ -608,13 +608,17 @@ def ingresarEntidad():
   data = request.get_json()
 
   nombre = data['nombre']
+  columnas = data['columnas']
+  datos = data['datos']
   tema_id = data['tema_id']
 
   coleccionEntidad = mongo.db.entidad
 
   entidadIngresada = coleccionEntidad.insert_one({
-    "nombre":nombre,
-    "tema_id":ObjectId(tema_id)
+    'nombre':nombre,
+    'columnas':columnas,
+    'datos':datos,
+    'tema_id':ObjectId(tema_id)
   }).inserted_id
 
   entidad = {
@@ -629,6 +633,8 @@ def actualizarEntidad():
 
   entidad_id = data['entidad_id']
   nombre = data['nombre']
+  columnas = data['columnas']
+  datos = data['datos']
   tema_id = data['tema_id']
   
   coleccionEntidad = mongo.db.entidad
@@ -638,6 +644,8 @@ def actualizarEntidad():
     {'$set':  
               { 
                 'nombre': nombre,
+                'columnas':columnas,
+                'datos':datos,
                 'tema_id': ObjectId(tema_id)
               }
     }
