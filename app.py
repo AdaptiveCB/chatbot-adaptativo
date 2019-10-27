@@ -635,7 +635,7 @@ def actualizarEntidad():
   nombre = data['nombre']
   columnas = data['columnas']
   datos = data['datos']
-  tema_id = data['tema_id']
+  # tema_id = data['tema_id']
   
   coleccionEntidad = mongo.db.entidad
 
@@ -646,7 +646,7 @@ def actualizarEntidad():
                 'nombre': nombre,
                 'columnas':columnas,
                 'datos':datos,
-                'tema_id': ObjectId(tema_id)
+                # 'tema_id': ObjectId(tema_id)
               }
     }
   )
