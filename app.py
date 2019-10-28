@@ -987,7 +987,7 @@ def obtenerRespuesta():
 
   modeloRespuesta = responder(consulta, conocimientosBD,tema_id)
 
-  material_id = coleccionConocimiento.find_one({'_id':ObjectId(modeloRespuesta.intencion)})
+  material_id = coleccionConocimiento.find_one({'_id':ObjectId(modeloRespuesta.conocimiento_id)})
 
   coleccionMaterial = mongo.db.material
  
@@ -1025,7 +1025,7 @@ def obtenerRespuesta():
     comprension = [materiali['nombre'] for materiali in materiales]
 
   respuesta = {
-    'conocimiento_id': str(modeloRespuesta.intencion),
+    'conocimiento_id': str(modeloRespuesta.conocimiento_id),
     'material_id': str(material_id['material_id']),
     'respuesta': random.choice(modeloRespuesta.respuestas),
     'mostrar': mostrar,
@@ -1044,34 +1044,30 @@ def obtenerRespuesta():
 @app.route('/obtenerRespuestaProfesor',methods=['GET','POST'])
 def obtenerRespuestaProfesor():
   data = request.get_json()
-  
   consulta = data['consulta']
   tema_id = data['tema_id']
 
   coleccionConocimiento = mongo.db.conocimiento
-  conocimiento = coleccionConocimiento.find({'tema_id':ObjectId(tema_id)})
-
-  arreglo = list(conocimiento)
+  conocimientos = coleccionConocimiento.find({'tema_id':ObjectId(tema_id)})
 
   conocimientosBD = []
- 
-  for elemento in arreglo:
-    conocimientosBD.append(Conocimiento(str(elemento['_id']),elemento['preguntas'],elemento['respuestas']))  
+  for elemento in list(conocimientos):
+    conocimientosBD.append(Conocimiento(str(elemento['_id']),elemento['preguntas'],elemento['respuestas'],elemento['material_id']))  
   
-  modeloRespuesta = responder(consulta,conocimientosBD,tema_id)
-
-  material = coleccionConocimiento.find_one({'_id':ObjectId(modeloRespuesta.intencion)})
-
+  respuesta, material_id, datos_ingresados, datos_faltantes, success = responder(consulta,conocimientosBD,tema_id)
+  
   respuesta = {
-    'conocimiento_id': str(modeloRespuesta.intencion),
-    'material_id': str(material['material_id']),
-    'respuestas': random.choice(modeloRespuesta.respuestas)
+    'respuesta': respuesta,
+    'material_id': str(material_id),
+    'datos_ingresados': datos_ingresados,
+    'datos_faltantes': datos_faltantes,
+    'success': success
   }
 
   return jsonify(respuesta)
 
 
-# CARGAR MODELo
+# CARGAR MODELO
 @app.route('/cargar',methods=['GET','POST'])
 def cargar():
   data = request.get_json()
