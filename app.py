@@ -1103,21 +1103,16 @@ cargarVarios()
 @app.route('/entrenar',methods=['GET','POST'])
 def entrenar():
   data = request.get_json()
-
   tema_id = data['tema_id']
 
   coleccionConocimiento = mongo.db.conocimiento
-  
   conocimiento = coleccionConocimiento.find({
     'tema_id' : ObjectId(tema_id)  
   })
   
-  arreglo = list(conocimiento)
-
   conocimientosBD = []
-
-  for elemento in arreglo:
-    conocimientosBD.append(Conocimiento(elemento['_id'],elemento['preguntas'],elemento['respuestas']))
+  for elemento in list(conocimiento):
+    conocimientosBD.append(Conocimiento(elemento['_id'],elemento['preguntas'],elemento['respuestas'],elemento['material_id']))
 
   score = entrenarModelo(conocimientosBD,tema_id)
 
