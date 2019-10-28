@@ -47,7 +47,7 @@ class Conocimiento:
   def __getitem__(self):#,conocimiento_id, preguntas, respuestas):
     return [self.conocimiento_id,self.preguntas,self.respuestas]
 
-class TablaEntidad:
+class Entidad:
   def __init__(self, nombre, columnas, datos):
     self.nombre = nombre
     self.columnas = columnas
@@ -93,16 +93,6 @@ def semhash(text, n):
   return ' '.join(tokens)
 
 n = 3 #tamaño n-gram
-tabla_entidades = [
-  TablaEntidad(
-    nombre = 'figura',
-    columnas = ['nombre', 'lados'],
-    datos = [
-        ['triángulo', '3'],
-        ['cuadrado' , '4'],
-        ['pentágono', '5']
-    ]
-  )]
 
 def entrenarModelo(conocimientos,tema_id):
   vectorizer = CountVectorizer(token_pattern='[#a-zñ0-9]+')
@@ -211,7 +201,7 @@ def get_entidades_requeridas(texto): # retorna [{'nombre': ?, 'columna': ?}, ...
       }]
   return entidades_requeridas
 
-def get_entidades_respondidas(texto, entidades_requeridas):
+def get_entidades_respondidas(texto, entidades_requeridas, tabla_entidades):
   tokens = texto.split()
   success = True
   
@@ -268,7 +258,7 @@ def get_queries(entidades_respondidas): # retorna [{?: [{'columna': ?, 'valor': 
     
   return queries
 
-def get_values_by_queries(queries):
+def get_values_by_queries(queries, tabla_entidades):
   values_by_queries = defaultdict(list)
   success = True
   
@@ -292,15 +282,10 @@ def construir_respuesta(respuesta_conocimiento, entidades_requeridas, values):
     
   return respuesta_conocimiento
 
-def responder(pregunta_usuario, conocimientos, tema_id):
+def responder(pregunta_usuario, conocimientos, tabla_entidades, tema_id):
   cargarModelo(tema_id)
   vectorizer = vectorizers.get(tema_id)
   model = modelos.get(tema_id)
-  ############################################################
-  x_semhash = [semhash(pregunta_usuario, n)]
-  x_vector = vectorizer.transform(x_semhash).toarray()
-  probabilidades = model.predict_proba(x_vector)[0]
-  idx = np.argmax(probabilidades)
   ############################################################
   respuesta = ''
   datos_ingresados = []
@@ -312,11 +297,11 @@ def responder(pregunta_usuario, conocimientos, tema_id):
   
   pregunta_conocimiento = conocimiento.preguntas[0]
   entidades_requeridas = get_entidades_requeridas(tratamiento(pregunta_conocimiento))
-  entidades_respondidas, success = get_entidades_respondidas(pregunta_usuario, entidades_requeridas)
+  entidades_respondidas, success = get_entidades_respondidas(pregunta_usuario, entidades_requeridas, tabla_entidades)
   
   if success: # todas las entidades requeridas fueron respondidas
     queries = get_queries(entidades_respondidas)
-    values, success = get_values_by_queries(queries)
+    values, success = get_values_by_queries(queries, tabla_entidades)
     
     if success: # se econtraron datos en la tabla que cumplen las entidades respondidas
       respuesta_conocimiento = random.choice(conocimiento.respuestas) # respuesta aleatoria

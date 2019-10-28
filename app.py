@@ -2,7 +2,7 @@ from flask import Flask, render_template, request, jsonify
 from flask_pymongo import PyMongo
 from flask_cors import CORS
 from tf_idf import limpiar, vocabulario, documento_a_vector, similitud_de_coseno
-from semhash import cargarModelo,entrenarModelo,responder,Conocimiento,cargarVariosModelos
+from semhash import cargarModelo,entrenarModelo,responder,Conocimiento,Entidad,cargarVariosModelos
 import pandas as pd
 import random
 import re
@@ -1049,12 +1049,17 @@ def obtenerRespuestaProfesor():
 
   coleccionConocimiento = mongo.db.conocimiento
   conocimientos = coleccionConocimiento.find({'tema_id':ObjectId(tema_id)})
+  coleccionEntidad = mongo.db.entidad
+  entidades = coleccionEntidad.find({'tema_id':ObjectId(tema_id)})
 
   conocimientosBD = []
+  entidadBD = []
   for elemento in list(conocimientos):
-    conocimientosBD.append(Conocimiento(str(elemento['_id']),elemento['preguntas'],elemento['respuestas'],elemento['material_id']))  
+    conocimientosBD.append(Conocimiento(str(elemento['_id']),elemento['preguntas'],elemento['respuestas'],elemento['material_id'])) 
+  for elemento in list(entidades):
+    entidadBD.append(Entidad(elemento['nombre'],elemento['columnas'],elemento['datos']))   
   
-  respuesta, material_id, datos_ingresados, datos_faltantes, success = responder(consulta,conocimientosBD,tema_id)
+  respuesta, material_id, datos_ingresados, datos_faltantes, success = responder(consulta, conocimientosBD, entidadBD, tema_id)
   
   respuesta = {
     'respuesta': respuesta,
