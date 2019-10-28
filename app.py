@@ -1046,11 +1046,14 @@ def obtenerRespuestaProfesor():
   data = request.get_json()
   consulta = data['consulta']
   tema_id = data['tema_id']
+  profesor_id = data['profesor_id']
 
   coleccionConocimiento = mongo.db.conocimiento
   conocimientos = coleccionConocimiento.find({'tema_id':ObjectId(tema_id)})
   coleccionEntidad = mongo.db.entidad
   entidades = coleccionEntidad.find({'tema_id':ObjectId(tema_id)})
+  coleccionProfesor = mongo.db.profesor
+  profesor = coleccionProfesor.find_one({'_id':ObjectId(profesor_id)})
 
   conocimientosBD = []
   entidadBD = []
@@ -1059,7 +1062,7 @@ def obtenerRespuestaProfesor():
   for elemento in list(entidades):
     entidadBD.append(Entidad(elemento['nombre'],elemento['columnas'],elemento['datos']))   
   
-  respuesta, material_id, datos_ingresados, datos_faltantes, success = responder(consulta, conocimientosBD, entidadBD, tema_id)
+  respuesta, material_id, datos_ingresados, datos_faltantes, success = responder(consulta, conocimientosBD, entidadBD, tema_id, profesor)
   
   respuesta = {
     'respuesta': respuesta,

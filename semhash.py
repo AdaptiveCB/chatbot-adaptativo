@@ -74,7 +74,7 @@ class Entidad:
 
 def tratamiento(text):
   text = text.lower()
-  text = re.sub(r'[^@a-zá-úñÑ0-9\s]+', ' ', text) # tomamos en cuenta @
+  text = re.sub(r'[^@_a-zá-úñÑ0-9\s]+', ' ', text) # tomamos en cuenta @ y _
   text = text.replace('á', 'a').replace('é', 'e').replace('í', 'i').replace('ó', 'o').replace('ú', 'u')
   text = text.split()
   return ' '.join(text)
@@ -258,9 +258,10 @@ def get_queries(entidades_respondidas): # retorna [{?: [{'columna': ?, 'valor': 
     
   return queries
 
-def get_values_by_queries(queries, tabla_entidades):
+def get_values_by_queries(queries, tabla_entidades, perfil):
   values_by_queries = defaultdict(list)
   success = True
+  values_by_queries['perfil'] = perfil
   
   for nombre, query in queries.items():
     for tbl_ent in tabla_entidades:
@@ -276,13 +277,16 @@ def get_values_by_queries(queries, tabla_entidades):
     
 def construir_respuesta(respuesta_conocimiento, entidades_requeridas, values):
   for er in entidades_requeridas:
-    value = values[er['nombre']][er['columna']]
-    if isinstance(value, list): value = value[0]
-    respuesta_conocimiento = respuesta_conocimiento.replace('@{}@{}'.format(er['nombre'],er['columna']), value)
+    try:
+      value = values[er['nombre']][er['columna']]
+      if isinstance(value, list): value = value[0]
+      respuesta_conocimiento = respuesta_conocimiento.replace('@{}@{}'.format(er['nombre'],er['columna']), value)
+    except:
+      return '', False
     
-  return respuesta_conocimiento
+  return respuesta_conocimiento, True
 
-def responder(pregunta_usuario, conocimientos, tabla_entidades, tema_id):
+def responder(pregunta_usuario, conocimientos, tabla_entidades, tema_id, perfil):
   cargarModelo(tema_id)
   vectorizer = vectorizers.get(tema_id)
   model = modelos.get(tema_id)
@@ -298,15 +302,13 @@ def responder(pregunta_usuario, conocimientos, tabla_entidades, tema_id):
   pregunta_conocimiento = conocimiento.preguntas[0]
   entidades_requeridas = get_entidades_requeridas(tratamiento(pregunta_conocimiento))
   entidades_respondidas, success = get_entidades_respondidas(pregunta_usuario, entidades_requeridas, tabla_entidades)
-  
   if success: # todas las entidades requeridas fueron respondidas
     queries = get_queries(entidades_respondidas)
-    values, success = get_values_by_queries(queries, tabla_entidades)
-    
+    values, success = get_values_by_queries(queries, tabla_entidades, perfil)
     if success: # se econtraron datos en la tabla que cumplen las entidades respondidas
       respuesta_conocimiento = random.choice(conocimiento.respuestas) # respuesta aleatoria
       entidades_requeridas = get_entidades_requeridas(tratamiento(respuesta_conocimiento))
-      respuesta = construir_respuesta(respuesta_conocimiento, entidades_requeridas, values)
+      respuesta, success = construir_respuesta(respuesta_conocimiento, entidades_requeridas, values)
     
   datos_ingresados = [['@{}@{}'.format(er['nombre'], er['columna']), er['valor']] for er in entidades_respondidas if er['valor'] != '']
   datos_faltantes = ['@{}@{}'.format(er['nombre'], er['columna']) for er in entidades_respondidas if er['valor'] == '']
