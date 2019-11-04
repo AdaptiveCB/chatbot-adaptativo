@@ -2,7 +2,7 @@ from flask import Flask, render_template, request, jsonify
 from flask_pymongo import PyMongo
 from flask_cors import CORS
 from tf_idf import limpiar, vocabulario, documento_a_vector, similitud_de_coseno
-from semhash import cargarModelo,entrenarModelo,responder,Conocimiento,cargarVariosModelos
+from semhash import cargarModelo,entrenarModelo,responder,Conocimiento,Entidad,cargarVariosModelos
 import pandas as pd
 import random
 import re
@@ -989,7 +989,7 @@ def obtenerRespuesta():
 
   modeloRespuesta = responder(consulta, conocimientosBD,tema_id)
 
-  material_id = coleccionConocimiento.find_one({'_id':ObjectId(modeloRespuesta.intencion)})
+  material_id = coleccionConocimiento.find_one({'_id':ObjectId(modeloRespuesta.conocimiento_id)})
 
   coleccionMaterial = mongo.db.material
  
@@ -1027,7 +1027,7 @@ def obtenerRespuesta():
     comprension = [materiali['nombre'] for materiali in materiales]
 
   respuesta = {
-    'conocimiento_id': str(modeloRespuesta.intencion),
+    'conocimiento_id': str(modeloRespuesta.conocimiento_id),
     'material_id': str(material_id['material_id']),
     'respuesta': random.choice(modeloRespuesta.respuestas),
     'mostrar': mostrar,
@@ -1046,34 +1046,38 @@ def obtenerRespuesta():
 @app.route('/obtenerRespuestaProfesor',methods=['GET','POST'])
 def obtenerRespuestaProfesor():
   data = request.get_json()
-  
   consulta = data['consulta']
   tema_id = data['tema_id']
+  profesor_id = data['profesor_id']
 
   coleccionConocimiento = mongo.db.conocimiento
-  conocimiento = coleccionConocimiento.find({'tema_id':ObjectId(tema_id)})
-
-  arreglo = list(conocimiento)
+  conocimientos = coleccionConocimiento.find({'tema_id':ObjectId(tema_id)})
+  coleccionEntidad = mongo.db.entidad
+  entidades = coleccionEntidad.find({'tema_id':ObjectId(tema_id)})
+  coleccionProfesor = mongo.db.profesor
+  profesor = coleccionProfesor.find_one({'_id':ObjectId(profesor_id)})
 
   conocimientosBD = []
- 
-  for elemento in arreglo:
-    conocimientosBD.append(Conocimiento(str(elemento['_id']),elemento['preguntas'],elemento['respuestas']))  
+  entidadBD = []
+  for elemento in list(conocimientos):
+    conocimientosBD.append(Conocimiento(str(elemento['_id']),elemento['preguntas'],elemento['respuestas'],elemento['material_id'])) 
+  for elemento in list(entidades):
+    entidadBD.append(Entidad(elemento['nombre'],elemento['columnas'],elemento['datos']))   
   
-  modeloRespuesta = responder(consulta,conocimientosBD,tema_id)
-
-  material = coleccionConocimiento.find_one({'_id':ObjectId(modeloRespuesta.intencion)})
-
+  respuesta, material_id, datos_ingresados, datos_faltantes, success = responder(consulta, conocimientosBD, entidadBD, tema_id, profesor)
+  
   respuesta = {
-    'conocimiento_id': str(modeloRespuesta.intencion),
-    'material_id': str(material['material_id']),
-    'respuestas': random.choice(modeloRespuesta.respuestas)
+    'respuesta': respuesta,
+    'material_id': str(material_id),
+    'datos_ingresados': datos_ingresados,
+    'datos_faltantes': datos_faltantes,
+    'success': success
   }
 
   return jsonify(respuesta)
 
 
-# CARGAR MODELo
+# CARGAR MODELO
 @app.route('/cargar',methods=['GET','POST'])
 def cargar():
   data = request.get_json()
@@ -1104,21 +1108,16 @@ cargarVarios()
 @app.route('/entrenar',methods=['GET','POST'])
 def entrenar():
   data = request.get_json()
-
   tema_id = data['tema_id']
 
   coleccionConocimiento = mongo.db.conocimiento
-  
   conocimiento = coleccionConocimiento.find({
     'tema_id' : ObjectId(tema_id)  
   })
   
-  arreglo = list(conocimiento)
-
   conocimientosBD = []
-
-  for elemento in arreglo:
-    conocimientosBD.append(Conocimiento(elemento['_id'],elemento['preguntas'],elemento['respuestas']))
+  for elemento in list(conocimiento):
+    conocimientosBD.append(Conocimiento(elemento['_id'],elemento['preguntas'],elemento['respuestas'],elemento['material_id']))
 
   score = entrenarModelo(conocimientosBD,tema_id)
 
