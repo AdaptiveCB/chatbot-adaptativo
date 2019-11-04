@@ -738,6 +738,7 @@ def obtenerAlumnoPorId():
     alumno = coleccionAlumno.find_one({'_id':ObjectId(alumno_id)})
 
     objetoAlumno = {
+      'alumno_id': alumno_id,
       'nombre': alumno['nombre'],
       'apellido_paterno': alumno['apellido_paterno'],
       'apellido_materno': alumno['apellido_materno'],
@@ -877,6 +878,7 @@ def obtenerProfesorPorId():
     profesor = coleccionProfesor.find_one({'_id':ObjectId(profesor_id)})
 
     objetoProfesor = {
+      'profesor_id': profesor_id,
       'nombre': profesor['nombre'],
       'apellido_paterno': profesor['apellido_paterno'],
       'apellido_materno': profesor['apellido_materno'],
