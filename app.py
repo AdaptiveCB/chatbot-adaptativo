@@ -813,8 +813,8 @@ def actualizarAlumno():
   nombre = data['nombre']
   apellido_paterno = data['apellido_paterno']
   apellido_materno = data['apellido_materno']
-  codigo = data['codigo']
-  contrasena = data['contrasena']
+  #codigo = data['codigo']
+  #contrasena = data['contrasena']
 
   coleccionAlumno = mongo.db.alumno
 
@@ -824,9 +824,9 @@ def actualizarAlumno():
               { 
                 'nombre': nombre,
                 'apellido_paterno': apellido_paterno,
-                'apellido_materno': apellido_materno,
-                'codigo': codigo,
-                'contrasena': contrasena
+                'apellido_materno': apellido_materno
+                #'codigo': codigo,
+                #'contrasena': contrasena
               }
     }
   )
@@ -923,8 +923,8 @@ def actualizarProfesor():
   nombre = data['nombre']
   apellido_paterno = data['apellido_paterno']
   apellido_materno = data['apellido_materno']
-  codigo = data['codigo']
-  contrasena = data['contrasena']
+  #codigo = data['codigo']
+  #contrasena = data['contrasena']
 
   coleccionProfesor = mongo.db.profesor
 
@@ -934,9 +934,9 @@ def actualizarProfesor():
               {
                 'nombre':nombre,
                 'apellido_paterno':apellido_paterno,
-                'apellido_materno':apellido_materno,
-                'codigo': codigo,
-                'contrasena': contrasena
+                'apellido_materno':apellido_materno
+                #'codigo': codigo,
+                #'contrasena': contrasena
               }
     }
   )  
