@@ -702,18 +702,45 @@ def matricularAlumno():
   curso_id = data['curso_id']
 
   coleccionMatricula = mongo.db.matricula
+  
+  matriculaExiste = coleccionMatricula.find_one({
+    '$and':[
+      {'alumno_id': ObjectId(alumno_id)},
+      {'curso_id': ObjectId(curso_id)}
+    ]
+  })
 
-  matriculaIngresada = coleccionMatricula.insert_one({
-    "alumno_id": ObjectId(alumno_id),
-    "curso_id": ObjectId(curso_id)
-  }).inserted_id
+  if not matriculaExiste:
+    matriculaNueva = coleccionMatricula.insert_one({
+      'alumno_id': ObjectId(alumno_id),
+      'curso_id': ObjectId(curso_id)
+    }).inserted_id
 
-  matricula = {
-    'matricula_id' : str(matriculaIngresada)
-  }
+    matricula = {
+      'matricula_id' : str(matriculaNueva)
+    }
+  else:
+    matricula = {
+      'respuesta' : 'matricula ya existe'
+    }
 
   return jsonify(matricula)
 
+@app.route('/desmatricularAlumno', methods=['POST'])
+def desmatricularAlumno():
+  data = request.get_json() 
+
+  matricula_id = data['matricula_id']
+
+  coleccionMatricula = mongo.db.matricula
+
+  resultado = coleccionMatricula.delete_one({'_id': ObjectId(matricula_id)})
+
+  objetoResultado = {
+    'eliminado': resultado.deleted_count
+  }
+
+  return jsonify(objetoResultado)
 
 
 @app.route('/obtenerAlumnos',methods=['GET'])
