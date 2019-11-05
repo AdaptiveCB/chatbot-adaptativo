@@ -1068,8 +1068,8 @@ def eliminarProfesor():
 
 # RESPUESTA
 
-@app.route('/obtenerRespuestaAlumno',methods=['GET','POST'])
-def obtenerRespuesta():
+# @app.route('/obtenerRespuestaAlumno',methods=['GET','POST'])
+# def obtenerRespuesta():
   data = request.get_json()
   
   alumno_id = data['alumno_id']
@@ -1142,6 +1142,39 @@ def obtenerRespuesta():
 
   if comprension == '':
     respuesta.pop('global')
+
+  return jsonify(respuesta)
+
+@app.route('/obtenerRespuestaAlumno',methods=['GET','POST'])
+def obtenerRespuesta():
+  data = request.get_json()
+  consulta = data['consulta']
+  tema_id = data['tema_id']
+  alumno_id = data['alumno_id']
+
+  coleccionConocimiento = mongo.db.conocimiento
+  conocimientos = coleccionConocimiento.find({'tema_id':ObjectId(tema_id)})
+  coleccionEntidad = mongo.db.entidad
+  entidades = coleccionEntidad.find({'tema_id':ObjectId(tema_id)})
+  coleccionAlumno = mongo.db.alumno
+  alumno = coleccionAlumno.find_one({'_id':ObjectId(alumno_id)})
+
+  conocimientosBD = []
+  entidadBD = []
+  for elemento in list(conocimientos):
+    conocimientosBD.append(Conocimiento(str(elemento['_id']),elemento['preguntas'],elemento['respuestas'],elemento['material_id'])) 
+  for elemento in list(entidades):
+    entidadBD.append(Entidad(elemento['nombre'],elemento['columnas'],elemento['datos']))   
+  
+  respuesta, material_id, datos_ingresados, datos_faltantes, success = responder(consulta, conocimientosBD, entidadBD, tema_id, alumno)
+  
+  respuesta = {
+    'respuesta': respuesta,
+    'material_id': str(material_id),
+    'datos_ingresados': datos_ingresados,
+    'datos_faltantes': datos_faltantes,
+    'success': success
+  }
 
   return jsonify(respuesta)
 
