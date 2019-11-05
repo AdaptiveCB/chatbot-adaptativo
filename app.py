@@ -730,11 +730,12 @@ def matricularAlumno():
 def desmatricularAlumno():
   data = request.get_json() 
 
-  matricula_id = data['matricula_id']
+  alumno_id = data['alumno_id']
+  curso_id = data['curso_id']
 
   coleccionMatricula = mongo.db.matricula
 
-  resultado = coleccionMatricula.delete_one({'_id': ObjectId(matricula_id)})
+  resultado = coleccionMatricula.delete_one({'alumno_id': ObjectId(alumno_id),'curso_id': ObjectId(curso_id)})
 
   objetoResultado = {
     'eliminado': resultado.deleted_count
