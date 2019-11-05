@@ -757,27 +757,17 @@ def obtenerAlumnoPorNombre():
 
   coleccionAlumno = mongo.db.alumno
 
-  try:
-    alumno = coleccionAlumno.find_one({
-      '$or':[
-        {'nombre':{'$regex':re.compile(alumno_nombre, re.IGNORECASE)}},
-        {'apellido_paterno':{'$regex':re.compile(alumno_nombre, re.IGNORECASE)}},
-        {'apellido_materno':{'$regex':re.compile(alumno_nombre, re.IGNORECASE)}}
-      ]
-    })
-    objetoAlumno = {
-      'alumno_id': str(alumno['_id']),
-      'nombre': alumno['nombre'],
-      'apellido_paterno': alumno['apellido_paterno'],
-      'apellido_materno': alumno['apellido_materno'],
-      'codigo': alumno['codigo']
-    }
-  except:
-    objetoAlumno = {}
+  alumnos = coleccionAlumno.find({
+    '$or':[
+      {'nombre':{'$regex':re.compile(alumno_nombre, re.IGNORECASE)}},
+      {'apellido_paterno':{'$regex':re.compile(alumno_nombre, re.IGNORECASE)}},
+      {'apellido_materno':{'$regex':re.compile(alumno_nombre, re.IGNORECASE)}}
+    ]
+  })
 
-  print(alumno_nombre)
+  alumnos = dumps(alumnos)
 
-  return jsonify(objetoAlumno)
+  return jsonify(alumnos)
 
 @app.route('/ingresarAlumno',methods=['POST'])
 def ingresarAlumno():
