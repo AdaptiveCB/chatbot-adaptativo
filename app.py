@@ -805,6 +805,40 @@ def ingresarAlumno():
 
   return jsonify(alumno)
 
+@app.route('/actualizarContrasenaAlumno',methods=['POST'])
+def actualizarContrasenaAlumno():
+  data = request.get_json()
+  
+  alumno_id = data['alumno_id']
+  contrasena_actual = data['contrasena_actual']
+  contrasena_nueva = data['contrasena_nueva']
+
+  coleccionAlumno = mongo.db.alumno
+
+  alumno = coleccionAlumno.find_one({'_id' : ObjectId(alumno_id)})
+
+  if contrasena_actual == alumno['contrasena']:
+    resultado = coleccionAlumno.update_one(
+      {'_id': ObjectId(alumno_id)},
+      {'$set':  
+                {
+                  'contrasena': contrasena_nueva
+                }
+      }
+    )  
+
+    objetoResultado = {
+      'encontrado': resultado.matched_count,
+      'modificado': resultado.modified_count
+    }
+  
+  else:
+    objetoResultado = {
+      'respuestas': 'contrasena actual incorrecta'
+    }
+
+  return jsonify(objetoResultado)
+
 @app.route('/actualizarAlumno',methods=['POST'])
 def actualizarAlumno():
   data = request.get_json()
@@ -914,6 +948,40 @@ def ingresarProfesor():
   }
 
   return jsonify(profesor)
+
+@app.route('/actualizarContrasenaProfesor',methods=['POST'])
+def actualizarContrasenaProfesor():
+  data = request.get_json()
+  
+  profesor_id = data['profesor_id']
+  contrasena_actual = data['contrasena_actual']
+  contrasena_nueva = data['contrasena_nueva']
+
+  coleccionProfesor = mongo.db.profesor
+
+  profesor = coleccionProfesor.find_one({'_id' : ObjectId(profesor_id)})
+
+  if contrasena_actual == profesor['contrasena']:
+    resultado = coleccionProfesor.update_one(
+      {'_id': ObjectId(profesor_id)},
+      {'$set':  
+                {
+                  'contrasena': contrasena_nueva
+                }
+      }
+    )  
+
+    objetoResultado = {
+      'encontrado': resultado.matched_count,
+      'modificado': resultado.modified_count
+    }
+  
+  else:
+    objetoResultado = {
+      'respuestas': 'contrasena actual incorrecta'
+    }
+
+  return jsonify(objetoResultado)
 
 @app.route('/actualizarProfesor',methods=['POST'])
 def actualizarProfesor():
