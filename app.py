@@ -524,6 +524,20 @@ def obtenerCursoPorProfesor():
 
   return jsonify(cursos)
 
+@app.route('/obtenerCursoPorAlumno', methods=['POST'])
+def obtenerCursoPorAlumno():
+  data = request.get_json()
+
+  alumno_id = data['alumno_id']
+
+  coleccionMatricula = mongo.db.matricula
+
+  cursos = coleccionMatricula.find({'alumno_id':ObjectId(alumno_id)})
+
+  cursos = dumps(cursos)
+
+  return jsonify(cursos)
+
 @app.route('/ingresarCurso',methods=['POST'])
 def ingresarCurso():
   data = request.get_json()
