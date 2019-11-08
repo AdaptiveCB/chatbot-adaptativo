@@ -1070,80 +1070,80 @@ def eliminarProfesor():
 
 # @app.route('/obtenerRespuestaAlumno',methods=['GET','POST'])
 # def obtenerRespuesta():
-  data = request.get_json()
+  # data = request.get_json()
   
-  alumno_id = data['alumno_id']
-  consulta = data['consulta']
-  tema_id = data['tema_id']
+  # alumno_id = data['alumno_id']
+  # consulta = data['consulta']
+  # tema_id = data['tema_id']
 
-  coleccionEstiloAprendizaje = mongo.db.estiloAprendizaje
-  estiloAprendizaje = coleccionEstiloAprendizaje.find_one({'alumno_id' : ObjectId(alumno_id)})
+  # coleccionEstiloAprendizaje = mongo.db.estiloAprendizaje
+  # estiloAprendizaje = coleccionEstiloAprendizaje.find_one({'alumno_id' : ObjectId(alumno_id)})
 
-  coleccionConocimiento = mongo.db.conocimiento
-  conocimiento = coleccionConocimiento.find({'tema_id':ObjectId(tema_id)})
+  # coleccionConocimiento = mongo.db.conocimiento
+  # conocimiento = coleccionConocimiento.find({'tema_id':ObjectId(tema_id)})
 
-  arreglo = list(conocimiento)
+  # arreglo = list(conocimiento)
 
-  conocimientosBD = []
+  # conocimientosBD = []
 
-  for elemento in arreglo:
-    conocimientosBD.append(Conocimiento(str(elemento['_id']),elemento['preguntas'],elemento['respuestas']))
+  # for elemento in arreglo:
+  #   conocimientosBD.append(Conocimiento(str(elemento['_id']),elemento['preguntas'],elemento['respuestas']))
 
-  modeloRespuesta = responder(consulta, conocimientosBD,tema_id)
+  # modeloRespuesta = responder(consulta, conocimientosBD,tema_id)
 
-  material_id = coleccionConocimiento.find_one({'_id':ObjectId(modeloRespuesta.conocimiento_id)})
+  # material_id = coleccionConocimiento.find_one({'_id':ObjectId(modeloRespuesta.conocimiento_id)})
 
-  coleccionMaterial = mongo.db.material
+  # coleccionMaterial = mongo.db.material
  
-  #material = coleccionMaterial.find_one({'_id':ObjectId(material_id['material_id'])})
+  # material = coleccionMaterial.find_one({'_id':ObjectId(material_id['material_id'])})
 
-  mostrar = []
+  # mostrar = []
 
-  if estiloAprendizaje['procesamiento']['activo'] > estiloAprendizaje['procesamiento']['reflexivo']:
-    # procesamiento = material['quiz']
-    mostrar.append('quiz')
-  else:
-    # procesamiento = material['ejemplos']
-    mostrar.append('ejemplos')
+  # if estiloAprendizaje['procesamiento']['activo'] > estiloAprendizaje['procesamiento']['reflexivo']:
+  #   # procesamiento = material['quiz']
+  #   mostrar.append('quiz')
+  # else:
+  #   # procesamiento = material['ejemplos']
+  #   mostrar.append('ejemplos')
 
-  if estiloAprendizaje['percepcion']['sensible'] > estiloAprendizaje['percepcion']['intuitivo']:
-    # percepcion = material['importancia']
-    mostrar.append('importancia')
-  else:
-    # percepcion = material['imagen']
-    mostrar.append('imagen')
+  # if estiloAprendizaje['percepcion']['sensible'] > estiloAprendizaje['percepcion']['intuitivo']:
+  #   # percepcion = material['importancia']
+  #   mostrar.append('importancia')
+  # else:
+  #   # percepcion = material['imagen']
+  #   mostrar.append('imagen')
 
-  if estiloAprendizaje['entrada']['verbal'] > estiloAprendizaje['entrada']['visual']:
-    # entrada = material['documento']
-    mostrar.append('documento')
-  else:
-    # entrada = material['video']
-    mostrar.append('video')
+  # if estiloAprendizaje['entrada']['verbal'] > estiloAprendizaje['entrada']['visual']:
+  #   # entrada = material['documento']
+  #   mostrar.append('documento')
+  # else:
+  #   # entrada = material['video']
+  #   mostrar.append('video')
 
-  if estiloAprendizaje['comprension']['secuencial'] > estiloAprendizaje['comprension']['global']:
-    # comprension = material['texto']
-    mostrar.append('texto')
-    comprension = ''
-  else:
-    materiales = coleccionMaterial.find({'tema_id':ObjectId(tema_id)})
-    comprension = [materiali['nombre'] for materiali in materiales]
+  # if estiloAprendizaje['comprension']['secuencial'] > estiloAprendizaje['comprension']['global']:
+  #   # comprension = material['texto']
+  #   mostrar.append('texto')
+  #   comprension = ''
+  # else:
+  #   materiales = coleccionMaterial.find({'tema_id':ObjectId(tema_id)})
+  #   comprension = [materiali['nombre'] for materiali in materiales]
 
-  respuesta = {
-    'conocimiento_id': str(modeloRespuesta.conocimiento_id),
-    'material_id': str(material_id['material_id']),
-    'respuesta': random.choice(modeloRespuesta.respuestas),
-    'mostrar': mostrar,
-    'global': comprension
+  # respuesta = {
+  #   'conocimiento_id': str(modeloRespuesta.conocimiento_id),
+  #   'material_id': str(material_id['material_id']),
+  #   'respuesta': random.choice(modeloRespuesta.respuestas),
+  #   'mostrar': mostrar,
+  #   'global': comprension
     #'procesamiento':procesamiento,#estiloAprendizaje['procesamiento'],
     #'percepcion':percepcion,#estiloAprendizaje['percepcion'],
     #'entrada':entrada,#estiloAprendizaje['entrada'],
     #'comprension':comprension#estiloAprendizaje['comprension']
-  }
+  # }
 
-  if comprension == '':
-    respuesta.pop('global')
+  # if comprension == '':
+  #   respuesta.pop('global')
 
-  return jsonify(respuesta)
+  # return jsonify(respuesta)
 
 @app.route('/obtenerRespuestaAlumno',methods=['GET','POST'])
 def obtenerRespuesta():
@@ -1159,6 +1159,10 @@ def obtenerRespuesta():
   coleccionAlumno = mongo.db.alumno
   alumno = coleccionAlumno.find_one({'_id':ObjectId(alumno_id)})
 
+  coleccionEstiloAprendizaje = mongo.db.estiloAprendizaje
+  estiloAprendizaje = coleccionEstiloAprendizaje.find_one({'alumno_id' : ObjectId(alumno_id)})
+
+
   conocimientosBD = []
   entidadBD = []
   for elemento in list(conocimientos):
@@ -1168,12 +1172,72 @@ def obtenerRespuesta():
   
   respuesta, material_id, datos_ingresados, datos_faltantes, success = responder(consulta, conocimientosBD, entidadBD, tema_id, alumno)
   
+  if material_id != '':
+    coleccionMaterial = mongo.db.material
+    material = coleccionMaterial.find_one({'_id':material_id})
+    
+    if estiloAprendizaje['procesamiento']['activo'] > estiloAprendizaje['procesamiento']['reflexivo']:
+      activo=1
+      reflexivo=0
+    else:
+      activo=0
+      reflexivo=1
+
+    if estiloAprendizaje['percepcion']['sensible'] > estiloAprendizaje['percepcion']['intuitivo']:
+      sensible=1
+      intuitivo=0
+    else:
+      sensible=0
+      intuitivo=1
+
+    if estiloAprendizaje['entrada']['verbal'] > estiloAprendizaje['entrada']['visual']:
+      verbal=1
+      visual=0
+    else:
+      verbal=0
+      visual=1
+
+    if estiloAprendizaje['comprension']['secuencial'] > estiloAprendizaje['comprension']['global']:
+      secuencial=1
+      _global=0
+    else:
+      secuencial=0
+      _global=1
+
+    recursos = []
+    recursosD = {}
+    
+    if(sensible or secuencial or _global):
+      recursosD['texto']=material['texto']
+
+    if(intuitivo or verbal or reflexivo or secuencial):
+      recursosD['importancia']=material['importancia']
+
+    if(sensible or activo or secuencial):
+      recursosD['ejemplos']=material['ejemplos']
+
+    if(activo or secuencial):
+      recursosD['quiz']=material['quiz']
+
+    if(intuitivo or visual):
+      recursosD['imagen']=material['imagen']
+
+    if(verbal):
+      recursosD['documento']=material['documento']
+      
+    if(visual):
+      recursosD['video']=material['video']
+
+  else:
+    recursosD = {}
+
   respuesta = {
     'respuesta': respuesta,
     'material_id': str(material_id),
     'datos_ingresados': datos_ingresados,
     'datos_faltantes': datos_faltantes,
-    'success': success
+    'success': success,
+    'recursos': recursosD
   }
 
   return jsonify(respuesta)
