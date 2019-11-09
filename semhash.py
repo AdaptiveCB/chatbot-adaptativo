@@ -103,7 +103,7 @@ def entrenarModelo(conocimientos,tema_id):
   y_train = []
   
   for c in conocimientos:
-    x_train.extend([m for m in c.preguntas])
+    x_train.extend([tratamiento(m) for m in c.preguntas])
     y_train.extend([conocimiento_ids.index(c.conocimiento_id)]*len(c.preguntas))
 
   x_train_semhash = [semhash(x, n) for x in x_train]
