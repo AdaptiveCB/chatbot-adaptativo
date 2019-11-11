@@ -135,7 +135,10 @@ def obtenerMaterialPorIdAlumno():
       _global=1
 
   recursosD = {}
-    
+
+  recursosD['tema_id']=str(material['tema_id'])
+  recursosD['nombre']=material['nombre']  
+
   if(sensorial or secuencial or _global):
     recursosD['texto']=material['texto']
 
