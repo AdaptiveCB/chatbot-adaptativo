@@ -390,6 +390,31 @@ def obtenerEvaluacion():
 # comprension
 # secuencial/global
 
+@app.route('/obtenerEstiloAprendizajePorAlumnoId', methods=['POST'])
+def obtenerEstiloAprendizajePorAlumnoId():
+  data = request.get_json()
+
+  alumno_id = data['alumno_id']
+
+  coleccionEstiloAprendizaje = mongo.db.estiloAprendizaje
+  
+  estiloAprendizaje = coleccionEstiloAprendizaje.find_one({'alumno_id' : ObjectId(alumno_id)})
+
+  estilos = {
+    'alumno_id': alumno_id,
+    'procesamiento': estiloAprendizaje['procesamiento']['categoria'],
+    'procesamiento_valor': estiloAprendizaje['procesamiento']['valor'],
+    'percepcion': estiloAprendizaje['percepcion']['categoria'],
+    'percepcion_valor': estiloAprendizaje['percepcion']['valor'],
+    'entrada': estiloAprendizaje['entrada']['categoria'],
+    'entrada_valor': estiloAprendizaje['entrada']['valor'],
+    'comprension': estiloAprendizaje['comprension']['categoria'],
+    'comprension_valor': estiloAprendizaje['comprension']['valor']
+  }
+
+  return jsonify(estilos)
+
+
 @app.route('/actualizarEstiloAprendizaje',methods=['POST'])
 def actualizarEstiloAprendizaje():
   data = request.get_json()
@@ -405,54 +430,6 @@ def actualizarEstiloAprendizaje():
   percepcion_categoria = data['percepcion']
   entrada_categoria = data['entrada']
   comprension_categoria = data['comprension']
-
-  # #procesamiento
-  # if procesamiento_valor<=3:
-  #   activo = procesamiento_valor
-  #   reflexivo = procesamiento_valor
-  # else:
-  #   if(procesamiento=='activo'):
-  #     activo = procesamiento_valor
-  #     reflexivo = 0
-  #   else:
-  #     activo = 0
-  #     reflexivo = procesamiento_valor
-  
-  # #percepcion
-  # if percepcion_valor<=3:
-  #   sensorial = percepcion_valor
-  #   intuitivo = percepcion_valor
-  # else:
-  #   if(percepcion=='sensitivo'):
-  #     sensorial = percepcion_valor
-  #     intuitivo = 0
-  #   else:
-  #     sensorial = 0
-  #     intuitivo = percepcion_valor
-  
-  # #entrada
-  # if entrada_valor<=3:
-  #   visual = entrada_valor
-  #   verbal = entrada_valor
-  # else:
-  #   if(entrada=='visual'):
-  #     visual = entrada_valor
-  #     verbal = 0
-  #   else:
-  #     visual = 0
-  #     verbal = entrada_valor
-  
-  # #comprension
-  # if comprension_valor<=3:
-  #   sequencial = comprension_valor
-  #   _global = comprension_valor
-  # else:
-  #   if(comprension=='sequencial'):
-  #     sequencial = comprension_valor
-  #     _global = 0
-  #   else:
-  #     sequencial = 0
-  #     _global = comprension_valor
 
   coleccionEstiloAprendizaje = mongo.db.estiloAprendizaje
   
