@@ -378,53 +378,156 @@ def obtenerEvaluacion():
 
 # ESTILO APRENDIZAJE
 
-@app.route('/actualizarEstiloAprendizaje',methods=['GET','POST'])
+@app.route('/actualizarEstiloAprendizaje',methods=['POST'])
 def actualizarEstiloAprendizaje():
   data = request.get_json()
 
   alumno_id = data['alumno_id']
+
+  procesamiento_valor = data['procesamiento_valor']
+  percepcion_valor = data['percepcion_valor']
+  entrada_valor = data['entrada_valor']
+  comprension_valor = data['comprension_valor']
+
+  procesamiento = data['procesamiento']
+  percepcion = data['percepcion']
+  entrada = data['entrada']
+  comprension = data['comprension']
+
+  #procesamiento
+  if procesamiento_valor<=3:
+    activo = procesamiento_valor
+    reflexivo = procesamiento_valor
+  else:
+    if(procesamiento=='activo'):
+      activo = procesamiento_valor
+      reflexivo = 0
+    else:
+      activo = 0
+      reflexivo = procesamiento_valor
   
-  #processing: active|reflexive
-  activo = int(data['procesamiento']['activo'])
-  reflexivo = int(data['procesamiento']['reflexivo'])
-
-  # perception: sensitive|intuitive
-  sensible = int(data['percepcion']['sensible'])
-  intuitivo = int(data['percepcion']['intuitivo'])
-
-  #input: visual|verbal
-  visual = int(data['entrada']['visual'])
-  verbal = int(data['entrada']['verbal'])
-
-  # #understanding: sequential/global
-  sequencial = int(data['comprension']['sequencial'])
-  _global = int(data['comprension']['_global'])
+  #percepcion
+  if percepcion_valor<=3:
+    sensible = percepcion_valor
+    intuitivo = percepcion_valor
+  else:
+    if(percepcion=='sensitivo'):
+      sensible = percepcion_valor
+      intuitivo = 0
+    else:
+      sensible = 0
+      intuitivo = percepcion_valor
+  
+  #entrada
+  if entrada_valor<=3:
+    visual = entrada_valor
+    verbal = entrada_valor
+  else:
+    if(entrada=='visual'):
+      visual = entrada_valor
+      verbal = 0
+    else:
+      visual = 0
+      verbal = entrada_valor
+  
+  #comprension
+  if comprension_valor<=3:
+    sequencial = comprension_valor
+    _global = comprension_valor
+  else:
+    if(comprension=='sequencial'):
+      sequencial = comprension_valor
+      _global = 0
+    else:
+      sequencial = 0
+      _global = comprension_valor
 
   coleccionEstiloAprendizaje = mongo.db.estiloAprendizaje
   
   existeAlumno = coleccionEstiloAprendizaje.find_one({'alumno_id' : ObjectId(alumno_id)})
-  if(existeAlumno):
-    coleccionEstiloAprendizaje.update_one(
-    {'alumno_id' : ObjectId(alumno_id)},
-    {
-      '$set':{
-      'procesamiento':{'activo': activo,'reflexivo':reflexivo},
-      'percepcion':{'sensible':sensible,'intuitivo':intuitivo},
-      'entrada':{'visual':visual,'verbal':verbal},
-      'comprension':{'secuencial':sequencial,'global':_global}
-      }
-    }
-    )
-  else:
-    coleccionEstiloAprendizaje.insert_one({
-    'alumno_id' : ObjectId(alumno_id),
-    'procesamiento':{'activo': activo,'reflexivo':reflexivo},
-    'percepcion':{'sensible':sensible,'intuitivo':intuitivo},
-    'entrada':{'visual':visual,'verbal':verbal},
-    'comprension':{'secuencial':sequencial,'global':_global}
-    })
 
-  return 'Estilo de Aprendizaje Guardado'
+  if(existeAlumno):
+    resultado = coleccionEstiloAprendizaje.update_one(
+      {'alumno_id' : ObjectId(alumno_id)},
+      {
+        '$set':{
+        'procesamiento':{'activo': activo,'reflexivo':reflexivo},
+        'percepcion':{'sensible':sensible,'intuitivo':intuitivo},
+        'entrada':{'visual':visual,'verbal':verbal},
+        'comprension':{'secuencial':sequencial,'global':_global}
+        }
+      }
+    )
+
+    respuesta = {
+      'encontrado': resultado.matched_count,
+      'modificado': resultado.modified_count
+    }
+
+  else:
+    estiloAprendizajeIngresado = coleccionEstiloAprendizaje.insert_one(
+      {
+        'alumno_id' : ObjectId(alumno_id),
+        'procesamiento':{'activo': activo,'reflexivo':reflexivo},
+        'percepcion':{'sensible':sensible,'intuitivo':intuitivo},
+        'entrada':{'visual':visual,'verbal':verbal},
+        'comprension':{'secuencial':sequencial,'global':_global}
+      }
+    ).inserted_id
+
+    respuesta = {
+      'estiloAprendizaje_id' : str(estiloAprendizajeIngresado)
+    }
+
+  return jsonify(respuesta)
+
+# @app.route('/actualizarEstiloAprendizaje',methods=['GET','POST'])
+# def actualizarEstiloAprendizaje():
+#   data = request.get_json()
+
+#   alumno_id = data['alumno_id']
+  
+#   #processing: active|reflexive
+#   activo = int(data['procesamiento']['activo'])
+#   reflexivo = int(data['procesamiento']['reflexivo'])
+
+#   # perception: sensitive|intuitive
+#   sensible = int(data['percepcion']['sensible'])
+#   intuitivo = int(data['percepcion']['intuitivo'])
+
+#   #input: visual|verbal
+#   visual = int(data['entrada']['visual'])
+#   verbal = int(data['entrada']['verbal'])
+
+#   # #understanding: sequential/global
+#   sequencial = int(data['comprension']['sequencial'])
+#   _global = int(data['comprension']['_global'])
+
+#   coleccionEstiloAprendizaje = mongo.db.estiloAprendizaje
+  
+#   existeAlumno = coleccionEstiloAprendizaje.find_one({'alumno_id' : ObjectId(alumno_id)})
+#   if(existeAlumno):
+#     coleccionEstiloAprendizaje.update_one(
+#     {'alumno_id' : ObjectId(alumno_id)},
+#     {
+#       '$set':{
+#       'procesamiento':{'activo': activo,'reflexivo':reflexivo},
+#       'percepcion':{'sensible':sensible,'intuitivo':intuitivo},
+#       'entrada':{'visual':visual,'verbal':verbal},
+#       'comprension':{'secuencial':sequencial,'global':_global}
+#       }
+#     }
+#     )
+#   else:
+#     coleccionEstiloAprendizaje.insert_one({
+#     'alumno_id' : ObjectId(alumno_id),
+#     'procesamiento':{'activo': activo,'reflexivo':reflexivo},
+#     'percepcion':{'sensible':sensible,'intuitivo':intuitivo},
+#     'entrada':{'visual':visual,'verbal':verbal},
+#     'comprension':{'secuencial':sequencial,'global':_global}
+#     })
+
+#   return 'Estilo de Aprendizaje Guardado'
 
 # CRUD CONOCIMIENTO
 
@@ -1185,6 +1288,9 @@ def obtenerRespuesta():
     if estiloAprendizaje['procesamiento']['activo'] > estiloAprendizaje['procesamiento']['reflexivo']:
       activo=1
       reflexivo=0
+    elif estiloAprendizaje['procesamiento']['activo'] == estiloAprendizaje['procesamiento']['reflexivo']:
+      activo=1
+      reflexivo=1
     else:
       activo=0
       reflexivo=1
@@ -1192,6 +1298,9 @@ def obtenerRespuesta():
     if estiloAprendizaje['percepcion']['sensible'] > estiloAprendizaje['percepcion']['intuitivo']:
       sensible=1
       intuitivo=0
+    elif estiloAprendizaje['percepcion']['sensible'] == estiloAprendizaje['percepcion']['intuitivo']:
+      sensible=1
+      intuitivo=1
     else:
       sensible=0
       intuitivo=1
@@ -1199,6 +1308,9 @@ def obtenerRespuesta():
     if estiloAprendizaje['entrada']['verbal'] > estiloAprendizaje['entrada']['visual']:
       verbal=1
       visual=0
+    elif estiloAprendizaje['entrada']['verbal'] == estiloAprendizaje['entrada']['visual']:
+      verbal=1
+      visual=1
     else:
       verbal=0
       visual=1
@@ -1206,6 +1318,9 @@ def obtenerRespuesta():
     if estiloAprendizaje['comprension']['secuencial'] > estiloAprendizaje['comprension']['global']:
       secuencial=1
       _global=0
+    elif estiloAprendizaje['comprension']['secuencial'] == estiloAprendizaje['comprension']['global']:
+      secuencial=1
+      _global=1
     else:
       secuencial=0
       _global=1
