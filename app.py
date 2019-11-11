@@ -183,6 +183,13 @@ def ingresarMaterial():
   ejemplos = data['ejemplos']
   importancia = data['importancia']
 
+  try:
+    explicacion = data['explicacion']
+    faq = data['faq']
+  except:
+    explicacion = ''
+    faq = ''
+
   coleccionMaterial = mongo.db.material
 
   materialIngresado = coleccionMaterial.insert_one({
@@ -220,8 +227,13 @@ def actualizarMaterial():
   quiz = data['quiz']
   ejemplos = data['ejemplos']
   importancia = data['importancia']
-  importancia = data['importancia']
-  faq = data['faq']
+  
+  try:
+    explicacion = data['explicacion']
+    faq = data['faq']
+  except:
+    explicacion = ''
+    faq = ''
 
   coleccionMaterial = mongo.db.material
 
