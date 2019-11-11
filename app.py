@@ -51,7 +51,7 @@ def obtenerListadoMaterial():
   return jsonify(materiales)
 
 @app.route('/obtenerMaterialPorId', methods=['GET','POST'])
-def obtenerMaterial():
+def obtenerMaterialPorId():
   data = request.get_json()
   
   material_id = data['material_id']
@@ -63,6 +63,99 @@ def obtenerMaterial():
   material = dumps(material)
   
   return jsonify(material)
+
+@app.route('/obtenerMaterialPorAlumnoId', methods=['GET','POST'])
+def obtenerMaterialPorIdAlumno():
+  data = request.get_json()
+
+  alumno_id = data['alumno_id']
+  material_id = data['material_id']
+
+  coleccionEstiloAprendizaje = mongo.db.estiloAprendizaje
+  estiloAprendizaje = coleccionEstiloAprendizaje.find_one({'alumno_id' : ObjectId(alumno_id)})
+
+  coleccionMaterial = mongo.db.material
+  material = coleccionMaterial.find_one({'_id':ObjectId(material_id)})
+    
+  if estiloAprendizaje['procesamiento']['valor']<=3 :
+    activo=1
+    reflexivo=1
+  else:
+    if estiloAprendizaje['procesamiento']['categoria']=='activo' :
+      activo=1
+      reflexivo=0
+    else:
+      activo=0
+      reflexivo=1
+    
+  if estiloAprendizaje['percepcion']['valor']<=3 :
+    sensorial=1
+    intuitivo=1
+  else:
+    if estiloAprendizaje['percepcion']['categoria']=='intuitivo' :
+      sensorial=0
+      intuitivo=1
+    else:
+      sensorial=1
+      intuitivo=0
+    
+  if estiloAprendizaje['entrada']['valor']<=3 :
+    verbal=1
+    visual=1
+  else:
+    if estiloAprendizaje['entrada']['categoria']=='visual' :
+      verbal=0
+      visual=1
+    else:
+      verbal=1
+      visual=0
+
+  if estiloAprendizaje['comprension']['valor']<=3 :
+    secuencial=1
+    _global=1
+  else:
+    if estiloAprendizaje['comprension']['categoria']=='secuencial' :
+      secuencial=1
+      _global=0
+    else:
+      secuencial=0
+      _global=1
+
+  recursosD = {}
+    
+  if(sensorial or secuencial or _global):
+    recursosD['texto']=material['texto']
+
+  if(intuitivo or verbal or reflexivo or secuencial):
+    recursosD['importancia']=material['importancia']
+
+  if(intuitivo or _global):
+    recursosD['explicacion']=material['explicacion']
+
+  if(sensorial or activo or secuencial):
+    recursosD['ejemplos']=material['ejemplos']
+
+  if(activo or secuencial):
+    recursosD['quiz']=material['quiz']
+
+  if(intuitivo or visual):
+    recursosD['imagen']=material['imagen']
+
+  if(verbal):
+    recursosD['documento']=material['documento']
+      
+  if(visual):
+    recursosD['video']=material['video']
+
+  if(sensorial or verbal or activo):
+    recursosD['faq']=material['faq']
+
+  respuesta = {
+    'recursos': recursosD
+  }
+
+  return jsonify(respuesta)
+
 
 @app.route('/ingresarMaterial', methods=['GET','POST'])
 def ingresarMaterial():
@@ -1270,94 +1363,94 @@ def obtenerRespuesta():
   
   respuesta, material_id, datos_ingresados, datos_faltantes, success = responder(consulta, conocimientosBD, entidadBD, tema_id, alumno)
   
-  if material_id != '':
-    coleccionMaterial = mongo.db.material
-    material = coleccionMaterial.find_one({'_id':material_id})
+  # if material_id != '':
+  #   coleccionMaterial = mongo.db.material
+  #   material = coleccionMaterial.find_one({'_id':material_id})
     
-    if estiloAprendizaje['procesamiento']['valor']<=3 :
-      activo=1
-      reflexivo=1
-    else:
-      if estiloAprendizaje['procesamiento']['categoria']=='activo' :
-        activo=1
-        reflexivo=0
-      else:
-        activo=0
-        reflexivo=1
+  #   if estiloAprendizaje['procesamiento']['valor']<=3 :
+  #     activo=1
+  #     reflexivo=1
+  #   else:
+  #     if estiloAprendizaje['procesamiento']['categoria']=='activo' :
+  #       activo=1
+  #       reflexivo=0
+  #     else:
+  #       activo=0
+  #       reflexivo=1
     
-    if estiloAprendizaje['percepcion']['valor']<=3 :
-      sensorial=1
-      intuitivo=1
-    else:
-      if estiloAprendizaje['percepcion']['categoria']=='intuitivo' :
-        sensorial=0
-        intuitivo=1
-      else:
-        sensorial=1
-        intuitivo=0
+  #   if estiloAprendizaje['percepcion']['valor']<=3 :
+  #     sensorial=1
+  #     intuitivo=1
+  #   else:
+  #     if estiloAprendizaje['percepcion']['categoria']=='intuitivo' :
+  #       sensorial=0
+  #       intuitivo=1
+  #     else:
+  #       sensorial=1
+  #       intuitivo=0
     
-    if estiloAprendizaje['entrada']['valor']<=3 :
-      verbal=1
-      visual=1
-    else:
-      if estiloAprendizaje['entrada']['categoria']=='visual' :
-        verbal=0
-        visual=1
-      else:
-        verbal=1
-        visual=0
+  #   if estiloAprendizaje['entrada']['valor']<=3 :
+  #     verbal=1
+  #     visual=1
+  #   else:
+  #     if estiloAprendizaje['entrada']['categoria']=='visual' :
+  #       verbal=0
+  #       visual=1
+  #     else:
+  #       verbal=1
+  #       visual=0
 
-    if estiloAprendizaje['comprension']['valor']<=3 :
-      secuencial=1
-      _global=1
-    else:
-      if estiloAprendizaje['comprension']['categoria']=='secuencial' :
-        secuencial=1
-        _global=0
-      else:
-        secuencial=0
-        _global=1
+  #   if estiloAprendizaje['comprension']['valor']<=3 :
+  #     secuencial=1
+  #     _global=1
+  #   else:
+  #     if estiloAprendizaje['comprension']['categoria']=='secuencial' :
+  #       secuencial=1
+  #       _global=0
+  #     else:
+  #       secuencial=0
+  #       _global=1
 
-    recursos = []
-    recursosD = {}
+  #   #recursos = []
+  #   recursosD = {}
     
-    if(sensorial or secuencial or _global):
-      recursosD['texto']=material['texto']
+  #   if(sensorial or secuencial or _global):
+  #     recursosD['texto']=material['texto']
 
-    if(intuitivo or verbal or reflexivo or secuencial):
-      recursosD['importancia']=material['importancia']
+  #   if(intuitivo or verbal or reflexivo or secuencial):
+  #     recursosD['importancia']=material['importancia']
 
-    if(intuitivo or _global):
-      recursosD['explicacion']=material['explicacion']
+  #   if(intuitivo or _global):
+  #     recursosD['explicacion']=material['explicacion']
 
-    if(sensorial or activo or secuencial):
-      recursosD['ejemplos']=material['ejemplos']
+  #   if(sensorial or activo or secuencial):
+  #     recursosD['ejemplos']=material['ejemplos']
 
-    if(activo or secuencial):
-      recursosD['quiz']=material['quiz']
+  #   if(activo or secuencial):
+  #     recursosD['quiz']=material['quiz']
 
-    if(intuitivo or visual):
-      recursosD['imagen']=material['imagen']
+  #   if(intuitivo or visual):
+  #     recursosD['imagen']=material['imagen']
 
-    if(verbal):
-      recursosD['documento']=material['documento']
+  #   if(verbal):
+  #     recursosD['documento']=material['documento']
       
-    if(visual):
-      recursosD['video']=material['video']
+  #   if(visual):
+  #     recursosD['video']=material['video']
 
-    if(sensorial or verbal or activo):
-      recursosD['faq']=material['faq']
+  #   if(sensorial or verbal or activo):
+  #     recursosD['faq']=material['faq']
 
-  else:
-    recursosD = {}
+  # else:
+  #   recursosD = {}
 
   respuesta = {
     'respuesta': respuesta,
     'material_id': str(material_id),
     'datos_ingresados': datos_ingresados,
     'datos_faltantes': datos_faltantes,
-    'success': success,
-    'recursos': recursosD
+    'success': success
+    #'recursos': recursosD
   }
 
   return jsonify(respuesta)
