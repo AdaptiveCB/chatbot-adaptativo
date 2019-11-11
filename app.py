@@ -187,8 +187,8 @@ def ingresarMaterial():
     explicacion = data['explicacion']
     faq = data['faq']
   except:
-    explicacion = ''
-    faq = ''
+    explicacion = []
+    faq = []
 
   coleccionMaterial = mongo.db.material
 
@@ -232,8 +232,8 @@ def actualizarMaterial():
     explicacion = data['explicacion']
     faq = data['faq']
   except:
-    explicacion = ''
-    faq = ''
+    explicacion = []
+    faq = []
 
   coleccionMaterial = mongo.db.material
 
