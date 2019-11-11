@@ -89,7 +89,9 @@ def ingresarMaterial():
     'imagen': imagen,
     'quiz': quiz,
     'ejemplos': ejemplos,
-    'importancia': importancia
+    'importancia': importancia,
+    'explicacion': explicacion,
+    'faq': faq
   }).inserted_id
 
   material = {
@@ -113,6 +115,8 @@ def actualizarMaterial():
   quiz = data['quiz']
   ejemplos = data['ejemplos']
   importancia = data['importancia']
+  importancia = data['importancia']
+  faq = data['faq']
 
   coleccionMaterial = mongo.db.material
 
@@ -128,7 +132,9 @@ def actualizarMaterial():
                 'imagen': imagen,
                 'quiz': quiz,
                 'ejemplos': ejemplos,
-                'importancia': importancia
+                'importancia': importancia,
+                'explicacion': explicacion,
+                'faq': faq
               }
     }
   )
@@ -1213,6 +1219,9 @@ def obtenerRespuesta():
     if(intuitivo or verbal or reflexivo or secuencial):
       recursosD['importancia']=material['importancia']
 
+    if(intuitivo or _global):
+      recursosD['explicacion']=material['explicacion']
+
     if(sensible or activo or secuencial):
       recursosD['ejemplos']=material['ejemplos']
 
@@ -1227,6 +1236,9 @@ def obtenerRespuesta():
       
     if(visual):
       recursosD['video']=material['video']
+
+    if(sensible or verbal or activo):
+      recursosD['faq']=material['faq']
 
   else:
     recursosD = {}
