@@ -1504,7 +1504,8 @@ def entrenar():
     arreglo_recurso.append(dict_video)
 
     for item in arreglo_recurso:
-      conocimientosBD.append(Conocimiento(ObjectId(),item['preguntas'],item['respuestas'],''))   
+      aux = ObjectId()
+      conocimientosBD.append(Conocimiento(aux,item['preguntas'],item['respuestas'],''))   
   
   for elemento in list(conocimiento):
     conocimientosBD.append(Conocimiento(elemento['_id'],elemento['preguntas'],elemento['respuestas'],elemento['material_id']))
