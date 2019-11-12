@@ -1436,76 +1436,76 @@ def entrenar():
 
   conocimientosBD = []
 
-  coleccionMaterial = mongo.db.material
-  materiales = coleccionMaterial.find({'tema_id': ObjectId(tema_id)})
+  # coleccionMaterial = mongo.db.material
+  # materiales = coleccionMaterial.find({'tema_id': ObjectId(tema_id)})
   
-  recursos = []
-  for material in list(materiales):
-    recursos.append(material['nombre'])
+  # recursos = []
+  # for material in list(materiales):
+  #   recursos.append(material['nombre'])
 
-  for recurso in recursos:
-    arreglo_recurso = []
+  # for recurso in recursos:
+  #   arreglo_recurso = []
 
-    dict_texto = {}
-    preguntas = ['Que es '+recurso]
-    respuestas = ['texto']
-    dict_texto['preguntas'] = preguntas
-    dict_texto['respuestas'] = respuestas
+  #   dict_texto = {}
+  #   preguntas = ['Que es '+recurso]
+  #   respuestas = ['texto']
+  #   dict_texto['preguntas'] = preguntas
+  #   dict_texto['respuestas'] = respuestas
 
-    dict_importancia = {}
-    preguntas = ['Por que es importante '+recurso]
-    respuestas = ['importancia']
-    dict_importancia['preguntas'] = preguntas
-    dict_importancia['respuestas'] = respuestas
+  #   dict_importancia = {}
+  #   preguntas = ['Por que es importante '+recurso]
+  #   respuestas = ['importancia']
+  #   dict_importancia['preguntas'] = preguntas
+  #   dict_importancia['respuestas'] = respuestas
 
-    dict_explicacion = {}
-    preguntas = ['Donde encuentro mas informacion de '+recurso]
-    respuestas = ['explicacion']
-    dict_explicacion['preguntas'] = preguntas
-    dict_explicacion['respuestas'] = respuestas
+  #   dict_explicacion = {}
+  #   preguntas = ['Donde encuentro mas informacion de '+recurso]
+  #   respuestas = ['explicacion']
+  #   dict_explicacion['preguntas'] = preguntas
+  #   dict_explicacion['respuestas'] = respuestas
 
-    dict_ejemplos = {}
-    preguntas = ['Dime ejemplos de '+recurso]
-    respuestas = ['ejemplos']
-    dict_ejemplos['preguntas'] = preguntas
-    dict_ejemplos['respuestas'] = respuestas
+  #   dict_ejemplos = {}
+  #   preguntas = ['Dime ejemplos de '+recurso]
+  #   respuestas = ['ejemplos']
+  #   dict_ejemplos['preguntas'] = preguntas
+  #   dict_ejemplos['respuestas'] = respuestas
 
-    dict_quiz = {}
-    preguntas = ['Hazme preguntas de '+recurso]
-    respuestas = ['quiz']
-    dict_quiz['preguntas'] = preguntas
-    dict_quiz['respuestas'] = respuestas
+  #   dict_quiz = {}
+  #   preguntas = ['Hazme preguntas de '+recurso]
+  #   respuestas = ['quiz']
+  #   dict_quiz['preguntas'] = preguntas
+  #   dict_quiz['respuestas'] = respuestas
 
-    dict_imagen = {}
-    preguntas = ['Muestrame una imagen de '+recurso]
-    respuestas = ['imagen']
-    dict_imagen['preguntas'] = preguntas
-    dict_imagen['respuestas'] = respuestas
+  #   dict_imagen = {}
+  #   preguntas = ['Muestrame una imagen de '+recurso]
+  #   respuestas = ['imagen']
+  #   dict_imagen['preguntas'] = preguntas
+  #   dict_imagen['respuestas'] = respuestas
 
-    dict_documento = {}
-    preguntas = ['Muestrame una documento de '+recurso]
-    respuestas = ['documento']
-    dict_documento['preguntas'] = preguntas
-    dict_documento['respuestas'] = respuestas
+  #   dict_documento = {}
+  #   preguntas = ['Muestrame una documento de '+recurso]
+  #   respuestas = ['documento']
+  #   dict_documento['preguntas'] = preguntas
+  #   dict_documento['respuestas'] = respuestas
 
-    dict_video = {}
-    preguntas = ['Muestrame un video de '+recurso]
-    respuestas = ['video']
-    dict_video['preguntas'] = preguntas
-    dict_video['respuestas'] = respuestas
+  #   dict_video = {}
+  #   preguntas = ['Muestrame un video de '+recurso]
+  #   respuestas = ['video']
+  #   dict_video['preguntas'] = preguntas
+  #   dict_video['respuestas'] = respuestas
 
-    arreglo_recurso.append(dict_texto)
-    arreglo_recurso.append(dict_importancia)
-    arreglo_recurso.append(dict_explicacion)
-    arreglo_recurso.append(dict_ejemplos)
-    arreglo_recurso.append(dict_quiz)
-    arreglo_recurso.append(dict_imagen)
-    arreglo_recurso.append(dict_documento)
-    arreglo_recurso.append(dict_video)
+  #   arreglo_recurso.append(dict_texto)
+  #   arreglo_recurso.append(dict_importancia)
+  #   arreglo_recurso.append(dict_explicacion)
+  #   arreglo_recurso.append(dict_ejemplos)
+  #   arreglo_recurso.append(dict_quiz)
+  #   arreglo_recurso.append(dict_imagen)
+  #   arreglo_recurso.append(dict_documento)
+  #   arreglo_recurso.append(dict_video)
 
-    for item in arreglo_recurso:
-      aux = ObjectId()
-      conocimientosBD.append(Conocimiento(aux,item['preguntas'],item['respuestas'],''))   
+  #   for item in arreglo_recurso:
+  #     aux = ObjectId()
+  #     conocimientosBD.append(Conocimiento(aux,item['preguntas'],item['respuestas'],''))   
   
   for elemento in list(conocimiento):
     conocimientosBD.append(Conocimiento(elemento['_id'],elemento['preguntas'],elemento['respuestas'],elemento['material_id']))
@@ -1513,20 +1513,6 @@ def entrenar():
   score = entrenarModelo(conocimientosBD,tema_id)
 
   return str(score)
-
-@app.route('/probando',methods=['POST'])
-def probando():
-  data = request.get_json()
-
-  tema = data['tema']
-  item = data['item']
-
-  a = ObjectId()
-  print(a)
-  a = ObjectId()
-  print(a)
-
-  return 'jaaaa'
 
 #entrenar()
 
