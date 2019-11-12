@@ -78,7 +78,7 @@ def obtenerMaterialPorId():
   return jsonify(respuesta)
 
 @app.route('/obtenerMaterialPorAlumnoId', methods=['GET','POST'])
-def obtenerMaterialPorIdAlumno():
+def obtenerMaterialPorAlumnoId():
   data = request.get_json()
 
   alumno_id = data['alumno_id']
@@ -91,80 +91,130 @@ def obtenerMaterialPorIdAlumno():
   material = coleccionMaterial.find_one({'_id':ObjectId(material_id)})
     
   if estiloAprendizaje['procesamiento']['valor']<=3 :
-    activo=1
-    reflexivo=1
+    activo=estiloAprendizaje['procesamiento']['valor']
+    reflexivo=estiloAprendizaje['procesamiento']['valor']
   else:
     if estiloAprendizaje['procesamiento']['categoria']=='activo' :
-      activo=1
+      activo=estiloAprendizaje['procesamiento']['valor']
       reflexivo=0
     else:
       activo=0
-      reflexivo=1
+      reflexivo=estiloAprendizaje['procesamiento']['valor']
     
   if estiloAprendizaje['percepcion']['valor']<=3 :
-    sensorial=1
-    intuitivo=1
+    sensorial=estiloAprendizaje['percepcion']['valor']
+    intuitivo=estiloAprendizaje['percepcion']['valor']
   else:
     if estiloAprendizaje['percepcion']['categoria']=='intuitivo' :
       sensorial=0
-      intuitivo=1
+      intuitivo=estiloAprendizaje['percepcion']['valor']
     else:
-      sensorial=1
+      sensorial=estiloAprendizaje['percepcion']['valor']
       intuitivo=0
-    
+
+
   if estiloAprendizaje['entrada']['valor']<=3 :
-    verbal=1
-    visual=1
+    verbal=estiloAprendizaje['entrada']['valor']
+    visual=estiloAprendizaje['entrada']['valor']
   else:
     if estiloAprendizaje['entrada']['categoria']=='visual' :
       verbal=0
-      visual=1
+      visual=estiloAprendizaje['entrada']['valor']
     else:
-      verbal=1
+      verbal=estiloAprendizaje['entrada']['valor']
       visual=0
 
+
   if estiloAprendizaje['comprension']['valor']<=3 :
-    secuencial=1
-    _global=1
+    secuencial=estiloAprendizaje['comprension']['valor']
+    _global=estiloAprendizaje['comprension']['valor']
   else:
     if estiloAprendizaje['comprension']['categoria']=='secuencial' :
-      secuencial=1
+      secuencial=estiloAprendizaje['comprension']['valor']
       _global=0
     else:
       secuencial=0
-      _global=1
+      _global=estiloAprendizaje['comprension']['valor']
 
   recursosD = {}
+  prioridad = []
 
   recursosD['tema_id']=str(material['tema_id'])
   recursosD['nombre']=material['nombre']  
 
   if(sensorial or secuencial or _global):
     recursosD['texto']=material['texto']
+    # recursosD['grado_texto']=max(sensorial,secuencial,_global)
+    dictTexto = {}
+    dictTexto['item']='texto'
+    dictTexto['puntaje']=max(sensorial,secuencial,_global)
+    prioridad.append(dictTexto)
 
   if(intuitivo or verbal or reflexivo or secuencial):
     recursosD['importancia']=material['importancia']
+    # recursosD['grado_importancia']=max(intuitivo,verbal,reflexivo,secuencial)
+    dictImportancia = {}
+    dictImportancia['item']='importancia'
+    dictImportancia['puntaje']=max(intuitivo,verbal,reflexivo,secuencial)
+    prioridad.append(dictImportancia)
 
   if(intuitivo or _global):
     recursosD['explicacion']=material['explicacion']
+    # recursosD['grado_explicacion']=max(intuitivo,_global)
+    dictExplicacion = {}
+    dictExplicacion['item']='explicacion'
+    dictExplicacion['puntaje']=max(intuitivo,_global)
+    prioridad.append(dictExplicacion)
 
   if(sensorial or activo or secuencial):
     recursosD['ejemplos']=material['ejemplos']
+    # recursosD['grado_ejemplos']=max(sensorial,activo,secuencial)
+    dictEjemplos = {}
+    dictEjemplos['item']='ejemplos'
+    dictEjemplos['puntaje']=max(sensorial,activo,secuencial)
+    prioridad.append(dictEjemplos)
 
   if(activo or secuencial):
     recursosD['quiz']=material['quiz']
+    # recursosD['grado_quiz']=max(activo,secuencial)
+    dictQuiz = {}
+    dictQuiz['item']='quiz'
+    dictQuiz['puntaje']=max(activo,secuencial)
+    prioridad.append(dictQuiz)
 
   if(intuitivo or visual):
     recursosD['imagen']=material['imagen']
+    # recursosD['grado_imagen']=max(intuitivo,visual)
+    dictImagen = {}
+    dictImagen['item']='imagen'
+    dictImagen['puntaje']=max(intuitivo,visual)
+    prioridad.append(dictImagen)
 
   if(verbal):
     recursosD['documento']=material['documento']
+    # recursosD['grado_documento']=verbal
+    dictDocumento = {}
+    dictDocumento['item']='documento'
+    dictDocumento['puntaje']=verbal
+    prioridad.append(dictDocumento)
       
   if(visual):
     recursosD['video']=material['video']
+    # recursosD['grado_video']=visual
+    dictVideo = {}
+    dictVideo['item']='video'
+    dictVideo['puntaje']=visual
+    prioridad.append(dictVideo)
 
   if(sensorial or verbal or activo):
     recursosD['faq']=material['faq']
+    # recursosD['grado_faq']=max(sensorial,verbal,activo)
+    dictFaq = {}
+    dictFaq['item']='faq'
+    dictFaq['puntaje']=max(sensorial,verbal,activo)
+    prioridad.append(dictFaq)
+
+  recursosD['prioridad']=prioridad
 
   return jsonify(recursosD)
 
