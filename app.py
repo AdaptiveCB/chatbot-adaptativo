@@ -144,7 +144,6 @@ def obtenerMaterialPorAlumnoId():
 
   if(sensorial or secuencial or _global):
     recursosD['texto']=material['texto']
-    # recursosD['grado_texto']=max(sensorial,secuencial,_global)
     dictTexto = {}
     dictTexto['item']='texto'
     dictTexto['puntaje']=max(sensorial,secuencial,_global)
@@ -152,7 +151,6 @@ def obtenerMaterialPorAlumnoId():
 
   if(intuitivo or verbal or reflexivo or secuencial):
     recursosD['importancia']=material['importancia']
-    # recursosD['grado_importancia']=max(intuitivo,verbal,reflexivo,secuencial)
     dictImportancia = {}
     dictImportancia['item']='importancia'
     dictImportancia['puntaje']=max(intuitivo,verbal,reflexivo,secuencial)
@@ -160,7 +158,6 @@ def obtenerMaterialPorAlumnoId():
 
   if(intuitivo or _global):
     recursosD['explicacion']=material['explicacion']
-    # recursosD['grado_explicacion']=max(intuitivo,_global)
     dictExplicacion = {}
     dictExplicacion['item']='explicacion'
     dictExplicacion['puntaje']=max(intuitivo,_global)
@@ -168,7 +165,6 @@ def obtenerMaterialPorAlumnoId():
 
   if(sensorial or activo or secuencial):
     recursosD['ejemplos']=material['ejemplos']
-    # recursosD['grado_ejemplos']=max(sensorial,activo,secuencial)
     dictEjemplos = {}
     dictEjemplos['item']='ejemplos'
     dictEjemplos['puntaje']=max(sensorial,activo,secuencial)
@@ -176,7 +172,6 @@ def obtenerMaterialPorAlumnoId():
 
   if(activo or secuencial):
     recursosD['quiz']=material['quiz']
-    # recursosD['grado_quiz']=max(activo,secuencial)
     dictQuiz = {}
     dictQuiz['item']='quiz'
     dictQuiz['puntaje']=max(activo,secuencial)
@@ -184,7 +179,6 @@ def obtenerMaterialPorAlumnoId():
 
   if(intuitivo or visual):
     recursosD['imagen']=material['imagen']
-    # recursosD['grado_imagen']=max(intuitivo,visual)
     dictImagen = {}
     dictImagen['item']='imagen'
     dictImagen['puntaje']=max(intuitivo,visual)
@@ -192,7 +186,6 @@ def obtenerMaterialPorAlumnoId():
 
   if(verbal):
     recursosD['documento']=material['documento']
-    # recursosD['grado_documento']=verbal
     dictDocumento = {}
     dictDocumento['item']='documento'
     dictDocumento['puntaje']=verbal
@@ -200,7 +193,6 @@ def obtenerMaterialPorAlumnoId():
       
   if(visual):
     recursosD['video']=material['video']
-    # recursosD['grado_video']=visual
     dictVideo = {}
     dictVideo['item']='video'
     dictVideo['puntaje']=visual
@@ -208,7 +200,6 @@ def obtenerMaterialPorAlumnoId():
 
   if(sensorial or verbal or activo):
     recursosD['faq']=material['faq']
-    # recursosD['grado_faq']=max(sensorial,verbal,activo)
     dictFaq = {}
     dictFaq['item']='faq'
     dictFaq['puntaje']=max(sensorial,verbal,activo)
@@ -1333,83 +1324,6 @@ def eliminarProfesor():
 
 # RESPUESTA
 
-# @app.route('/obtenerRespuestaAlumno',methods=['GET','POST'])
-# def obtenerRespuesta():
-  # data = request.get_json()
-  
-  # alumno_id = data['alumno_id']
-  # consulta = data['consulta']
-  # tema_id = data['tema_id']
-
-  # coleccionEstiloAprendizaje = mongo.db.estiloAprendizaje
-  # estiloAprendizaje = coleccionEstiloAprendizaje.find_one({'alumno_id' : ObjectId(alumno_id)})
-
-  # coleccionConocimiento = mongo.db.conocimiento
-  # conocimiento = coleccionConocimiento.find({'tema_id':ObjectId(tema_id)})
-
-  # arreglo = list(conocimiento)
-
-  # conocimientosBD = []
-
-  # for elemento in arreglo:
-  #   conocimientosBD.append(Conocimiento(str(elemento['_id']),elemento['preguntas'],elemento['respuestas']))
-
-  # modeloRespuesta = responder(consulta, conocimientosBD,tema_id)
-
-  # material_id = coleccionConocimiento.find_one({'_id':ObjectId(modeloRespuesta.conocimiento_id)})
-
-  # coleccionMaterial = mongo.db.material
- 
-  # material = coleccionMaterial.find_one({'_id':ObjectId(material_id['material_id'])})
-
-  # mostrar = []
-
-  # if estiloAprendizaje['procesamiento']['activo'] > estiloAprendizaje['procesamiento']['reflexivo']:
-  #   # procesamiento = material['quiz']
-  #   mostrar.append('quiz')
-  # else:
-  #   # procesamiento = material['ejemplos']
-  #   mostrar.append('ejemplos')
-
-  # if estiloAprendizaje['percepcion']['sensible'] > estiloAprendizaje['percepcion']['intuitivo']:
-  #   # percepcion = material['importancia']
-  #   mostrar.append('importancia')
-  # else:
-  #   # percepcion = material['imagen']
-  #   mostrar.append('imagen')
-
-  # if estiloAprendizaje['entrada']['verbal'] > estiloAprendizaje['entrada']['visual']:
-  #   # entrada = material['documento']
-  #   mostrar.append('documento')
-  # else:
-  #   # entrada = material['video']
-  #   mostrar.append('video')
-
-  # if estiloAprendizaje['comprension']['secuencial'] > estiloAprendizaje['comprension']['global']:
-  #   # comprension = material['texto']
-  #   mostrar.append('texto')
-  #   comprension = ''
-  # else:
-  #   materiales = coleccionMaterial.find({'tema_id':ObjectId(tema_id)})
-  #   comprension = [materiali['nombre'] for materiali in materiales]
-
-  # respuesta = {
-  #   'conocimiento_id': str(modeloRespuesta.conocimiento_id),
-  #   'material_id': str(material_id['material_id']),
-  #   'respuesta': random.choice(modeloRespuesta.respuestas),
-  #   'mostrar': mostrar,
-  #   'global': comprension
-    #'procesamiento':procesamiento,#estiloAprendizaje['procesamiento'],
-    #'percepcion':percepcion,#estiloAprendizaje['percepcion'],
-    #'entrada':entrada,#estiloAprendizaje['entrada'],
-    #'comprension':comprension#estiloAprendizaje['comprension']
-  # }
-
-  # if comprension == '':
-  #   respuesta.pop('global')
-
-  # return jsonify(respuesta)
-
 @app.route('/obtenerRespuestaAlumno',methods=['GET','POST'])
 def obtenerRespuesta():
   data = request.get_json()
@@ -1507,6 +1421,7 @@ def cargarVarios():
   return "ok"
 
 cargarVarios()
+
 # ENTRENAMIENTO DEL MODELO
 
 @app.route('/entrenar',methods=['GET','POST'])
@@ -1518,14 +1433,99 @@ def entrenar():
   conocimiento = coleccionConocimiento.find({
     'tema_id' : ObjectId(tema_id)  
   })
-  
+
   conocimientosBD = []
+
+  coleccionMaterial = mongo.db.material
+  materiales = coleccionMaterial.find({'tema_id': ObjectId(tema_id)})
+  
+  recursos = []
+  for material in list(materiales):
+    recursos.append(material['nombre'])
+
+  for recurso in recursos:
+    arreglo_recurso = []
+
+    dict_texto = {}
+    preguntas = ['Que es '+recurso]
+    respuestas = ['texto']
+    dict_texto['preguntas'] = preguntas
+    dict_texto['respuestas'] = respuestas
+
+    dict_importancia = {}
+    preguntas = ['Por que es importante '+recurso]
+    respuestas = ['importancia']
+    dict_importancia['preguntas'] = preguntas
+    dict_importancia['respuestas'] = respuestas
+
+    dict_explicacion = {}
+    preguntas = ['Donde encuentro mas informacion de '+recurso]
+    respuestas = ['explicacion']
+    dict_explicacion['preguntas'] = preguntas
+    dict_explicacion['respuestas'] = respuestas
+
+    dict_ejemplos = {}
+    preguntas = ['Dime ejemplos de '+recurso]
+    respuestas = ['ejemplos']
+    dict_ejemplos['preguntas'] = preguntas
+    dict_ejemplos['respuestas'] = respuestas
+
+    dict_quiz = {}
+    preguntas = ['Hazme preguntas de '+recurso]
+    respuestas = ['quiz']
+    dict_quiz['preguntas'] = preguntas
+    dict_quiz['respuestas'] = respuestas
+
+    dict_imagen = {}
+    preguntas = ['Muestrame una imagen de '+recurso]
+    respuestas = ['imagen']
+    dict_imagen['preguntas'] = preguntas
+    dict_imagen['respuestas'] = respuestas
+
+    dict_documento = {}
+    preguntas = ['Muestrame una documento de '+recurso]
+    respuestas = ['documento']
+    dict_documento['preguntas'] = preguntas
+    dict_documento['respuestas'] = respuestas
+
+    dict_video = {}
+    preguntas = ['Muestrame un video de '+recurso]
+    respuestas = ['video']
+    dict_video['preguntas'] = preguntas
+    dict_video['respuestas'] = respuestas
+
+    arreglo_recurso.append(dict_texto)
+    arreglo_recurso.append(dict_importancia)
+    arreglo_recurso.append(dict_explicacion)
+    arreglo_recurso.append(dict_ejemplos)
+    arreglo_recurso.append(dict_quiz)
+    arreglo_recurso.append(dict_imagen)
+    arreglo_recurso.append(dict_documento)
+    arreglo_recurso.append(dict_video)
+
+    for item in arreglo_recurso:
+      conocimientosBD.append(Conocimiento(ObjectId(),item['preguntas'],item['respuestas'],''))   
+  
   for elemento in list(conocimiento):
     conocimientosBD.append(Conocimiento(elemento['_id'],elemento['preguntas'],elemento['respuestas'],elemento['material_id']))
 
   score = entrenarModelo(conocimientosBD,tema_id)
 
   return str(score)
+
+@app.route('/probando',methods=['POST'])
+def probando():
+  data = request.get_json()
+
+  tema = data['tema']
+  item = data['item']
+
+  a = ObjectId()
+  print(a)
+  a = ObjectId()
+  print(a)
+
+  return 'jaaaa'
 
 #entrenar()
 
