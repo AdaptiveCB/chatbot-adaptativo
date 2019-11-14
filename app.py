@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, jsonify
+from flask import Flask, render_template, request, jsonify, redirect
 from flask_pymongo import PyMongo
 from flask_cors import CORS
 from tf_idf import limpiar, vocabulario, documento_a_vector, similitud_de_coseno
@@ -29,7 +29,8 @@ mongo = PyMongo(app)
 
 @app.route('/')
 def home():
-  return render_template('home.html')
+  # return render_template('home.html')
+  return redirect("https://mitsuoysharag.github.io/TesisChatbotDocente_Vue")
 
 @app.route('/test')
 def test():
