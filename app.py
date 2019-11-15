@@ -365,7 +365,7 @@ def actualizarTiempoAlumno():
   fecha = data['fecha']
   tiempo = data['tiempo']
 
-  fecha = datetime.strptime(fecha,'%Y-%m-%d')
+  fecha = datetime.strptime(fecha,'%d/%m/%Y') #'%Y-%m-%d'
 
   coleccionLogTiempoAlumno = mongo.db.logTiempoAlumno
 
