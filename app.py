@@ -403,23 +403,33 @@ def actualizarTiempoAlumno():
   })
 
   if(existeLogTiempoAlumnoHoy):
-    resultado = coleccionLogTiempoAlumno.update_one(
-      {
-        'alumno_id': ObjectId(alumno_id),
-        'fecha': fecha
-      },
-      {
-        '$set':
-                { 
-                  'tiempo': tiempo
-                }
-      }
-    )
+    # validar
+    tiempoGuardado = existeLogTiempoAlumnoHoy['tiempo']
 
-    objetoResultado = {
-      'encontrado': resultado.matched_count,
-      'modificado': resultado.modified_count
-    }
+    if tiempo < tiempoGuardado:
+      objetoResultado = {
+        'error': 'El tiempo (' + str(tiempo) + ') no puede ser menor al existente en la BD (' + str(tiempoGuardado) + ')'
+      }
+
+    else:
+      resultado = coleccionLogTiempoAlumno.update_one(
+        {
+          'alumno_id': ObjectId(alumno_id),
+          'fecha': fecha
+        },
+        {
+          '$set':
+                  { 
+                    'tiempo': tiempo
+                  }
+        }
+      )
+
+      objetoResultado = {
+        'encontrado': resultado.matched_count,
+        'modificado': resultado.modified_count
+      }
+
   else:
     logIngresado = coleccionLogTiempoAlumno.insert_one({
       'alumno_id': ObjectId(alumno_id),
