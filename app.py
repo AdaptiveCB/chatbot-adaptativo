@@ -357,8 +357,8 @@ def logInicioSesionAlumno(alumno_id):
     'horaIngreso': now
   })
 
-@app.route('/ingresarTiempoAlumno', methods=['POST'])
-def ingresarTiempoAlumno():
+@app.route('/actualizarTiempoAlumno', methods=['POST'])
+def actualizarTiempoAlumno():
   data = request.get_json()
 
   alumno_id = data['alumno_id']
