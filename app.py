@@ -357,6 +357,34 @@ def logInicioSesionAlumno(alumno_id):
     'horaIngreso': now
   })
 
+@app.route('/obtenerTiempoAlumno', methods=['POST'])
+def obtenerTiempoAlumno():
+  data = request.get_json()
+
+  alumno_id = data['alumno_id']
+  fecha = data['fecha']
+
+  fecha = datetime.strptime(fecha,'%d/%m/%Y')
+
+  coleccionLogTiempoAlumno = mongo.db.logTiempoAlumno
+
+  try:
+    logTiempoAlumno = coleccionLogTiempoAlumno.find_one({
+      'alumno_id':ObjectId(alumno_id),
+      'fecha':fecha
+    })
+
+    tiempo = logTiempoAlumno['tiempo']
+    
+  except:
+    tiempo = 0
+  
+  objetoResultado = {
+    'tiempo': tiempo
+  }
+
+  return jsonify(objetoResultado)
+
 @app.route('/actualizarTiempoAlumno', methods=['POST'])
 def actualizarTiempoAlumno():
   data = request.get_json()
