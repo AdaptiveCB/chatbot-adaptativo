@@ -357,6 +357,54 @@ def logInicioSesionAlumno(alumno_id):
     'horaIngreso': now
   })
 
+@app.route('/ingresarTiempoAlumno', methods=['POST'])
+def ingresarTiempoAlumno():
+  data = request.get_json()
+
+  alumno_id = data['alumno_id']
+  fecha = data['fecha']
+  tiempo = data['tiempo']
+
+  fecha = datetime.strptime(fecha,'%Y-%m-%d')
+
+  coleccionLogTiempoAlumno = mongo.db.logTiempoAlumno
+
+  existeLogTiempoAlumnoHoy = coleccionLogTiempoAlumno.find_one({
+    'alumno_id':ObjectId(alumno_id),
+    'fecha':fecha
+  })
+
+  if(existeLogTiempoAlumnoHoy):
+    resultado = coleccionLogTiempoAlumno.update_one(
+      {
+        'alumno_id': ObjectId(alumno_id),
+        'fecha': fecha
+      },
+      {
+        '$set':
+                { 
+                  'tiempo': tiempo
+                }
+      }
+    )
+
+    objetoResultado = {
+      'encontrado': resultado.matched_count,
+      'modificado': resultado.modified_count
+    }
+  else:
+    logIngresado = coleccionLogTiempoAlumno.insert_one({
+      'alumno_id': ObjectId(alumno_id),
+      'fecha': fecha,
+      'tiempo': tiempo
+    }).inserted_id
+
+    objetoResultado = {
+      'logIngresado_id' : str(logIngresado)
+    }
+
+  return jsonify(objetoResultado)
+
 @app.route('/iniciarSesionProfesor', methods=['GET','POST'])
 def iniciarSesionProfesor():
   data = request.get_json()
