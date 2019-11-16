@@ -393,53 +393,62 @@ def actualizarTiempoAlumno():
   fecha = data['fecha']
   tiempo = data['tiempo']
 
-  fecha = datetime.strptime(fecha,'%d/%m/%Y') #'%Y-%m-%d'
 
-  coleccionLogTiempoAlumno = mongo.db.logTiempoAlumno
+  if alumno_id == None:
+    objetoResultado = {
+      'error': 'El ID del alumno no puede ser nulo'
+    }
+  elif alumno_id == '':
+    objetoResultado = {
+      'error': 'El ID del alumno no puede ser vacio'
+    }
+  else:
+    fecha = datetime.strptime(fecha,'%d/%m/%Y') #'%Y-%m-%d'
 
-  existeLogTiempoAlumnoHoy = coleccionLogTiempoAlumno.find_one({
-    'alumno_id':ObjectId(alumno_id),
-    'fecha':fecha
-  })
+    coleccionLogTiempoAlumno = mongo.db.logTiempoAlumno
 
-  if(existeLogTiempoAlumnoHoy):
-    # validar
-    tiempoGuardado = existeLogTiempoAlumnoHoy['tiempo']
+    existeLogTiempoAlumnoHoy = coleccionLogTiempoAlumno.find_one({
+      'alumno_id':ObjectId(alumno_id),
+      'fecha':fecha
+    })
 
-    if tiempo < tiempoGuardado:
-      objetoResultado = {
-        'error': 'El tiempo (' + str(tiempo) + ') no puede ser menor al existente en la BD (' + str(tiempoGuardado) + ')'
-      }
+    if(existeLogTiempoAlumnoHoy):
+      tiempoGuardado = existeLogTiempoAlumnoHoy['tiempo']
+
+      if tiempo < tiempoGuardado:
+        objetoResultado = {
+          'error': 'El tiempo (' + str(tiempo) + ') no puede ser menor al existente en la BD (' + str(tiempoGuardado) + ')'
+        }
+
+      else:
+        resultado = coleccionLogTiempoAlumno.update_one(
+          {
+            'alumno_id': ObjectId(alumno_id),
+            'fecha': fecha
+          },
+          {
+            '$set':
+                    { 
+                      'tiempo': tiempo
+                    }
+          }
+        )
+
+        objetoResultado = {
+          'encontrado': resultado.matched_count,
+          'modificado': resultado.modified_count
+        }
 
     else:
-      resultado = coleccionLogTiempoAlumno.update_one(
-        {
-          'alumno_id': ObjectId(alumno_id),
-          'fecha': fecha
-        },
-        {
-          '$set':
-                  { 
-                    'tiempo': tiempo
-                  }
-        }
-      )
+      logIngresado = coleccionLogTiempoAlumno.insert_one({
+        'alumno_id': ObjectId(alumno_id),
+        'fecha': fecha,
+        'tiempo': tiempo
+      }).inserted_id
 
       objetoResultado = {
-        'encontrado': resultado.matched_count,
-        'modificado': resultado.modified_count
+        'logIngresado_id' : str(logIngresado)
       }
-
-  else:
-    logIngresado = coleccionLogTiempoAlumno.insert_one({
-      'alumno_id': ObjectId(alumno_id),
-      'fecha': fecha,
-      'tiempo': tiempo
-    }).inserted_id
-
-    objetoResultado = {
-      'logIngresado_id' : str(logIngresado)
-    }
 
   return jsonify(objetoResultado)
 
