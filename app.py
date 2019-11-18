@@ -530,13 +530,15 @@ def ingresarCuestionario():
   tema_id = data['tema_id']
   nombre = data['nombre']
   preguntas = data['preguntas']
+  nivel = data['nivel']
 
   coleccionCuestionario = mongo.db.cuestionario
 
   cuestionarioIngresado = coleccionCuestionario.insert_one({
     'tema_id': ObjectId(tema_id),
     'nombre': nombre,
-    'preguntas': preguntas
+    'preguntas': preguntas,
+    'nivel': nivel
   }).inserted_id
 
   cuestionario = {
@@ -555,9 +557,16 @@ def obtenerCuestionarioPorTema():
 
   cuestionarios = coleccionCuestionario.find({"tema_id":ObjectId(tema_id)})
 
-  cuestionarios = dumps(cuestionarios)
+  listaCuestionario = []
 
-  return jsonify(cuestionarios)
+  for cuestionario in list(cuestionarios):
+    objetoCuestionario = {}
+    objetoCuestionario['nombre'] = cuestionario['nombre']
+    objetoCuestionario['preguntas'] = cuestionario['preguntas']
+    objetoCuestionario['nivel'] = cuestionario['nivel']
+    listaCuestionario.append(objetoCuestionario)
+
+  return jsonify(listaCuestionario)
 
 @app.route('/actualizarCuestionario', methods=['GET','POST'])
 def actualizarCuestionario():
@@ -565,9 +574,9 @@ def actualizarCuestionario():
 
   cuestionario_id = data['cuestionario_id']
 
-  tema_id = data['tema_id']
   nombre = data['nombre']
   preguntas = data['preguntas']
+  nivel = data['nivel']
 
   coleccionCuestionario = mongo.db.cuestionario
 
@@ -575,9 +584,9 @@ def actualizarCuestionario():
     {'_id':ObjectId(cuestionario_id)},
     {'$set':
               {
-                'tema_id': ObjectId(tema_id),
                 'nombre': nombre,
-                'preguntas': preguntas
+                'preguntas': preguntas,
+                'nivel': nivel
               }
     }
   )
