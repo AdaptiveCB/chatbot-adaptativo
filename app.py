@@ -608,8 +608,8 @@ def eliminarCuestionario():
   
 # EVALUACIÓN
 
-@app.route('/puntajeAlumnoPorCurso', methods=['POST'])
-def puntajeAlumnoPorCurso():
+@app.route('/notaTotalAlumnoPorCurso', methods=['POST'])
+def notaTotalAlumnoPorCurso():
   data = request.get_json()
 
   alumno_id = data['alumno_id']
