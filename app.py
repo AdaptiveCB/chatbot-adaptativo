@@ -3,7 +3,7 @@ from flask_pymongo import PyMongo
 from flask_cors import CORS
 from tf_idf import limpiar, vocabulario, documento_a_vector, similitud_de_coseno
 from semhash import cargarModelo,entrenarModelo,responder,Conocimiento,Entidad,cargarVariosModelos
-from datetime import datetime
+from datetime import datetime, timedelta
 import pandas as pd
 import random
 import re
@@ -608,12 +608,19 @@ def eliminarCuestionario():
   
 # EVALUACIÓN
 
-@app.route('/notaTotalAlumnoPorCurso', methods=['POST'])
-def notaTotalAlumnoPorCurso():
+@app.route('/puntajeTotalAlumnoPorCurso', methods=['POST'])
+def puntajeTotalAlumnoPorCurso():
   data = request.get_json()
 
   alumno_id = data['alumno_id']
   curso_id = data['curso_id']
+
+  fechas = []
+  for i in range(5):
+    fecha = datetime.today() - timedelta(days=(4-i))
+    fecha = datetime.strftime(fecha,'%d/%m/%Y')
+    fecha = datetime.strptime(fecha,'%d/%m/%Y')
+    fechas.append(fecha)
 
   coleccionTema = mongo.db.tema
   tema = coleccionTema.find_one({'curso_id':ObjectId(curso_id)})
@@ -627,24 +634,25 @@ def notaTotalAlumnoPorCurso():
 
   coleccionEvaluacion = mongo.db.evaluacion
 
-  notaCurso = 0
-  for cuestionario in listaCuestionarios:
-    evaluaciones = coleccionEvaluacion.find({'cuestionario_id':cuestionario,'alumno_id':ObjectId(alumno_id)})
+  puntajes = []
 
-    if(evaluaciones):
-      notaEvaluacion = 0
-
-      for evaluacion in evaluaciones:
-        if evaluacion['nota']>notaEvaluacion:
-          notaEvaluacion = evaluacion['nota']
+  for fecha in fechas:
     
-      notaCurso = notaCurso + notaEvaluacion
+    puntajeFecha = 0
 
-  objetoResultado = {
-    'nota': notaCurso
-  }
+    for cuestionario in listaCuestionarios:
+      evaluacion = coleccionEvaluacion.find_one({'cuestionario_id':cuestionario,'alumno_id':ObjectId(alumno_id),'fecha':fecha})
 
-  return jsonify(objetoResultado)
+      if(evaluacion):
+        puntajeFecha = puntajeFecha + evaluacion['nota']
+        
+    objetoFecha = {}
+    objetoFecha['fecha'] = datetime.strftime(fecha,'%d/%m/%Y')
+    objetoFecha['puntajeTotal'] = puntajeFecha
+    
+    puntajes.append(objetoFecha)
+
+  return jsonify(puntajes)
 
 @app.route('/actualizarEvaluacion', methods=['GET','POST'])
 def ingresarEvaluacion():
