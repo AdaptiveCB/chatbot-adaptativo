@@ -640,24 +640,31 @@ def ingresarEvaluacion():
   })
 
   if(existeEvaluacion):
-    resultado = coleccionEvaluacion.update_one(
-      {
-        'alumno_id': ObjectId(alumno_id),
-        'cuestionario_id': ObjectId(cuestionario_id),
-        'fecha': fecha
-      },
-      {
-        '$set':
-            { 
-              'nota': nota
-            }
-      }
-    )
+    notaBD = existeEvaluacion['nota']
 
-    objetoResultado = {
-      'encontrado': resultado.matched_count,
-      'modificado': resultado.modified_count
-    }
+    if nota < notaBD:
+      objetoResultado = {
+        'error': 'La nota \'' + str(nota) + '\' no puede ser menor a la existente en la BD (' + str(notaBD) + ') en la misma fecha'
+      }
+    else:
+      resultado = coleccionEvaluacion.update_one(
+        {
+          'alumno_id': ObjectId(alumno_id),
+          'cuestionario_id': ObjectId(cuestionario_id),
+          'fecha': fecha
+        },
+        {
+          '$set':
+              { 
+                'nota': nota
+              }
+        }
+      )
+
+      objetoResultado = {
+        'encontrado': resultado.matched_count,
+        'modificado': resultado.modified_count
+      }
   else:
     evaluacionIngresada = coleccionEvaluacion.insert_one({
       'alumno_id': ObjectId(alumno_id),
