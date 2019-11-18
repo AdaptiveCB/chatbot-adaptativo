@@ -608,41 +608,129 @@ def eliminarCuestionario():
   
 # EVALUACIÓN
 
-@app.route('/ingresarEvaluacion', methods=['GET','POST'])
+@app.route('/actualizarEvaluacion', methods=['GET','POST'])
 def ingresarEvaluacion():
   data = request.get_json()
 
   alumno_id = data['alumno_id']
   cuestionario_id = data['cuestionario_id']
+  fecha = data['fecha']
   nota = int(data['nota'])
+
+  if fecha == '':
+    objetoResultado = {
+      'error': 'La fecha no puede ser vacía'
+    }
+    return jsonify(objetoResultado)
+  
+  try:
+    fecha = datetime.strptime(fecha,'%d/%m/%Y') #str -> datetime
+  except:
+    objetoResultado = {
+      'error': 'La fecha \'' + fecha + '\' no es válida. Enviar en el formato (dd/mm/aaaa)'
+    }
+    return jsonify(objetoResultado)
 
   coleccionEvaluacion = mongo.db.evaluacion
 
-  evaluacionIngresada = coleccionEvaluacion.insert_one({
+  existeEvaluacion = mongo.db.evaluacion.find_one({
     'alumno_id': ObjectId(alumno_id),
     'cuestionario_id': ObjectId(cuestionario_id),
-    'nota': nota
-  }).inserted_id
+    'fecha': fecha
+  })
 
-  evaluacion = {
-    'evaluacion_id' : str(evaluacionIngresada)
-  }
+  if(existeEvaluacion):
+    resultado = coleccionEvaluacion.update_one(
+      {
+        'alumno_id': ObjectId(alumno_id),
+        'cuestionario_id': ObjectId(cuestionario_id),
+        'fecha': fecha
+      },
+      {
+        '$set':
+            { 
+              'nota': nota
+            }
+      }
+    )
 
-  return jsonify(evaluacion)
+    objetoResultado = {
+      'encontrado': resultado.matched_count,
+      'modificado': resultado.modified_count
+    }
+  else:
+    evaluacionIngresada = coleccionEvaluacion.insert_one({
+      'alumno_id': ObjectId(alumno_id),
+      'cuestionario_id': ObjectId(cuestionario_id),
+      'fecha': fecha,
+      'nota': nota
+    }).inserted_id
 
-@app.route('/obtenerEvaluacion', methods=['GET','POST'])
+    objetoResultado = {
+      'evaluacion_id' : str(evaluacionIngresada)
+    }
+
+  return jsonify(objetoResultado)
+
+@app.route('/obtenerEvaluacion', methods=['POST'])
 def obtenerEvaluacion():
   data = request.get_json()
 
-  evaluacion_id = data['evaluacion_id']
+  cuestionario_id = data['cuestionario_id']
+  alumno_id = data['alumno_id']
 
   coleccionEvaluacion = mongo.db.evaluacion
 
-  evaluacion = coleccionEvaluacion.find({"_id":ObjectId(evaluacion_id)})
+  evaluaciones = coleccionEvaluacion.find({
+    'alumno_id':ObjectId(alumno_id),
+    'cuestionario_id':ObjectId(cuestionario_id)
+  })
 
-  evaluacion = dumps(evaluacion)
+  diccionarioEvaluaciones = {}
+  
+  for evaluacion in list(evaluaciones):
+    diccionarioEvaluaciones[evaluacion['fecha']] = evaluacion['nota']
+  
+  resultados = []
 
-  return jsonify(evaluacion)
+  for key in sorted(diccionarioEvaluaciones.keys()):
+    evaluacion = {}
+    evaluacion['fecha'] = datetime.strftime(key,'%d/%m/%Y') #datetime -> str
+    evaluacion['nota'] = diccionarioEvaluaciones[key]
+    resultados.append(evaluacion)
+
+  return jsonify(resultados)
+
+@app.route('/eliminarEvaluacion', methods=['POST'])
+def eliminarEvaluacion():
+  data = request.get_json()
+
+  alumno_id = data['alumno_id']
+  cuestionario_id = data['cuestionario_id']
+  fecha = data['fecha']
+
+  try:
+    fecha = datetime.strptime(fecha,'%d/%m/%Y') #str -> datetime
+  except:
+    objetoResultado = {
+      'error': 'La fecha \'' + fecha + '\' no es válida. Enviar en el formato (dd/mm/aaaa)'
+    }
+    return jsonify(objetoResultado)
+
+  coleccionEvaluacion = mongo.db.evaluacion
+
+  resultado = coleccionEvaluacion.delete_one({
+    'alumno_id': ObjectId(alumno_id),
+    'cuestionario_id': ObjectId(cuestionario_id),
+    'fecha': fecha
+  })
+
+  objetoResultado = {
+    'eliminado': resultado.deleted_count
+  }
+
+  return jsonify(objetoResultado)
+
 
 # ESTILO APRENDIZAJE
 
