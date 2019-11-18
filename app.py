@@ -561,6 +561,7 @@ def obtenerCuestionarioPorTema():
 
   for cuestionario in list(cuestionarios):
     objetoCuestionario = {}
+    objetoCuestionario['cuestionario_id'] = str(cuestionario['_id'])
     objetoCuestionario['nombre'] = cuestionario['nombre']
     objetoCuestionario['preguntas'] = cuestionario['preguntas']
     objetoCuestionario['nivel'] = cuestionario['nivel']
