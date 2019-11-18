@@ -608,6 +608,44 @@ def eliminarCuestionario():
   
 # EVALUACIÓN
 
+@app.route('/puntajeAlumnoPorCurso', methods=['POST'])
+def puntajeAlumnoPorCurso():
+  data = request.get_json()
+
+  alumno_id = data['alumno_id']
+  curso_id = data['curso_id']
+
+  coleccionTema = mongo.db.tema
+  tema = coleccionTema.find_one({'curso_id':ObjectId(curso_id)})
+  
+  coleccionCuestionario = mongo.db.cuestionario
+  cuestionarios = coleccionCuestionario.find({'tema_id':tema['_id']})
+
+  listaCuestionarios = []
+  for cuestionario in cuestionarios:
+    listaCuestionarios.append(cuestionario['_id'])  
+
+  coleccionEvaluacion = mongo.db.evaluacion
+
+  notaCurso = 0
+  for cuestionario in listaCuestionarios:
+    evaluaciones = coleccionEvaluacion.find({'cuestionario_id':cuestionario,'alumno_id':ObjectId(alumno_id)})
+
+    if(evaluaciones):
+      notaEvaluacion = 0
+
+      for evaluacion in evaluaciones:
+        if evaluacion['nota']>notaEvaluacion:
+          notaEvaluacion = evaluacion['nota']
+    
+      notaCurso = notaCurso + notaEvaluacion
+
+  objetoResultado = {
+    'nota': notaCurso
+  }
+
+  return jsonify(objetoResultado)
+
 @app.route('/actualizarEvaluacion', methods=['GET','POST'])
 def ingresarEvaluacion():
   data = request.get_json()
