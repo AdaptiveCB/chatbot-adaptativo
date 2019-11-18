@@ -531,6 +531,7 @@ def ingresarCuestionario():
   nombre = data['nombre']
   preguntas = data['preguntas']
   nivel = data['nivel']
+  tiempo = data['tiempo']
 
   coleccionCuestionario = mongo.db.cuestionario
 
@@ -538,7 +539,8 @@ def ingresarCuestionario():
     'tema_id': ObjectId(tema_id),
     'nombre': nombre,
     'preguntas': preguntas,
-    'nivel': nivel
+    'nivel': nivel,
+    'tiempo': tiempo
   }).inserted_id
 
   cuestionario = {
@@ -565,6 +567,7 @@ def obtenerCuestionarioPorTema():
     objetoCuestionario['nombre'] = cuestionario['nombre']
     objetoCuestionario['preguntas'] = cuestionario['preguntas']
     objetoCuestionario['nivel'] = cuestionario['nivel']
+    objetoCuestionario['tiempo'] = cuestionario['tiempo']
     listaCuestionario.append(objetoCuestionario)
 
   return jsonify(listaCuestionario)
@@ -578,6 +581,7 @@ def actualizarCuestionario():
   nombre = data['nombre']
   preguntas = data['preguntas']
   nivel = data['nivel']
+  tiempo = data['tiempo']
 
   coleccionCuestionario = mongo.db.cuestionario
 
@@ -587,7 +591,8 @@ def actualizarCuestionario():
               {
                 'nombre': nombre,
                 'preguntas': preguntas,
-                'nivel': nivel
+                'nivel': nivel,
+                'tiempo': tiempo
               }
     }
   )
