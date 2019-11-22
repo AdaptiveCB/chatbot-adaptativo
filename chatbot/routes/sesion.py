@@ -1,5 +1,9 @@
 from flask import request, jsonify
-from .. import app, mongo
+from datetime import datetime, timedelta
+from bson.json_util import dumps
+from bson.objectid import ObjectId
+from chatbot import app, mongo
+
 
 @app.route('/iniciarSesionAlumno', methods=['GET','POST'])
 def iniciarSesionAlumno():
