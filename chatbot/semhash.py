@@ -97,8 +97,7 @@ n = 3 #tamaño n-gram
 def entrenarModelo(conocimientos,tema_id):
   vectorizer = CountVectorizer(token_pattern='[#a-zñ0-9]+')
   conocimiento_ids = [c.conocimiento_id for c in conocimientos]
-  # for c in conocimientos:
-  #   print(c.conocimiento_id, c.preguntas, c.respuestas)
+
   x_train = []
   y_train = []
   
@@ -122,13 +121,13 @@ def entrenarModelo(conocimientos,tema_id):
   modelos.update({tema_id:model})
   vectorizers.update({tema_id:vectorizer})
   
-  filename = os.path.join('models',tema_id+'.sav')
+  filename = os.path.join('chatbot','models',tema_id+'.sav')
   pickle.dump(model, open(filename, 'wb'))
-  FirebaseStorage.child('models',tema_id+'.sav').put(os.path.join('models',tema_id+'.sav'))
+  FirebaseStorage.child('models',tema_id+'.sav').put(os.path.join('chatbot','models',tema_id+'.sav'))
 
-  filenameVectorizer = os.path.join('vectorizer',tema_id+'.sav')
+  filenameVectorizer = os.path.join('chatbot','vectorizer',tema_id+'.sav')
   pickle.dump(vectorizer, open(filenameVectorizer, 'wb'))
-  FirebaseStorage.child('vectorizer',tema_id+'.sav').put(os.path.join('vectorizer',tema_id+'.sav'))
+  FirebaseStorage.child('vectorizer',tema_id+'.sav').put(os.path.join('chatbot','vectorizer',tema_id+'.sav'))
   
   return score
 

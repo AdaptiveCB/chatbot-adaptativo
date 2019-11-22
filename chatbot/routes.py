@@ -1718,6 +1718,7 @@ def procesamientoCategoriaMaterial(tema_id):
 
 @app.route('/entrenar',methods=['GET','POST'])
 def entrenar():
+  # print('INICIO DE ENTRENAR')
   data = request.get_json()
   tema_id = data['tema_id']
 
@@ -1734,6 +1735,9 @@ def entrenar():
   conocimientosBD.extend(procesamientoCategoriaMaterial(tema_id))
 
   score = entrenarModelo(conocimientosBD,tema_id)
+  # print('score:',score)
+
+  # print('FIN DE ENTRENAR')
 
   return str(score)
 
