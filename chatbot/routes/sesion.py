@@ -145,7 +145,7 @@ def actualizarTiempoAlumno():
   return jsonify(objetoResultado)
 
 def logInicioSesionAlumno(alumno_id):
-  now = datetime.now()
+  now = datetime.today() - timedelta(hours=5)
 
   coleccionLogAlumno = mongo.db.logAlumno
 

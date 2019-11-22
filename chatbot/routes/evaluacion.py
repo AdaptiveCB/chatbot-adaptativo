@@ -13,7 +13,7 @@ def puntajeTotalAlumnoPorCurso():
 
   fechas = []
   for i in range(5):
-    fecha = datetime.today() - timedelta(days=(4-i))
+    fecha = (datetime.today() - timedelta(hours=5)) - timedelta(days=(4-i))
     fecha = datetime.strftime(fecha,'%d/%m/%Y')
     fecha = datetime.strptime(fecha,'%d/%m/%Y')
     fechas.append(fecha)
