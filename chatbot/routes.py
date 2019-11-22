@@ -1,35 +1,16 @@
-from flask import Flask, render_template, request, jsonify, redirect
-from flask_pymongo import PyMongo
-from flask_cors import CORS
-from tf_idf import limpiar, vocabulario, documento_a_vector, similitud_de_coseno
-from semhash import cargarModelo,entrenarModelo,responder,Conocimiento,Entidad,cargarVariosModelos
+from flask import render_template, request, jsonify, redirect
 from datetime import datetime, timedelta
-import pandas as pd
-import random
-import re
-
-import os
-# http://api.mongodb.com/python/current/api/bson/json_util.html?highlight=json_util
 from bson.json_util import dumps
 from bson.objectid import ObjectId
-
-
-
-
-app = Flask(__name__)
-
-CORS(app)
-
-app.config['MONGO_DBNAME'] = 'chatbot'
-app.config['MONGO_URI'] = 'mongodb+srv://chatbot:adaptive@cluster0-k4fnb.mongodb.net/chatbot?retryWrites=true&w=majority'
-# app.config['MONGO_URI'] = 'mongodb://localhost/chatbot'
-
-mongo = PyMongo(app)
-
+from chatbot.semhash import cargarModelo,entrenarModelo,responder,Conocimiento,Entidad,cargarVariosModelos
+from chatbot import app, mongo
+# import random
+# import re
+# import os
+# from tf_idf import limpiar, vocabulario, documento_a_vector, similitud_de_coseno
 
 @app.route('/')
 def home():
-  # return render_template('home.html')
   return redirect("https://mitsuoysharag.github.io/TesisChatbotDocente_Vue")
 
 @app.route('/test')
@@ -802,18 +783,6 @@ def eliminarEvaluacion():
 
 # ESTILO APRENDIZAJE
 
-# procesamiento
-# activo/reflexivo
-
-# percepcion
-# sensorial/intuitivo
-
-# entrada
-# visual/verbal
-
-# comprension
-# secuencial/global
-
 @app.route('/obtenerEstiloAprendizajePorAlumnoId', methods=['POST'])
 def obtenerEstiloAprendizajePorAlumnoId():
   data = request.get_json()
@@ -894,53 +863,6 @@ def actualizarEstiloAprendizaje():
 
   return jsonify(respuesta)
 
-# @app.route('/actualizarEstiloAprendizaje',methods=['GET','POST'])
-# def actualizarEstiloAprendizaje():
-#   data = request.get_json()
-
-#   alumno_id = data['alumno_id']
-  
-#   #processing: active|reflexive
-#   activo = int(data['procesamiento']['activo'])
-#   reflexivo = int(data['procesamiento']['reflexivo'])
-
-#   # perception: sensitive|intuitive
-#   sensible = int(data['percepcion']['sensible'])
-#   intuitivo = int(data['percepcion']['intuitivo'])
-
-#   #input: visual|verbal
-#   visual = int(data['entrada']['visual'])
-#   verbal = int(data['entrada']['verbal'])
-
-#   # #understanding: sequential/global
-#   sequencial = int(data['comprension']['sequencial'])
-#   _global = int(data['comprension']['_global'])
-
-#   coleccionEstiloAprendizaje = mongo.db.estiloAprendizaje
-  
-#   existeAlumno = coleccionEstiloAprendizaje.find_one({'alumno_id' : ObjectId(alumno_id)})
-#   if(existeAlumno):
-#     coleccionEstiloAprendizaje.update_one(
-#     {'alumno_id' : ObjectId(alumno_id)},
-#     {
-#       '$set':{
-#       'procesamiento':{'activo': activo,'reflexivo':reflexivo},
-#       'percepcion':{'sensible':sensible,'intuitivo':intuitivo},
-#       'entrada':{'visual':visual,'verbal':verbal},
-#       'comprension':{'secuencial':sequencial,'global':_global}
-#       }
-#     }
-#     )
-#   else:
-#     coleccionEstiloAprendizaje.insert_one({
-#     'alumno_id' : ObjectId(alumno_id),
-#     'procesamiento':{'activo': activo,'reflexivo':reflexivo},
-#     'percepcion':{'sensible':sensible,'intuitivo':intuitivo},
-#     'entrada':{'visual':visual,'verbal':verbal},
-#     'comprension':{'secuencial':sequencial,'global':_global}
-#     })
-
-#   return 'Estilo de Aprendizaje Guardado'
 
 # CRUD CONOCIMIENTO
 
@@ -1619,104 +1541,6 @@ def obtenerRespuesta():
   conocimientosBD.extend(procesamientoCategoriaMaterial(tema_id))
 
 
-  # coleccionMaterial = mongo.db.material
-  # materiales = coleccionMaterial.find({'tema_id': ObjectId(tema_id)})
-  
-  # recursos = []
-  # for material in list(materiales):
-  #   obj_dict = {}
-  #   obj_dict['nombre']=material['nombre']
-  #   obj_dict['material']=str(material['_id'])
-  #   obj_dict['faq']=material['faq']
-  #   recursos.append(obj_dict)
-
-  # for recurso in recursos:
-  #   arreglo_recurso = []
-
-  #   dict_texto = {}
-  #   preguntas = ['Que es '+recurso['nombre']]
-  #   respuestas = ['texto']
-  #   material = recurso['material']
-  #   dict_texto['preguntas'] = preguntas
-  #   dict_texto['respuestas'] = respuestas
-  #   dict_texto['material_id'] = material
-  #   arreglo_recurso.append(dict_texto)
-  
-  #   dict_importancia = {}
-  #   preguntas = ['Por que es importante '+recurso['nombre']]
-  #   respuestas = ['importancia']
-  #   material = recurso['material']
-  #   dict_importancia['preguntas'] = preguntas
-  #   dict_importancia['respuestas'] = respuestas
-  #   dict_importancia['material_id'] = material
-  #   arreglo_recurso.append(dict_importancia)
-
-  #   dict_explicacion = {}
-  #   preguntas = ['Donde encuentro mas informacion de '+recurso['nombre']]
-  #   respuestas = ['explicacion']
-  #   material = recurso['material']
-  #   dict_explicacion['preguntas'] = preguntas
-  #   dict_explicacion['respuestas'] = respuestas
-  #   dict_explicacion['material_id'] = material
-  #   arreglo_recurso.append(dict_explicacion)
-  
-  #   dict_ejemplos = {}
-  #   preguntas = ['Dime ejemplos de '+recurso['nombre']]
-  #   respuestas = ['ejemplos']
-  #   material = recurso['material']
-  #   dict_ejemplos['preguntas'] = preguntas
-  #   dict_ejemplos['respuestas'] = respuestas
-  #   dict_ejemplos['material_id'] = material
-  #   arreglo_recurso.append(dict_ejemplos)
-
-  #   dict_quiz = {}
-  #   preguntas = ['Hazme preguntas de '+recurso['nombre']]
-  #   respuestas = ['quiz']
-  #   material = recurso['material']
-  #   dict_quiz['preguntas'] = preguntas
-  #   dict_quiz['respuestas'] = respuestas
-  #   dict_quiz['material_id'] = material
-  #   arreglo_recurso.append(dict_quiz)
-
-  #   dict_imagen = {}
-  #   preguntas = ['Muestrame una imagen de '+recurso['nombre']]
-  #   respuestas = ['imagen']
-  #   material = recurso['material']
-  #   dict_imagen['preguntas'] = preguntas
-  #   dict_imagen['respuestas'] = respuestas
-  #   dict_imagen['material_id'] = material    
-  #   arreglo_recurso.append(dict_imagen)
-
-  #   dict_documento = {}
-  #   preguntas = ['Muestrame una documento de '+recurso['nombre']]
-  #   respuestas = ['documento']
-  #   material = recurso['material']
-  #   dict_documento['preguntas'] = preguntas
-  #   dict_documento['respuestas'] = respuestas
-  #   dict_documento['material_id'] = material
-  #   arreglo_recurso.append(dict_documento)
-
-  #   dict_video = {}
-  #   preguntas = ['Muestrame un video de '+recurso['nombre']]
-  #   respuestas = ['video']
-  #   material = recurso['material']
-  #   dict_video['preguntas'] = preguntas
-  #   dict_video['respuestas'] = respuestas
-  #   dict_video['material_id'] = material
-  #   arreglo_recurso.append(dict_video)
-
-  #   for preguntaFrecuente in recurso['faq']:
-  #     dict_faq = {}
-  #     preguntas = [preguntaFrecuente['pregunta']]
-  #     respuestas = [preguntaFrecuente['respuesta']]
-  #     dict_faq['preguntas'] = preguntas
-  #     dict_faq['respuestas'] = respuestas
-  #     dict_faq['material_id'] = ''
-  #     arreglo_recurso.append(dict_faq)
-
-  #   for item in arreglo_recurso:
-  #     aux = ObjectId()
-  #     conocimientosBD.append(Conocimiento(aux,item['preguntas'],item['respuestas'],item['material_id']))  
   
   respuesta, material_id, datos_ingresados, datos_faltantes, success = responder(consulta, conocimientosBD, entidadBD, tema_id, alumno)
 
@@ -1762,105 +1586,6 @@ def obtenerRespuestaProfesor():
     entidadBD.append(Entidad(elemento['nombre'],elemento['columnas'],elemento['datos']))   
 
   conocimientosBD.extend(procesamientoCategoriaMaterial(tema_id))
-
-  # coleccionMaterial = mongo.db.material
-  # materiales = coleccionMaterial.find({'tema_id': ObjectId(tema_id)})
-  
-  # recursos = []
-  # for material in list(materiales):
-  #   obj_dict = {}
-  #   obj_dict['nombre']=material['nombre']
-  #   obj_dict['material']=str(material['_id'])
-  #   obj_dict['faq']=material['faq']
-  #   recursos.append(obj_dict)
-
-  # for recurso in recursos:
-  #   arreglo_recurso = []
-
-  #   dict_texto = {}
-  #   preguntas = ['Que es '+recurso['nombre']]
-  #   respuestas = ['texto']
-  #   material = recurso['material']
-  #   dict_texto['preguntas'] = preguntas
-  #   dict_texto['respuestas'] = respuestas
-  #   dict_texto['material_id'] = material
-  #   arreglo_recurso.append(dict_texto)
-  
-  #   dict_importancia = {}
-  #   preguntas = ['Por que es importante '+recurso['nombre']]
-  #   respuestas = ['importancia']
-  #   material = recurso['material']
-  #   dict_importancia['preguntas'] = preguntas
-  #   dict_importancia['respuestas'] = respuestas
-  #   dict_importancia['material_id'] = material
-  #   arreglo_recurso.append(dict_importancia)
-
-  #   dict_explicacion = {}
-  #   preguntas = ['Donde encuentro mas informacion de '+recurso['nombre']]
-  #   respuestas = ['explicacion']
-  #   material = recurso['material']
-  #   dict_explicacion['preguntas'] = preguntas
-  #   dict_explicacion['respuestas'] = respuestas
-  #   dict_explicacion['material_id'] = material
-  #   arreglo_recurso.append(dict_explicacion)
-  
-  #   dict_ejemplos = {}
-  #   preguntas = ['Dime ejemplos de '+recurso['nombre']]
-  #   respuestas = ['ejemplos']
-  #   material = recurso['material']
-  #   dict_ejemplos['preguntas'] = preguntas
-  #   dict_ejemplos['respuestas'] = respuestas
-  #   dict_ejemplos['material_id'] = material
-  #   arreglo_recurso.append(dict_ejemplos)
-
-  #   dict_quiz = {}
-  #   preguntas = ['Hazme preguntas de '+recurso['nombre']]
-  #   respuestas = ['quiz']
-  #   material = recurso['material']
-  #   dict_quiz['preguntas'] = preguntas
-  #   dict_quiz['respuestas'] = respuestas
-  #   dict_quiz['material_id'] = material
-  #   arreglo_recurso.append(dict_quiz)
-
-  #   dict_imagen = {}
-  #   preguntas = ['Muestrame una imagen de '+recurso['nombre']]
-  #   respuestas = ['imagen']
-  #   material = recurso['material']
-  #   dict_imagen['preguntas'] = preguntas
-  #   dict_imagen['respuestas'] = respuestas
-  #   dict_imagen['material_id'] = material    
-  #   arreglo_recurso.append(dict_imagen)
-
-  #   dict_documento = {}
-  #   preguntas = ['Muestrame una documento de '+recurso['nombre']]
-  #   respuestas = ['documento']
-  #   material = recurso['material']
-  #   dict_documento['preguntas'] = preguntas
-  #   dict_documento['respuestas'] = respuestas
-  #   dict_documento['material_id'] = material
-  #   arreglo_recurso.append(dict_documento)
-
-  #   dict_video = {}
-  #   preguntas = ['Muestrame un video de '+recurso['nombre']]
-  #   respuestas = ['video']
-  #   material = recurso['material']
-  #   dict_video['preguntas'] = preguntas
-  #   dict_video['respuestas'] = respuestas
-  #   dict_video['material_id'] = material
-  #   arreglo_recurso.append(dict_video)
-
-  #   for preguntaFrecuente in recurso['faq']:
-  #     dict_faq = {}
-  #     preguntas = [preguntaFrecuente['pregunta']]
-  #     respuestas = [preguntaFrecuente['respuesta']]
-  #     dict_faq['preguntas'] = preguntas
-  #     dict_faq['respuestas'] = respuestas
-  #     dict_faq['material_id'] = ''
-  #     arreglo_recurso.append(dict_faq)
-
-  #   for item in arreglo_recurso:
-  #     aux = ObjectId()
-  #     conocimientosBD.append(Conocimiento(aux,item['preguntas'],item['respuestas'],item['material_id']))   
 
   respuesta, material_id, datos_ingresados, datos_faltantes, success = responder(consulta, conocimientosBD, entidadBD, tema_id, profesor)
   
@@ -2008,112 +1733,10 @@ def entrenar():
 
   conocimientosBD.extend(procesamientoCategoriaMaterial(tema_id))
 
-  # coleccionMaterial = mongo.db.material
-  # materiales = coleccionMaterial.find({'tema_id': ObjectId(tema_id)})
-  
-  # recursos = []
-
-  # for material in list(materiales):
-  #   obj_dict = {}
-  #   obj_dict['nombre']=material['nombre']
-  #   obj_dict['material']=str(material['_id'])
-  #   obj_dict['faq']=material['faq']
-
-  #   recursos.append(obj_dict)
-
-  # for recurso in recursos:
-  #   arreglo_recurso = []
-
-  #   dict_texto = {}
-  #   preguntas = ['Que es '+recurso['nombre']]
-  #   respuestas = ['texto']
-  #   material = recurso['material']
-  #   dict_texto['preguntas'] = preguntas
-  #   dict_texto['respuestas'] = respuestas
-  #   dict_texto['material_id'] = material
-  #   arreglo_recurso.append(dict_texto)
-  
-  #   dict_importancia = {}
-  #   preguntas = ['Por que es importante '+recurso['nombre']]
-  #   respuestas = ['importancia']
-  #   material = recurso['material']
-  #   dict_importancia['preguntas'] = preguntas
-  #   dict_importancia['respuestas'] = respuestas
-  #   dict_importancia['material_id'] = material
-  #   arreglo_recurso.append(dict_importancia)
-
-  #   dict_explicacion = {}
-  #   preguntas = ['Donde encuentro mas informacion de '+recurso['nombre']]
-  #   respuestas = ['explicacion']
-  #   material = recurso['material']
-  #   dict_explicacion['preguntas'] = preguntas
-  #   dict_explicacion['respuestas'] = respuestas
-  #   dict_explicacion['material_id'] = material
-  #   arreglo_recurso.append(dict_explicacion)
-  
-  #   dict_ejemplos = {}
-  #   preguntas = ['Dime ejemplos de '+recurso['nombre']]
-  #   respuestas = ['ejemplos']
-  #   material = recurso['material']
-  #   dict_ejemplos['preguntas'] = preguntas
-  #   dict_ejemplos['respuestas'] = respuestas
-  #   dict_ejemplos['material_id'] = material
-  #   arreglo_recurso.append(dict_ejemplos)
-
-  #   dict_quiz = {}
-  #   preguntas = ['Hazme preguntas de '+recurso['nombre']]
-  #   respuestas = ['quiz']
-  #   material = recurso['material']
-  #   dict_quiz['preguntas'] = preguntas
-  #   dict_quiz['respuestas'] = respuestas
-  #   dict_quiz['material_id'] = material
-  #   arreglo_recurso.append(dict_quiz)
-
-  #   dict_imagen = {}
-  #   preguntas = ['Muestrame una imagen de '+recurso['nombre']]
-  #   respuestas = ['imagen']
-  #   material = recurso['material']
-  #   dict_imagen['preguntas'] = preguntas
-  #   dict_imagen['respuestas'] = respuestas
-  #   dict_imagen['material_id'] = material    
-  #   arreglo_recurso.append(dict_imagen)
-
-  #   dict_documento = {}
-  #   preguntas = ['Muestrame una documento de '+recurso['nombre']]
-  #   respuestas = ['documento']
-  #   material = recurso['material']
-  #   dict_documento['preguntas'] = preguntas
-  #   dict_documento['respuestas'] = respuestas
-  #   dict_documento['material_id'] = material
-  #   arreglo_recurso.append(dict_documento)
-
-  #   dict_video = {}
-  #   preguntas = ['Muestrame un video de '+recurso['nombre']]
-  #   respuestas = ['video']
-  #   material = recurso['material']
-  #   dict_video['preguntas'] = preguntas
-  #   dict_video['respuestas'] = respuestas
-  #   dict_video['material_id'] = material
-  #   arreglo_recurso.append(dict_video)
-
-  #   for preguntaFrecuente in recurso['faq']:
-  #     dict_faq = {}
-  #     preguntas = [preguntaFrecuente['pregunta']]
-  #     respuestas = [preguntaFrecuente['respuesta']]
-  #     dict_faq['preguntas'] = preguntas
-  #     dict_faq['respuestas'] = respuestas
-  #     dict_faq['material_id'] = ''
-  #     arreglo_recurso.append(dict_faq)
-
-  #   for item in arreglo_recurso:
-  #     aux = ObjectId()
-  #     conocimientosBD.append(Conocimiento(aux,item['preguntas'],item['respuestas'],item['material_id']))     
-
   score = entrenarModelo(conocimientosBD,tema_id)
 
   return str(score)
 
-#entrenar()
 
 # CARGAR MODELO
 @app.route('/cargar',methods=['GET','POST'])
@@ -2141,11 +1764,3 @@ def cargarVarios():
   return "ok"
 
 cargarVarios()
-
-
-if __name__ == '__main__':
-  app.run(debug=True)
-
-
-# url app: https://adaptive-chatbot.herokuapp.com/
-# deploy heroku: c

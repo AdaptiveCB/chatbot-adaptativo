@@ -133,12 +133,12 @@ def entrenarModelo(conocimientos,tema_id):
   return score
 
 def cargarModelo(tema_id):
-  FirebaseStorage.child('models',tema_id+'.sav').download(os.path.join('models',tema_id+'.sav'))
-  FirebaseStorage.child('vectorizer',tema_id+'.sav').download(os.path.join('vectorizer',tema_id+'.sav'))
-  filename = os.path.join('models',tema_id+'.sav')
+  FirebaseStorage.child('models',tema_id+'.sav').download(os.path.join('chatbot','models',tema_id+'.sav'))
+  FirebaseStorage.child('vectorizer',tema_id+'.sav').download(os.path.join('chatbot','vectorizer',tema_id+'.sav'))
+  filename = os.path.join('chatbot','models',tema_id+'.sav')
   model = pickle.load(open(filename, 'rb'))
 
-  filenameVectorizer = os.path.join('vectorizer',tema_id+'.sav')
+  filenameVectorizer = os.path.join('chatbot','vectorizer',tema_id+'.sav')
   vectorizer = pickle.load(open(filenameVectorizer, 'rb'))
 
   modelos.update({tema_id:model})  
@@ -146,10 +146,10 @@ def cargarModelo(tema_id):
 
 def cargarVariosModelos(temas):
   for tema_id in temas:
-    FirebaseStorage.child('models',tema_id+'.sav').download(os.path.join('models',tema_id+'.sav'))
-    FirebaseStorage.child('vectorizer',tema_id+'.sav').download(os.path.join('vectorizer',tema_id+'.sav'))
-    filename = os.path.join('models',tema_id+'.sav')
-    filenameVectorizer = os.path.join('vectorizer',tema_id+'.sav')
+    FirebaseStorage.child('models',tema_id+'.sav').download(os.path.join('chatbot','models',tema_id+'.sav'))
+    FirebaseStorage.child('vectorizer',tema_id+'.sav').download(os.path.join('chatbot','vectorizer',tema_id+'.sav'))
+    filename = os.path.join('chatbot','models',tema_id+'.sav')
+    filenameVectorizer = os.path.join('chatbot','vectorizer',tema_id+'.sav')
     if(os.path.exists(filename)):
       model = pickle.load(open(filename, 'rb'))
       modelos.update({tema_id:model})  
