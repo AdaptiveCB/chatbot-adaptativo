@@ -11,6 +11,6 @@ app.config['MONGO_URI'] = 'mongodb+srv://chatbot:adaptive@cluster0-k4fnb.mongodb
 
 mongo = PyMongo(app)
 
-from chatbot import routes
+from chatbot.routes import rutas,sesion
 
 

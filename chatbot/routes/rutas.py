@@ -1,9 +1,9 @@
-from flask import render_template, request, jsonify, redirect
+from flask import request, jsonify, redirect
 from datetime import datetime, timedelta
 from bson.json_util import dumps
 from bson.objectid import ObjectId
-from chatbot.semhash import cargarModelo,entrenarModelo,responder,Conocimiento,Entidad,cargarVariosModelos
-from chatbot import app, mongo
+from ..semhash import cargarModelo,entrenarModelo,responder,Conocimiento,Entidad,cargarVariosModelos
+from .. import app, mongo
 # import random
 # import re
 # import os
@@ -12,10 +12,6 @@ from chatbot import app, mongo
 @app.route('/')
 def home():
   return redirect("https://mitsuoysharag.github.io/TesisChatbotDocente_Vue")
-
-@app.route('/test')
-def test():
-  return render_template('test.html')
 
 
 # MATERIAL
@@ -433,26 +429,7 @@ def actualizarTiempoAlumno():
 
   return jsonify(objetoResultado)
 
-@app.route('/iniciarSesionProfesor', methods=['GET','POST'])
-def iniciarSesionProfesor():
-  data = request.get_json()
 
-  codigo = data['codigo']
-  contrasena = data['contrasena']
-
-  coleccionProfesor = mongo.db.profesor
-  profesor = coleccionProfesor.find_one({'codigo':codigo,'contrasena':contrasena})
-
-  profesor_id = ""
-  
-  if(profesor):
-    profesor_id = (str(profesor['_id']))
-  
-  objetoProfesor = {
-    "profesor_id": profesor_id
-  }
-
-  return jsonify(objetoProfesor)
 
 # TEMA
 @app.route('/ingresarTema', methods=['GET','POST'])
