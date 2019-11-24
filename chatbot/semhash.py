@@ -247,6 +247,25 @@ def get_conocimiento_por_pregunta(pregunta, conocimientos, model, vectorizer):
   
   return conocimientos[idx]
 
+def get_conocimiento_por_pregunta_2(pregunta, conocimientos, vectorizer):
+  x = [p for c in conocimientos for p in c.preguntas]
+  y = [c.conocimiento_id for c in conocimientos for _ in c.preguntas]
+
+  sim = [similarity(pregunta, p, vectorizer) for p in x]
+  idx = np.argmax(sim)
+
+  for c in conocimientos:
+    if c.conocimiento_id == y[idx]:
+      return c
+  
+  return None
+
+def similarity(text1, text2, vectorizer):
+  v1 = vectorizer.transform([semhash(tratamiento(text1), n)]).toarray()[0]
+  v2 = vectorizer.transform([semhash(tratamiento(text2), n)]).toarray()[0]
+  aux = np.linalg.norm(v1)*np.linalg.norm(v2)
+  return 0 if aux == 0 else np.dot(v1, v2)/aux
+
 def get_queries(entidades_respondidas): # retorna [{?: [{'columna': ?, 'valor': ?}, ...]}, ...]
   queries = defaultdict(list)
   for er in entidades_respondidas:
@@ -295,7 +314,8 @@ def responder(pregunta_usuario, conocimientos, tabla_entidades, tema_id, perfil)
   datos_faltantes = []
   
   pregunta_usuario = tratamiento(pregunta_usuario)
-  conocimiento = get_conocimiento_por_pregunta(pregunta_usuario, conocimientos, model, vectorizer)
+  # conocimiento = get_conocimiento_por_pregunta(pregunta_usuario, conocimientos, model, vectorizer)
+  conocimiento = get_conocimiento_por_pregunta_2(pregunta_usuario, conocimientos, vectorizer)
   material_id = conocimiento.material_id
   
   pregunta_conocimiento = conocimiento.preguntas[0]
