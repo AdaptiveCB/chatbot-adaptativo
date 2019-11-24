@@ -4,6 +4,46 @@ from bson.json_util import dumps
 from bson.objectid import ObjectId
 from chatbot import app, mongo
 
+
+@app.route('/obtenerPuntajeMayorAlumnoPorCurso', methods=['POST'])
+def obtenerPuntajeMayorAlumnoPorCurso():
+  data = request.get_json()
+
+  alumno_id = data['alumno_id']
+  curso_id = data['curso_id']
+
+  coleccionTema = mongo.db.tema
+  tema = coleccionTema.find_one({'curso_id':ObjectId(curso_id)})
+
+  coleccionCuestionario = mongo.db.cuestionario
+  cuestionarios = coleccionCuestionario.find({'tema_id':tema['_id']})
+
+  listaCuestionarios = []
+  for cuestionario in cuestionarios:
+    listaCuestionarios.append(cuestionario['_id'])
+  
+  coleccionEvaluacion = mongo.db.evaluacion
+
+  puntajes = []
+  for cuestionario in listaCuestionarios:
+
+    evaluaciones = coleccionEvaluacion.find({'alumno_id':ObjectId(alumno_id),'cuestionario_id':cuestionario})
+    notaEvaluacion = 0
+
+    for evaluacion in list(evaluaciones):
+      notaBD = evaluacion['nota']
+      if notaBD > notaEvaluacion:
+        notaEvaluacion = notaBD
+
+    puntajes.append(notaEvaluacion)
+
+  objetoResultado = {
+    'puntaje': sum(puntajes)
+  }
+
+  return jsonify(objetoResultado) 
+  
+
 @app.route('/puntajeTotalAlumnoPorCurso', methods=['POST'])
 def puntajeTotalAlumnoPorCurso():
   data = request.get_json()
