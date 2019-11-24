@@ -49,6 +49,39 @@ def iniciarSesionProfesor():
 
   return jsonify(objetoProfesor)
 
+@app.route('/tiempoTotalAlumnoPorDia', methods=['POST'])
+def tiempoTotalAlumnoPorDia():
+  data = request.get_json()
+
+  alumno_id = data['alumno_id']
+
+  fechas = []
+  for i in range(5):
+    fecha = (datetime.today() - timedelta(hours=5)) - timedelta(days=(4-i))
+    fecha = datetime.strftime(fecha,'%d/%m/%Y')
+    fecha = datetime.strptime(fecha,'%d/%m/%Y')
+    fechas.append(fecha)
+  
+  coleccionLogTiempoAlumno = mongo.db.logTiempoAlumno
+
+  tiempos = []
+
+  for fecha in fechas:
+    tiempoFecha = 0
+
+    logTiempoAlumno = coleccionLogTiempoAlumno.find_one({'alumno_id':ObjectId(alumno_id),'fecha':fecha})
+
+    if(logTiempoAlumno):
+      tiempoFecha = tiempoFecha = logTiempoAlumno['tiempo']
+    
+    objetoFecha = {}
+    objetoFecha['fecha'] = datetime.strftime(fecha,'%d/%m/%Y')
+    objetoFecha['tiempoTotal'] = tiempoFecha
+
+    tiempos.append(objetoFecha)
+
+  return jsonify(tiempos)
+
 @app.route('/obtenerTiempoAlumno', methods=['POST'])
 def obtenerTiempoAlumno():
   data = request.get_json()
