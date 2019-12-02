@@ -96,6 +96,7 @@ n = 3 #tamaño n-gram
 
 def entrenarModelo(conocimientos,tema_id):
   vectorizer = CountVectorizer(token_pattern='[#a-zñ0-9]+')
+  # vectorizer = TfidfVectorizer(token_pattern='[#a-zñ0-9]+')
   conocimiento_ids = [c.conocimiento_id for c in conocimientos]
 
   x_train = []
