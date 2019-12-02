@@ -35,7 +35,7 @@ def obtenerRespuesta():
   conocimientosBD.extend(procesamientoCategoriaMaterial(tema_id))
 
   
-  respuesta, material_id, datos_ingresados, datos_faltantes, success = responder(consulta, conocimientosBD, entidadBD, tema_id, alumno)
+  respuesta, material_id, datos_ingresados, datos_faltantes, success, score = responder(consulta, conocimientosBD, entidadBD, tema_id, alumno)
 
   if(respuesta in ['texto','importancia','explicacion','ejemplos','quiz','imagen','documento','video']):
     respuesta = {
@@ -43,7 +43,8 @@ def obtenerRespuesta():
       'material_id': str(material_id),
       'datos_ingresados': datos_ingresados,
       'datos_faltantes': datos_faltantes,
-      'success': success
+      'success': success,
+      'score': score
     }
   else:
     respuesta = {
@@ -51,7 +52,8 @@ def obtenerRespuesta():
       'material_id': str(material_id),
       'datos_ingresados': datos_ingresados,
       'datos_faltantes': datos_faltantes,
-      'success': success
+      'success': success,
+      'score': score
     }
 
   return jsonify(respuesta)
@@ -80,7 +82,7 @@ def obtenerRespuestaProfesor():
 
   conocimientosBD.extend(procesamientoCategoriaMaterial(tema_id))
 
-  respuesta, material_id, datos_ingresados, datos_faltantes, success = responder(consulta, conocimientosBD, entidadBD, tema_id, profesor)
+  respuesta, material_id, datos_ingresados, datos_faltantes, success, score = responder(consulta, conocimientosBD, entidadBD, tema_id, profesor)
   
   if(respuesta in ['texto','importancia','explicacion','ejemplos','quiz','imagen','documento','video']):
     respuesta = {
@@ -88,7 +90,8 @@ def obtenerRespuestaProfesor():
       'material_id': str(material_id),
       'datos_ingresados': datos_ingresados,
       'datos_faltantes': datos_faltantes,
-      'success': success
+      'success': success,
+      'score': score
     }
   else:
     respuesta = {
@@ -96,7 +99,8 @@ def obtenerRespuestaProfesor():
       'material_id': str(material_id),
       'datos_ingresados': datos_ingresados,
       'datos_faltantes': datos_faltantes,
-      'success': success
+      'success': success,
+      'score': score
     }
 
   return jsonify(respuesta)

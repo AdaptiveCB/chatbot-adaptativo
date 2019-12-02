@@ -256,7 +256,7 @@ def get_conocimiento_por_pregunta_2(pregunta, conocimientos, vectorizer):
 
   for c in conocimientos:
     if c.conocimiento_id == y[idx]:
-      return c
+      return c, sim[idx]
   
   return None
 
@@ -309,13 +309,14 @@ def responder(pregunta_usuario, conocimientos, tabla_entidades, tema_id, perfil)
   vectorizer = vectorizers.get(tema_id)
   model = modelos.get(tema_id)
   ############################################################
+  score = 0
   respuesta = ''
   datos_ingresados = []
   datos_faltantes = []
   
   pregunta_usuario = tratamiento(pregunta_usuario)
   # conocimiento = get_conocimiento_por_pregunta(pregunta_usuario, conocimientos, model, vectorizer)
-  conocimiento = get_conocimiento_por_pregunta_2(pregunta_usuario, conocimientos, vectorizer)
+  conocimiento, score = get_conocimiento_por_pregunta_2(pregunta_usuario, conocimientos, vectorizer)
   material_id = conocimiento.material_id
   
   pregunta_conocimiento = conocimiento.preguntas[0]
@@ -332,6 +333,6 @@ def responder(pregunta_usuario, conocimientos, tabla_entidades, tema_id, perfil)
   datos_ingresados = [['@{}@{}'.format(er['nombre'], er['columna']), er['valor']] for er in entidades_respondidas if er['valor'] != '']
   datos_faltantes = ['@{}@{}'.format(er['nombre'], er['columna']) for er in entidades_respondidas if er['valor'] == '']
       
-  return respuesta, material_id, datos_ingresados, datos_faltantes, success
+  return respuesta, material_id, datos_ingresados, datos_faltantes, success, score
   
  
