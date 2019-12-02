@@ -64,6 +64,9 @@ def procesamientoCategoriaMaterial(tema_id):
   coleccionMaterial = mongo.db.material
   materiales = coleccionMaterial.find({'tema_id': ObjectId(tema_id)})
 
+  coleccionPreguntaMaterial = mongo.db.preguntaMaterial
+  preguntaMaterial = coleccionPreguntaMaterial.find_one({})
+
   recursos = []
 
   for material in list(materiales):
@@ -78,7 +81,7 @@ def procesamientoCategoriaMaterial(tema_id):
     arreglo_recurso = []
 
     dict_texto = {}
-    preguntas = ['Que es '+recurso['nombre']]
+    preguntas = [preguntaMaterial['texto'].replace('@','').strip() + ' ' + recurso['nombre']]
     respuestas = ['texto']
     material = recurso['material']
     dict_texto['preguntas'] = preguntas
@@ -87,7 +90,7 @@ def procesamientoCategoriaMaterial(tema_id):
     arreglo_recurso.append(dict_texto)
   
     dict_importancia = {}
-    preguntas = ['Por que es importante '+recurso['nombre']]
+    preguntas = [preguntaMaterial['importancia'].replace('@','').strip() + ' ' + recurso['nombre']]
     respuestas = ['importancia']
     material = recurso['material']
     dict_importancia['preguntas'] = preguntas
@@ -96,7 +99,7 @@ def procesamientoCategoriaMaterial(tema_id):
     arreglo_recurso.append(dict_importancia)
 
     dict_explicacion = {}
-    preguntas = ['Donde encuentro mas informacion de '+recurso['nombre']]
+    preguntas = [preguntaMaterial['explicacion'].replace('@','').strip() + ' ' + recurso['nombre']]
     respuestas = ['explicacion']
     material = recurso['material']
     dict_explicacion['preguntas'] = preguntas
@@ -105,7 +108,7 @@ def procesamientoCategoriaMaterial(tema_id):
     arreglo_recurso.append(dict_explicacion)
   
     dict_ejemplos = {}
-    preguntas = ['Dime ejemplos de '+recurso['nombre']]
+    preguntas = [preguntaMaterial['ejemplos'].replace('@','').strip() + ' ' + recurso['nombre']]
     respuestas = ['ejemplos']
     material = recurso['material']
     dict_ejemplos['preguntas'] = preguntas
@@ -114,7 +117,7 @@ def procesamientoCategoriaMaterial(tema_id):
     arreglo_recurso.append(dict_ejemplos)
 
     dict_quiz = {}
-    preguntas = ['Hazme preguntas de '+recurso['nombre']]
+    preguntas = [preguntaMaterial['quiz'].replace('@','').strip() + ' ' + recurso['nombre']]
     respuestas = ['quiz']
     material = recurso['material']
     dict_quiz['preguntas'] = preguntas
@@ -123,7 +126,7 @@ def procesamientoCategoriaMaterial(tema_id):
     arreglo_recurso.append(dict_quiz)
 
     dict_imagen = {}
-    preguntas = ['Muestrame una imagen de '+recurso['nombre']]
+    preguntas = [preguntaMaterial['imagen'].replace('@','').strip() + ' ' + recurso['nombre']]
     respuestas = ['imagen']
     material = recurso['material']
     dict_imagen['preguntas'] = preguntas
@@ -132,7 +135,7 @@ def procesamientoCategoriaMaterial(tema_id):
     arreglo_recurso.append(dict_imagen)
 
     dict_documento = {}
-    preguntas = ['Muestrame una documento de '+recurso['nombre']]
+    preguntas = [preguntaMaterial['documento'].replace('@','').strip() + ' ' + recurso['nombre']]
     respuestas = ['documento']
     material = recurso['material']
     dict_documento['preguntas'] = preguntas
@@ -141,7 +144,7 @@ def procesamientoCategoriaMaterial(tema_id):
     arreglo_recurso.append(dict_documento)
 
     dict_video = {}
-    preguntas = ['Muestrame un video de '+recurso['nombre']]
+    preguntas = [preguntaMaterial['video'].replace('@','').strip() + ' ' + recurso['nombre']]
     respuestas = ['video']
     material = recurso['material']
     dict_video['preguntas'] = preguntas

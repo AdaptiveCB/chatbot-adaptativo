@@ -5,6 +5,29 @@ from bson.objectid import ObjectId
 from chatbot import app, mongo
 
 
+@app.route('/pruebaTiempo', methods=['GET'])
+def pruebaTiempo():
+  coleccionLogTiempoAlumno = mongo.db.logTiempoAlumno
+
+  tiempos = coleccionLogTiempoAlumno.find({})
+
+  for t in list(tiempos):
+    print(t['alumno_id'],t['tiempo'])
+  
+  return 'ja'
+
+@app.route('/alumnos', methods=['GET'])
+def alumnos():
+  coleccionAlumno = mongo.db.alumno
+
+  alumnos = coleccionAlumno.find({})
+
+  for a in list(alumnos):
+    print(a['_id'],a['apellido_paterno'],a['apellido_materno'])
+
+  return 'j'
+
+
 @app.route('/iniciarSesionAlumno', methods=['GET','POST'])
 def iniciarSesionAlumno():
   data = request.get_json()
