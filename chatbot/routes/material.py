@@ -3,6 +3,25 @@ from bson.json_util import dumps
 from bson.objectid import ObjectId
 from chatbot import app, mongo
 
+@app.route('/obtenerPreguntaMaterial', methods=['GET'])
+def obtenerPreguntaMaterial():
+  coleccionPreguntaMaterial = mongo.db.preguntaMaterial
+
+  preguntaMaterial = coleccionPreguntaMaterial.find_one({})
+
+  objetoResultado = {
+    'texto': preguntaMaterial['texto'],
+    'documento': preguntaMaterial['documento'],
+    'video': preguntaMaterial['video'],
+    'imagen': preguntaMaterial['imagen'],
+    'quiz': preguntaMaterial['quiz'],
+    'ejemplos': preguntaMaterial['ejemplos'],
+    'explicacion': preguntaMaterial['explicacion'],
+    'importancia': preguntaMaterial['importancia']
+  }
+
+  return jsonify(objetoResultado)
+
 
 @app.route('/obtenerMaterialPorTema', methods=['GET','POST'])
 def obtenerListadoMaterial():
